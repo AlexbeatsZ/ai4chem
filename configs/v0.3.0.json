@@ -1,0 +1,26 @@
+{
+  "seed": 20261116,
+  "development_reactions": 77,
+  "legacy_development_reactions": [894, 1061, 1154, 3685, 4002, 5696, 6196, 7936, 8549, 9925],
+  "validation_reactions": 20,
+  "train_shards": [0],
+  "train_sizes": [64, 256],
+  "training": {
+    "epochs": 8,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "energy_weight": 10.0,
+    "forces_weight": 1.0,
+    "dtype": "float64",
+    "E0s": "estimated"
+  },
+  "experiments": [
+    {"name": "mh1_full_64", "foundation": "mh1-omol", "train_size": 64, "freeze": 0},
+    {"name": "mh1_readout_256", "foundation": "mh1-omol", "train_size": 256, "freeze": 6},
+    {"name": "mh1_full_256", "foundation": "mh1-omol", "train_size": 256, "freeze": 0},
+    {"name": "mh0_full_256", "foundation": "mh0-rgd1", "train_size": 256, "freeze": 0}
+  ],
+  "selection": "minimum validation sampled-barrier MAE, then nonreactant relative-energy MAE",
+  "final_evaluation": "remaining test reaction IDs after the fixed development selection; evaluate baselines and the validation-selected candidate once",
+  "bootstrap_replicates": 2000
+}

@@ -4,6 +4,7 @@
 
 - v0.1.0 为本地推理环境验收，计算水分子势能和受力。
 - v0.2.0 为 Transition1x 十条反应的数据读取及三个预训练模型的零微调基准。
+- v0.3.0 为扩大基准、短程微调和独立最终集评价。
 
 ## 创建环境
 
@@ -58,6 +59,74 @@ print(atoms.get_forces())
 
 v0.1.0 的验收范围是本地 CUDA 推理与结果文件读写。Transition1x 数据基准的
 进展见下一节，微调训练和反应路径搜索待后续验收。
+
+## v0.3.0 微调与泛化验证
+
+使用现有 Linux CUDA 依赖锁环境，按以下顺序执行。
+
+```bash
+mamba run -n ai4chem python inspect_models.py
+mamba run -n ai4chem python prepare_research_data.py
+mamba run -n ai4chem python run_finetuning.py
+mamba run -n ai4chem python run_research_evaluation.py
+mamba run -n ai4chem python -m unittest discover -s tests -v
+```
+
+数据准备程序自动下载固定 revision 的 test、val 和 train 第零个 shard，
+缓存大小约 647 MB。沿用 WSL Mamba `ai4chem` 环境和 OMEN CUDA。
+
+本轮使用 77 条开发反应、20 条官方 val 反应与 210 条预留最终反应。
+原十条位于开发集，训练样本来自官方 train。训练规模为嵌套的 64/256 构型，
+每个构型对应一个不同反应，数据源限定为本轮选定的一个 train shard。
+分区与构型序号固定于 `configs/v0.3.0_partitions.json`。
+
+四个八-epoch 试验覆盖 MH-1 全模型 64 构型、MH-1 readout-only 256 构型、
+MH-1 全模型 256 构型和 MH-0 全模型 256 构型。复用官方训练入口，提取单头后
+采用 `E0s="estimated"`。训练配置和日志保存在 `results/v0.3.0/training/`，
+模型保存在 `models/v0.3.0/`。训练脚本可复用配置相同且已完成的实验。
+
+验证集选定候选之后，再评估预留最终集。三个原始基线在开发和最终集合计覆盖
+全部 287 条 test 反应。当前图像均采用固定 DFT 路径几何。
+
+结果集中保存非反应物和 TS 图像能量误差、带符号能垒误差、峰值偏移、TS 区域
+力误差及按化学式、原子数和端点连接变化分层的指标。置信区间按反应与化学式
+分别进行 2,000 次聚类 bootstrap，整体力 RMSE 保留 Cartesian 分量权重。
+
+- `results/v0.3.0/selection.json` 记录 validation 排名和最终候选。
+- `results/v0.3.0/experiment_comparison.csv` 汇总三个角色的指标和置信区间。
+- `results/v0.3.0/finetuning_generalization.png` 和 `.pdf` 展示学习曲线与泛化表现。
+- `results/v0.3.0/report.md` 为实测结果报告。
+- 各角色的 `analysis/` 保存分层 CSV、误差分解和配对置信区间。
+
+### v0.3.0 实测结果
+
+四组实验各运行八个 epochs。验证集按固定规则选择 MH-1 全模型、256 构型方案，
+所选权重来自该实验最佳 validation loss 的 epoch 6（从 0 开始编号）。
+
+| 模型 | 最终能垒 MAE / eV | 非反应物相对能量 MAE / eV | 力分量 RMSE / (eV/Å) | TS 区域力分量 RMSE / (eV/Å) |
+| --- | --- | --- | --- | --- |
+| OFF23-small | 0.606971 | 0.372728 | 0.587378 | 0.845369 |
+| MH-1 / omol | 0.245429 | 0.126206 | 0.251791 | 0.276627 |
+| MH-0 / RGD1 | 0.565433 | 0.258092 | 0.233540 | 0.296187 |
+| MH-1 全模型，256 构型 | 0.131641 | 0.063770 | 0.111649 | 0.169773 |
+
+选定模型的最终能垒 MAE 反应级 bootstrap 95% 区间为 [0.114183, 0.149081] eV，
+化学式级区间为 [0.061627, 0.177177] eV。相对未微调 MH-1 的配对能垒 MAE
+差值为 -0.113789 eV，化学式级 95% 区间为 [-0.124152, -0.081254] eV，
+共八个化学式簇。平均带符号能垒误差从 -0.231239 变为 -0.041327 eV，低估比例
+从 192/210 变为 117/210。
+
+readout-only 方案在 validation 的力误差改善，而能垒 MAE 从原模型的 0.253158
+升至 0.346186 eV。MH-1 的可选 TorchScript 编译导出遇到上游类型错误，标准
+`.model` 权重均已重新加载并完成基准。所有实测配置、日志和错误提示保留在结果包。
+
+[已发布的学习与泛化图](https://github.com/AlexbeatsZ/ai4chem/releases/download/v0.3.0/finetuning_generalization.png)
+
+完整约定位于 [微调与泛化设计文档](docs/design/finetuning.md)。
+本轮仍采用公开导出副本、一个 train shard、单种子和短程训练，官方原始 HDF5
+对照、预训练重叠、更充分收敛、多种子和模型独立优化路径仍待验证。
+本轮最终集已用于报告。后续依据这些结果改变方案时，需要记录其已使用状态，
+并重新设计后续独立评价。
 
 ## v0.2.0 反应路径基准
 

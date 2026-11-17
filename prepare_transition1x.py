@@ -28,6 +28,37 @@ def write_group(group, numbers, positions, energies, forces):
     group.create_dataset(FORCES_KEY, data=forces, compression="gzip")
 
 
+def write_reaction(output, rows, sid, split, allowed_formulas):
+    rows.sort(key=lambda row: row["fid"])
+    if [row["fid"] for row in rows] != list(range(len(rows))):
+        raise ValueError(f"Missing or duplicated frame IDs for reaction {sid}")
+    numbers = np.asarray(rows[0]["atomic_numbers"], dtype=np.int64)
+    for row in rows:
+        np.testing.assert_array_equal(row["atomic_numbers"], numbers)
+    positions = np.asarray([row["pos"] for row in rows], dtype=np.float32)
+    energies = np.asarray([row["y"] for row in rows], dtype=np.float64)
+    forces = np.asarray([row["force"] for row in rows], dtype=np.float32)
+    formula = Atoms(numbers=numbers).get_chemical_formula()
+    if formula not in allowed_formulas:
+        raise ValueError(f"Formula {formula} is outside the original {split} split")
+    indices = final_band_indices(len(rows))
+    if positions.shape != (len(rows), len(numbers), 3) or forces.shape != positions.shape:
+        raise ValueError(f"Invalid dimensions for reaction {sid}")
+    if not all(np.isfinite(values).all() for values in (positions, energies, forces)):
+        raise ValueError(f"Non-finite values for reaction {sid}")
+    reaction = f"rxn{int(sid):04d}"
+    group = output["data"].require_group(formula).create_group(reaction)
+    write_group(group, numbers, positions, energies, forces)
+    ts_candidates = indices if len(rows) == 10 else indices[1:-1]
+    ts = ts_candidates[np.argmax(energies[ts_candidates])]
+    for name, index in (("reactant", 0), ("product", 9), ("transition_state", ts)):
+        write_group(group.create_group(name), numbers, positions[index:index + 1],
+                    energies[index:index + 1], forces[index:index + 1])
+    if formula not in output[split]:
+        output[split][formula] = h5py.SoftLink(f"/data/{formula}")
+    return {"reaction": reaction, "formula": formula, "source_frames": len(rows), "atoms": len(numbers)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--count", type=int, default=10)
@@ -60,41 +91,14 @@ def main():
         "reactions": [],
     }
     with h5py.File(temporary, "w") as output:
-        data = output.create_group("data")
+        output.create_group("data")
         for split in ("train", "val", "test"):
             output.create_group(split)
         for sid in selected:
             rows = table.filter(pc.equal(table["sid"], int(sid))).to_pylist()
-            rows.sort(key=lambda row: row["fid"])
-            if [row["fid"] for row in rows] != list(range(len(rows))):
-                raise ValueError(f"Missing or duplicated frame IDs for reaction {sid}")
-            numbers = np.asarray(rows[0]["atomic_numbers"], dtype=np.int64)
-            for row in rows:
-                np.testing.assert_array_equal(row["atomic_numbers"], numbers)
-            positions = np.asarray([row["pos"] for row in rows], dtype=np.float32)
-            energies = np.asarray([row["y"] for row in rows], dtype=np.float64)
-            forces = np.asarray([row["force"] for row in rows], dtype=np.float32)
-            formula = Atoms(numbers=numbers).get_chemical_formula()
-            if formula not in OFFICIAL_TEST_FORMULAS:
-                raise ValueError(f"Formula {formula} is outside the original test split")
-            indices = final_band_indices(len(rows))
-            if positions.shape != (len(rows), len(numbers), 3) or forces.shape != positions.shape:
-                raise ValueError(f"Invalid dimensions for reaction {sid}")
-            if not all(np.isfinite(values).all() for values in (positions, energies, forces)):
-                raise ValueError(f"Non-finite values for reaction {sid}")
-            reaction = f"rxn{int(sid):04d}"
-            group = data.require_group(formula).create_group(reaction)
-            write_group(group, numbers, positions, energies, forces)
-            ts_candidates = indices if len(rows) == 10 else indices[1:-1]
-            ts = ts_candidates[np.argmax(energies[ts_candidates])]
-            for name, index in (("reactant", 0), ("product", 9), ("transition_state", ts)):
-                write_group(group.create_group(name), numbers, positions[index:index + 1],
-                            energies[index:index + 1], forces[index:index + 1])
-            if formula not in output["test"]:
-                output["test"][formula] = h5py.SoftLink(f"/data/{formula}")
-            manifest["reactions"].append({"reaction": reaction, "formula": formula,
-                                          "source_frames": len(rows), "atoms": len(numbers)})
-            print(f"Prepared test/{formula}/{reaction}, {len(rows)} source frames", flush=True)
+            entry = write_reaction(output, rows, sid, "test", OFFICIAL_TEST_FORMULAS)
+            manifest["reactions"].append(entry)
+            print(f"Prepared test/{entry['formula']}/{entry['reaction']}, {len(rows)} source frames", flush=True)
         output.attrs["provenance"] = json.dumps(manifest)
     load_paths(temporary, count=args.count, seed=args.seed)
     temporary.replace(args.output)

@@ -58,8 +58,17 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--dtype", choices=["float32", "float64"], default="float64")
-    parser.add_argument("--models", nargs="+", choices=list(MODELS), default=list(MODELS))
+    parser.add_argument("--models", nargs="+", default=list(MODELS))
+    parser.add_argument("--checkpoint", action="append", default=[], metavar="NAME=PATH")
+    parser.add_argument("--plot-limit", type=int, default=10)
     args = parser.parse_args()
+    for checkpoint in args.checkpoint:
+        name, path = checkpoint.split("=", 1)
+        if name in MODELS:
+            raise ValueError(f"Duplicate model name {name}")
+        MODELS[name] = {"label": name, "file": str(Path(path).resolve()), "head": None}
+    if len(set(args.models)) != len(args.models) or any(name not in MODELS for name in args.models):
+        raise ValueError("Requested model names must be unique and defined")
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("Requested CUDA is unavailable")
     paths = load_paths(args.input, args.split, args.count, args.seed)
@@ -87,7 +96,7 @@ def main():
         "barrier_definition": "maximum sampled band energy minus reactant energy",
         "force_error_definition": "Cartesian component error in eV/angstrom",
         "ts_region_definition": "writer-defined DFT TS image and adjacent band images, clipped at endpoints",
-        "scope": "ten-reaction cross-DFT zero-shot feasibility benchmark",
+        "scope": "fixed-geometry cross-DFT reaction path benchmark",
         "models": {},
     }
     image_rows, reaction_rows = [], []
@@ -184,26 +193,27 @@ def main():
     (output / "benchmark_summary.json").write_text(json.dumps(summary, indent=2) + "\n")
 
     columns = 2
-    rows = (len(paths) + columns - 1) // columns
+    plotted_paths = paths[:max(1, args.plot_limit)]
+    rows = (len(plotted_paths) + columns - 1) // columns
     fig, axes = plt.subplots(rows, columns, figsize=(12, rows * 3.1), squeeze=False, layout="constrained")
     colors = {"off23-small": "#d47720", "mh1-omol": "#19746a", "mh0-rgd1": "#72539b"}
-    for index, path in enumerate(paths):
+    for index, path in enumerate(plotted_paths):
         axis = axes.flat[index]
         reference = path.energies - path.energies[0]
         axis.plot(range(10), reference, "o-", color="#202733", linewidth=2, markersize=3, label="DFT reference")
         for name in args.models:
             axis.plot(range(10), predicted_curves[name][index]["predicted_relative_eV"],
-                      ".--", color=colors[name], linewidth=1.4, label=MODELS[name]["label"])
+                      ".--", color=colors.get(name), linewidth=1.4, label=MODELS[name]["label"])
         axis.set_title(f"{path.reaction}  |  {path.formula}", fontsize=11)
         axis.set_xlabel("Final NEB image index")
         axis.set_ylabel("Relative energy (eV)")
         axis.grid(alpha=0.2)
         if index == 0:
             axis.legend(fontsize=8)
-    for index in range(len(paths), rows * columns):
+    for index in range(len(plotted_paths), rows * columns):
         axes.flat[index].set_visible(False)
     fig.suptitle("Transition1x test subset | fixed geometries | reactant-referenced energies\n"
-                 f"Cross-DFT zero-shot comparison, {len(paths)} reactions", fontsize=14)
+                 f"{len(paths)} reactions evaluated, first {len(plotted_paths)} shown", fontsize=14)
     fig.savefig(output / "reaction_energy_profiles.png", dpi=180)
     fig.savefig(output / "reaction_energy_profiles.pdf")
     plt.close(fig)
