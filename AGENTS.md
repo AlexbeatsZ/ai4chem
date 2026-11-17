@@ -1,7 +1,7 @@
 # Goal
 
-Maintain reproducible Transition1x benchmarks and small-data fine-tuning on
-OMEN WSL CUDA. v0.3.0 completed validation selection and final evaluation.
+Maintain reproducible Transition1x benchmarks, fine-tuning and endpoint-driven
+transition-state searches on OMEN WSL CUDA. v0.4.0 adds CI-NEB and DFT validation.
 
 # Current State
 
@@ -28,11 +28,26 @@ OMEN WSL CUDA. v0.3.0 completed validation selection and final evaluation.
   from 0.245429 to 0.131641 eV, force component RMSE from 0.251791 to 0.111649 eV/A.
 - Source train data is shard 0 of 13. `configs/v0.3.0_partitions.json` fixes all IDs.
 - `results/v0.3.0/` has reports and bootstrap intervals. `models/v0.3.0/` has models.
+- v0.4.0 completed all twenty endpoint-only searches. Original MH-1 passes 7/10,
+  fine-tuned MH-1 passes 6/10 under NEB, stationary-point, frequency and IRC checks.
+- Existing Windows Gaussian is `C:\Users\Meta\AppData\Local\Programs\g16w\g16.exe`.
+  Its CLI takes input/output file arguments. WSL calls the checked-in PowerShell
+  wrapper, with a per-result scratch directory and process-local environment.
+- Installed Sella 2.6.0 and CPU JAX 0.12.0.1 only in the ai4chem Mamba environment.
+- Five selected fine-tuned candidates passed Gaussian TS/frequency, two-way IRC,
+  stable-minimum and mapped-endpoint checks. On these selected five, electronic
+  barrier MAE is 0.197624 eV for original MH-1 and 0.103424 eV for fine-tuned MH-1.
+- rxn1152 IRC reached the 160-point budget, then checkpoint continuation detected
+  a minimum at point 161. Gaussian's subsequent PESDtA Invalid IPoint error was
+  recovered using a separate normally terminated endpoint optimization/frequency
+  and geometry validation. normal_termination=false and recovery flags are retained.
+- `results/v0.4.0/` contains all 20 searches, five DFT records, plots, report and
+  verification.json. 31 regression tests, pip check and CUDA smoke test passed.
+- MH-1 optional TorchScript compiled export failed upstream in v0.3.0. Standard
+  .model serialization and loaded inference passed for every experiment.
 
 # Active Work
 
-- v0.2.0 small-sample data reading and pretrained benchmarking are complete.
-- v0.3.0 expanded baselines, fine-tuning and final evaluation are complete.
 - The 210-reaction final set was opened after validation selection and has now
   been reported. Further method choices informed by these results require a new
   independent evaluation design.
@@ -40,9 +55,9 @@ OMEN WSL CUDA. v0.3.0 completed validation selection and final evaluation.
   public export with float32 positions/forces, with source revision and precision
   recorded in the manifest. Numeric comparison against the official original is pending.
 - Full train-pool coverage, multiple seeds, longer training, pretraining-overlap
-  checks, model-optimized NEB and Mac execution remain future work.
-- MH-1 optional TorchScript compiled export failed with an upstream Irreps type
-  error. Standard .model serialization and loaded inference passed for all runs.
+  checks and Mac execution remain future work.
+- Expanded independent search evaluation and multiple path initializations remain
+  future work. v0.4.0 uses ten exposed reactions and one IDPP initialization each.
 
 # Build / Run / Test
 
@@ -58,6 +73,9 @@ mamba run -n ai4chem python -m unittest discover -s tests -v
 mamba run -n ai4chem python prepare_research_data.py
 mamba run -n ai4chem python run_finetuning.py
 mamba run -n ai4chem python run_research_evaluation.py
+OMP_NUM_THREADS=4 JAX_PLATFORMS=cpu mamba run -n ai4chem python ts_search.py
+mamba run -n ai4chem python validate_ts_dft.py
+mamba run -n ai4chem python summarize_ts_search.py
 ```
 
 The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
@@ -74,6 +92,11 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
   there, outside the lower-level E0 helper, and uses the first foundation head's E0s.
 - Before remove_pt_head, set the process default dtype from the source model
   like the official select-head CLI. Missing this caused E0 estimation dtype failure.
+- ASE 3.29's Gaussian frequency-log reader can attach a force array with fewer rows
+  than atoms. DFT validation exports checked coordinates and separately parsed SCF
+  energy, omitting those unusable parsed forces.
+- Compare separated molecular products using mapped bonds and rigid alignment per
+  connected component. Whole-system RMSD conflates fragment arrangement with chemistry.
 
 # Docs Index
 
@@ -82,3 +105,5 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 - `docs/design/transition1x.md` covers provenance, final bands, metrics, heads and E0.
   Read before changing Transition1x preprocessing or benchmark semantics.
 - `docs/design/finetuning.md` covers v0.3.0 partitions, training and selection ordering.
+- `docs/design/ts-search.md` covers endpoint-only initialization, saddle/IRC checks,
+  Gaussian integration and numerical acceptance thresholds. Read before changing searches.

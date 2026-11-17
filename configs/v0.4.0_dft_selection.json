@@ -1,0 +1,11 @@
+{
+  "source_model": "mh1-finetuned",
+  "reactions": ["rxn4439", "rxn0109", "rxn1883", "rxn1961", "rxn1152"],
+  "selection_note": "Five initially verified MLIP candidates were frozen before correcting whole-system RMSD to connected-component RMSD. All five remain verified after the correction. Preserve this DFT subset for reproduction.",
+  "charge": 0,
+  "multiplicity": 1,
+  "lqa_reactions": ["rxn0109", "rxn1883", "rxn1961", "rxn1152"],
+  "irc_restart_max_points": 320,
+  "irc_postprocessing_recovery": "Accept the specific observed PESDtA Invalid IPoint postprocessing failure only after directional IRC completion and PES minimum detection, with a saved checkpoint and a separate normally terminated endpoint optimization/frequency and mapped-geometry validation. Preserve normal_termination=false and the recovery flag.",
+  "irc_policy_note": "After repeated HPC corrector failures and a small-step branch exceeding twenty corrector iterations at one point, unfinished IRCs were interrupted with logs retained. These four reactions resume forward and reverse IRC from their verified TS checkpoints using LQA, step size 5, max points 160 and max cycle 80. rxn4439 retains completed HPC IRCs. This is an adaptive development protocol."
+}

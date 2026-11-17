@@ -5,6 +5,7 @@
 - v0.1.0 为本地推理环境验收，计算水分子势能和受力。
 - v0.2.0 为 Transition1x 十条反应的数据读取及三个预训练模型的零微调基准。
 - v0.3.0 为扩大基准、短程微调和独立最终集评价。
+- v0.4.0 为端点初始化 CI-NEB、鞍点频率和 IRC 检查，以及 Gaussian DFT 精修。
 
 ## 创建环境
 
@@ -15,6 +16,7 @@ cd /mnt/c/Users/Meta/Project/Workspaces/ai4chem
 mamba env create -f environment.yml
 mamba run -n ai4chem python -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cu134
 mamba run -n ai4chem python -m pip install mace-torch==0.3.17 ase
+mamba run -n ai4chem python -m pip install sella==2.6.0
 mamba run -n ai4chem python -m pip check
 ```
 
@@ -41,7 +43,73 @@ mamba run -n ai4chem python smoke_test.py
 CUDA、能量为有限值、三个原子的受力均为有限值，以及保存后重新读取的数据一致。
 通过后输出 `PASS - CUDA inference and saved energy/forces verified`。
 
-## 输出
+## 端点驱动的过渡态搜索
+
+v0.4.0 在 v0.3.0 已评价过的反应中固定选择十条，覆盖八个化学式，比较原始
+MH-1/omol 与微调 mh1_full_256。搜索程序从两个端点坐标开始，执行端点优化、
+IDPP、CI-NEB、Sella 鞍点精修、投影振动分析和双向 MLIP IRC。
+先完成 v0.3.0 数据准备与训练，或从该版本发布资产恢复微调权重。
+本轮复用 `models/mh1-omol.model` 和 `models/v0.3.0/mh1_full_256.model`。
+从发布资产恢复微调权重时，可先用官方命令补齐原始 MH-1 单头模型。
+
+```bash
+mamba run -n ai4chem python inspect_models.py
+TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 mamba run -n ai4chem mace_select_head \
+  --head_name omol --target_device cpu \
+  --output_file models/mh1-omol.model models/mace-mh-1.model
+```
+
+v0.4.0 结果包中的 `inputs/` 与 `selection.json` 可直接恢复搜索输入，搜索恢复阶段
+只需端点文件。生成包含原始 DFT 路径比较的报告还需 v0.3.0 的参考 HDF5。
+
+```bash
+export OMP_NUM_THREADS=4 JAX_PLATFORMS=cpu
+mamba run -n ai4chem python ts_search.py --prepare-only
+mamba run -n ai4chem python ts_search.py --models mh1-finetuned mh1-original
+mamba run -n ai4chem python validate_ts_dft.py
+mamba run -n ai4chem python summarize_ts_search.py
+mamba run -n ai4chem python -m unittest discover -s tests -v
+```
+
+Gaussian 验证使用 OMEN 已安装的 Gaussian 16W，经 `run_gaussian_job.ps1` 调用，
+选择五个微调候选，执行 ωB97X/6-31G(d) TS 优化、频率、双向 IRC 和末端最小值检查。
+每个任务的工作目录和 scratch 位于对应结果子目录。
+
+`results/v0.4.0/selection.json` 固定反应及协议，`inputs/` 保存端点输入。
+每个模型、反应的 `result.json` 保留完整阶段判定，轨迹和 extxyz 供几何复核。
+`search_metrics.csv`、`dft_metrics.csv`、`summary.json` 和 `report.md` 为汇总，
+`optimized_paths.png/pdf` 展示模型优化路径与原始 DFT 离散路径。
+正常结束和已记录结果可复用，具体失败原因修复后使用 `--retry-failed` 恢复对应阶段。
+
+十条反应属于开发试验。详细选择规则、数值容差及 DFT 验收条件见
+[过渡态搜索设计文档](docs/design/ts-search.md)。
+
+### v0.4.0 路径搜索结果
+
+十条反应覆盖八个化学式，按端点几何成断键规则涵盖成键、断键和重排。
+每个模型独立优化端点和路径，各运行一次 IDPP 初始化。
+
+| 模型 | CI-NEB 收敛 | 模型势能面全阶段通过 |
+| --- | --- | --- |
+| 原始 MH-1 / omol | 9/10 | 7/10 |
+| MH-1 全模型，256 构型微调 | 8/10 | 6/10 |
+
+全阶段检查包含端点收敛及连接保持、NEB 收敛、鞍点最大受力不超过 0.01 eV/Å、
+一个显著虚频、双向 IRC 收敛并连接预期端点，以及逐连通片段的几何匹配。
+本轮通过的十三个模型鞍点在投影振动空间中均恰有一个负频率。
+解离产物采用逐片段配准，完整体系 RMSD 同时保留。全部二十个结果已统一复核。
+
+五个固定微调候选完成了 Gaussian DFT TS 精修、唯一虚频、双向 IRC 与稳定端点
+验证。它们的 MLIP→DFT TS 几何 RMSD 为 0.0113–0.0690 Å。在这五个所选且已
+验证的反应上，模型势能面电子能垒相对 Gaussian 的 MAE 为原始 MH-1 的
+0.197624 eV、微调 MH-1 的 0.103424 eV。
+
+rxn1152 的 IRC 先达到 160 点预算，checkpoint 续算在第 161 点找到最小值，
+随后 Gaussian 路径汇总报 `PESDtA: Invalid IPoint`。末端另行通过正常结束的
+DFT 优化、频率和几何匹配，原始错误日志及恢复标记保留。其余四条完成正常流程。
+实际数据来自已使用过的开发池，五条 DFT 子集按微调候选的验收结果选择。
+
+## 本地推理结果
 
 - `results/smoke_h2o.extxyz` 保存元素、坐标、势能和原子受力。
 - `results/smoke_summary.json` 保存版本、设备、数值结果和运行时间。
@@ -57,8 +125,8 @@ print(atoms.get_potential_energy())
 print(atoms.get_forces())
 ```
 
-v0.1.0 的验收范围是本地 CUDA 推理与结果文件读写。Transition1x 数据基准的
-进展见下一节，微调训练和反应路径搜索待后续验收。
+v0.1.0 的验收范围是本地 CUDA 推理与结果文件读写。Transition1x 基准、
+微调和路径搜索的执行方式与结果分别保存在对应版本章节和设计文档中。
 
 ## v0.3.0 微调与泛化验证
 
@@ -123,8 +191,8 @@ readout-only 方案在 validation 的力误差改善，而能垒 MAE 从原模�
 [已发布的学习与泛化图](https://github.com/AlexbeatsZ/ai4chem/releases/download/v0.3.0/finetuning_generalization.png)
 
 完整约定位于 [微调与泛化设计文档](docs/design/finetuning.md)。
-本轮仍采用公开导出副本、一个 train shard、单种子和短程训练，官方原始 HDF5
-对照、预训练重叠、更充分收敛、多种子和模型独立优化路径仍待验证。
+本轮采用公开导出副本、一个 train shard、单种子和短程训练，官方原始 HDF5
+对照、预训练重叠、更充分收敛和多种子仍待验证。端点驱动的模型路径优化见 v0.4.0。
 本轮最终集已用于报告。后续依据这些结果改变方案时，需要记录其已使用状态，
 并重新设计后续独立评价。
 

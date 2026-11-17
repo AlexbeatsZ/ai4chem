@@ -53,7 +53,7 @@ NEB band 追加八个内部构型，最后一轮强制保留。反应组里的�
 - TS 区域定义为上述 writer 定义的 TS 图像及相邻图像，在端点截断，单独统计力分量 RMSE。
 
 图的横轴为最终 NEB 图像序号。能垒来自固定离散路径上的最大值，模型自行搜索的
-鞍点与优化路径属于后续工作。十条样本的聚合指标用于可行性诊断。
+鞍点与优化路径由后续 v0.4.0 另行验收，见 `ts-search.md`。十条样本的聚合指标用于可行性诊断。
 
 OFF23、MH-1/omol、MH-0/rgd1_b3lyp 与 Transition1x 的参考 DFT 方法存在差异，
 因此将本次结果记作跨理论水平的零微调对照。Transition1x test 表示该数据集的
@@ -72,7 +72,7 @@ OFF23、MH-1/omol、MH-0/rgd1_b3lyp 与 Transition1x 的参考 DFT 方法存在�
 
 `configs/transition1x_e0s.json` 保存官方 dataloader 发布的 H/C/N/O 孤立原子参考能，
 单位 eV，目标理论水平为 Transition1x 的 ωB97X/6-31G(d)。v0.2.0 的相对能量
-基准直接使用总能量，E0 文件供后续训练准备，尚未进行训练验收。
+基准直接使用总能量。v0.3.0 训练采用下述单头 `estimated`，详见 `finetuning.md`。
 
 已安装的 MACE 0.3.17 在 `tools/scripts_utils.py` 中将 `E0s="average"`
 解释为按元素计数做最小二乘拟合。`cli/run_train.py` 单独处理
@@ -83,7 +83,7 @@ OFF23、MH-1/omol、MH-0/rgd1_b3lyp 与 Transition1x 的参考 DFT 方法存在�
 采用该方式时，应先通过官方 `mace_select_head` 导出目标单 head checkpoint，
 再验证估计时实际使用的 head。后续训练统一选择显式的 Transition1x JSON 或
 经过 head 核验的 `estimated` 配置，并核对目标能量设置和原子参考能覆盖。
-估计或拟合参考能统一仅使用 train 构型。实际微调训练及 E0 估计仍待验收。
+估计或拟合参考能统一仅使用 train 构型。v0.3.0 四组微调已完成该入口的实测。
 
 ## 上游来源
 

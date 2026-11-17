@@ -1,0 +1,33 @@
+{
+  "version": "v0.4.0",
+  "input": "data/v0.3.0/final.h5",
+  "split": "test",
+  "count": 10,
+  "selection": "one reaction per formula, then missing endpoint-change classes and distinct change signatures; smallest bond-change count then reaction ID",
+  "models": {
+    "mh1-original": {"path": "models/mh1-omol.model", "head": "omol"},
+    "mh1-finetuned": {"path": "models/v0.3.0/mh1_full_256.model", "head": "Default"}
+  },
+  "device": "cuda",
+  "dtype": "float64",
+  "images": 10,
+  "spring_eV_A2": 0.1,
+  "endpoint_fmax_eV_A": 0.02,
+  "endpoint_steps": 250,
+  "neb_warmup_steps": 150,
+  "neb_warmup_fmax_eV_A": 0.15,
+  "neb_climb_steps": 500,
+  "neb_fmax_eV_A": 0.05,
+  "ts_steps": 150,
+  "ts_fmax_eV_A": 0.01,
+  "hessian_delta_A": 0.005,
+  "imaginary_threshold_cm1": 50.0,
+  "irc_dx_A_sqrt_amu": 0.1,
+  "irc_steps": 400,
+  "irc_fmax_eV_A": 0.05,
+  "irc_endpoint_rmsd_A": 0.5,
+  "dft_count": 5,
+  "dft_method": "wB97X/6-31G(d)",
+  "dft_nproc": 4,
+  "dft_mem": "4GB"
+}
