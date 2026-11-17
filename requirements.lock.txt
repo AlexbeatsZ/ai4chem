@@ -1,3 +1,5 @@
+# Validated on Linux x86_64 / WSL / Python 3.12 / CUDA 13.4.
+# Export with pip list --format=freeze to avoid build-local direct URLs.
 ase==3.29.0
 ConfigArgParse==1.10.1
 contourpy==1.4.0
@@ -39,13 +41,15 @@ nvidia-nccl-cu13==2.30.7
 nvidia-nvjitlink==13.4.92
 nvidia-nvshmem-cu13==3.7.2
 nvidia-nvtx==13.4.49
-opt-einsum-fx==0.1.4
 opt_einsum==3.4.0
+opt-einsum-fx==0.1.4
 orjson==3.13.0
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1785888127/work
+packaging==26.3
 pandas==3.1.1
 pillow==13.0.0
+pip==26.2.2
 prettytable==3.18.0
+pyarrow==26.0.1
 pyelftools==0.32
 pyparsing==3.3.3
 python-dateutil==4.0.0
