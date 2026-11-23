@@ -17,6 +17,10 @@ TabPFN/TabICL 则直接从标注表格拟合数值误差或专家选择。
 - TabPFN v2 开放权重；新版本可能需要许可证登录，不自动接受账户条款。
 - TabICLv2 官方开放实现。与常数规则、Ridge、ExtraTrees/随机森林比较。
 
+截至本轮实际完成：三种候选均取得固定公开权重并完成 native MPS/MLX 推理，
+没有使用推理 API。专家表格五折与 Jev 风格八近邻示例比较均已完成；详细
+结果在 `docs/reports/v0.7.0-routing/`，当前专家库尚无跨指标路由收益。
+
 ## 先验证互补性
 
 固定 OFF23-small、MH-1/omol、MH-0/rgd1、v0.3 微调 MH-1 四个专家。

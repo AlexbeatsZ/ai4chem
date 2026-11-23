@@ -59,6 +59,14 @@ def main():
         "| --- | ---: | ---: | ---: |"]
     for name, values in results.items():
         lines.append(f"| {name} | {values['barrier_MAE_eV']:.6f} | {values['force_global_component_RMSE_eV_per_A']:.6f} | {values['oof_fit_and_batch_predict_seconds']:.3f} |")
+    if "jevmlx" in results:
+        values = results["jevmlx"]
+        lines += ["", f"Jev 风格比较器五折共用时 {values['oof_fit_and_batch_predict_seconds']/60:.2f} 分钟，",
+            f"选中参考能垒最优专家的比例为 {values['expert_selection_accuracy_vs_oracle']:.2%}。"]
+        if "restricted_score_diagnostic" in values:
+            diagnostic = values["restricted_score_diagnostic"]
+            lines += [f"所选答案平均受约束概率为 {diagnostic['mean_chosen_option_probability']:.2%}，",
+                "高于该最优专家选择正确率；它不是已校准的化学正确率。"]
     lines += ["", f"状态：{status}；待完成方法：{', '.join(record['pending_methods']) or '无'}。",
         "时间包含折内拟合与批量推理，不是每个新反应的部署延迟，也不是跨后端速度基准。",
         "TabPFN/ExtraTrees 在本轮选择所有反应均使用原微调专家，因此没有提高精度。",
@@ -66,6 +74,7 @@ def main():
         "## 下一步", "",
         "优先提高底层模型及共同 DFT 标准下专家的真实性能，再比较能垒、受力、反应能和尾部风险。",
         "当前静态路径上的负结果不否定搜索成功率上的互补；后者必须用独立端点搜索和完整 DFT 链验证。",
+        "样本都来自本项目的中性单重态 CHNO 数据，未测试金属、周期材料、离子或其他自旋。",
         "MACE 的 256/2048/4096 帧对照正在 OMEN 按冻结预算继续。后续需增加独立反应、优化/力权重对照、",
         "不同基础模型在同一 DFT 标准下的微调，以及有效方案的多种子重复。最终方案冻结后才打开新 holdout。", ""]
     (output / "README.md").write_text("\n".join(lines))

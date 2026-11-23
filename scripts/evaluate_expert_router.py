@@ -165,6 +165,14 @@ def evaluate(args):
                 "paired_vs_fold_selected_fixed": grouped_delta_interval(errors-baseline, groups),
                 "oof_fit_and_batch_predict_seconds": sum(times), "fold_seconds": times,
                 "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"}
+            if method == "jevmlx":
+                correct = (choice == winner).astype(float)
+                result["restricted_score_diagnostic"] = {
+                    "mean_chosen_option_probability": float(np.mean(confidence)),
+                    "chosen_expert_matches_reference_best_fraction": float(np.mean(correct)),
+                    "mean_score_minus_accuracy": float(np.mean(confidence-correct)),
+                    "top_label_binary_brier": float(np.mean((confidence-correct)**2)),
+                    "scope": "OOF developmental diagnostic for matching the minimum-error expert; not calibrated DFT precision probability"}
             cached = {"reactions": reactions, "folds": fold_ids.tolist(), "choices": choice.tolist(),
                 "confidence": [float(v) if np.isfinite(v) else None for v in confidence], "summary": result}
             save_json(path, cached)

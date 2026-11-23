@@ -1,5 +1,5 @@
 {
-  "status": "partial",
+  "status": "complete",
   "scope": "meta-development formula-grouped OOF on fixed DFT path geometries; router inputs are endpoint-only",
   "prospective_holdout_opened": false,
   "reactions": 128,
@@ -198,11 +198,43 @@
         2.454903290999937
       ],
       "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "jevmlx": {
+      "barrier_MAE_eV": 0.1796841382134744,
+      "barrier_absolute_error_p90_eV": 0.3699649661977673,
+      "force_global_component_RMSE_eV_per_A": 0.12799493963404532,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.14874929606360388,
+      "reaction_energy_MAE_eV": 0.1065568118756488,
+      "error_over_0.1eV_fraction": 0.640625,
+      "expert_selection_accuracy_vs_oracle": 0.5234375,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.04810950959719662,
+        "formula_cluster_ci95_eV": [
+          0.02468132827573842,
+          0.07543761244990115
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 1390.066037582008,
+      "fold_seconds": [
+        340.7956142080002,
+        323.82866741700127,
+        302.5033350829981,
+        179.1637207080057,
+        243.77470016600273
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency",
+      "restricted_score_diagnostic": {
+        "mean_chosen_option_probability": 0.8093861928334107,
+        "chosen_expert_matches_reference_best_fraction": 0.5234375,
+        "mean_score_minus_accuracy": 0.2859486928334107,
+        "top_label_binary_brier": 0.3498659525827619,
+        "scope": "OOF developmental diagnostic for matching the minimum-error expert; not calibrated DFT precision probability"
+      }
     }
   },
-  "pending_methods": [
-    "jevmlx"
-  ],
+  "pending_methods": [],
   "local_runtime_acceptance": {
     "host": "Mac",
     "platform": "macOS-26.6.2-arm64-i386-64bit",
