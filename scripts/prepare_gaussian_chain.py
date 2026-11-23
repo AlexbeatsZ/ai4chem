@@ -16,6 +16,10 @@ def prepare(protocol, reaction, output):
     output.mkdir(parents=True, exist_ok=False)
     (output/"task.json").write_text(json.dumps(task, indent=2)+"\n")
     common = "scf=(xqc,maxcycle=128) int=ultrafine nosymm"
+    initial_points = configuration["dft_policy"].get("irc_initial_max_points", 160)
+    restart_points = configuration["dft_policy"]["irc_restart_max_points"]
+    if not isinstance(initial_points, int) or initial_points < 1 or restart_points < initial_points:
+        raise ValueError("IRC budgets must be positive with restart budget >= initial budget")
 
     def write(name, route, old=None, atoms=False):
         lines = ([f"%oldchk={old}.chk"] if old else [])
@@ -30,8 +34,8 @@ def prepare(protocol, reaction, output):
     write("ts", "opt=(ts,calcfc,noeigentest,maxcycles=80) freq", atoms=True)
     for direction in ("forward", "reverse"):
         name = f"irc_{direction}"
-        write(name, f"irc=(rcfc,{direction},lqa,maxpoints=160,stepsize=5,maxcycle=80) geom=allcheck guess=read", old="ts")
-        write(name+"_extended", "irc=(restart,maxpoints=320) geom=allcheck guess=read", old=name)
+        write(name, f"irc=(rcfc,{direction},lqa,maxpoints={initial_points},stepsize=5,maxcycle=80) geom=allcheck guess=read", old="ts")
+        write(name+"_extended", f"irc=(restart,maxpoints={restart_points}) geom=allcheck guess=read", old=name)
         for suffix in ("", "_extended"):
             write(f"minimum_{direction}{suffix}", "opt=(calcfc,maxcycles=100) freq geom=allcheck guess=read", old=name+suffix)
     return task

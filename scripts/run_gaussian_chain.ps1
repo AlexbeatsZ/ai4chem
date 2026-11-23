@@ -122,6 +122,11 @@ try {
         $irc = Run-Stage $name $true
         if (-not ($irc.minimum_detected -and $irc.direction_complete)) {
             if (-not $irc.maximum_steps_reached) { throw "IRC did not reach a minimum: $name" }
+            $policy = $task.configuration.dft_policy
+            if ($policy.irc_initial_max_points -and
+                $policy.irc_initial_max_points -ge $policy.irc_restart_max_points) {
+                throw "IRC exhausted its fixed budget: $name"
+            }
             $name = "${name}_extended"
             $irc = Run-Stage $name $true
         }

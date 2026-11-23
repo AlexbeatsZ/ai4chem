@@ -1,0 +1,494 @@
+{
+  "version": "v0.6.0-pilot",
+  "dft_method": "wB97X/6-31G(d)",
+  "dft_nproc": 4,
+  "dft_mem": "4GB",
+  "irc_endpoint_rmsd_A": 0.5,
+  "charge": 0,
+  "multiplicity": 1,
+  "electronic_state_verified": true,
+  "electronic_state_basis": "The pinned original Transition1x NEB script constructs ASE ORCA calculators without overriding charge or multiplicity. ASE 3.22.1 ORCA defaults explicitly set charge=0 and mult=1. The v0.5.0 DFT calculations reproduce this reference electronic-state convention. Each selected reaction is additionally checked for even electron count and preserved atomic mapping.",
+  "electronic_state_sources": [
+    "https://gitlab.com/matschreiner/Transition1x/-/raw/08f728925d76e22ce04ec1ab3b75770d32e617ca/scripts/neb.py",
+    "https://gitlab.com/ase/ase/-/raw/3.22.1/ase/calculators/orca.py"
+  ],
+  "dft_policy": {
+    "irc_algorithm": "LQA",
+    "irc_restart_max_points": 320,
+    "decision_basis": "Bounded numerical replay after the observed restart failure. Same LQA step 5, method, state and acceptance. Both directions start with MaxPoints=320. No checkpoint extension beyond 320. The TS is recomputed from the identical original MLIP geometry. Retain r1 and count all replay computation separately.",
+    "irc_initial_max_points": 320
+  },
+  "study_type": "post_hoc_diagnostic_and_engine_calibration",
+  "protocol_revision": 2,
+  "frozen_at_utc": "2026-11-23T13:37:54.085655+00:00",
+  "changes_v05_results": false,
+  "endpoint_tolerance_A": 0.5,
+  "selection_explanation": "Same sole extra recovery rxn9456 selected in revision 1. Gaussian numerical replay plus independent Mac DFT chain. The completed rxn0666 positive control remains in revision 1. This adds no independent holdout.",
+  "jobs": [
+    {
+      "job_id": "rxn9456-gaussian16w-r2",
+      "reaction": "rxn9456",
+      "purpose": "sole_extra_recovery_DFT_diagnostic",
+      "engine": "Gaussian16W-A.03",
+      "source_attempt": "498df471bf2dd325",
+      "source_candidate": "results/v0.5.0/attempts/mh1-finetuned/rxn9456/498df471bf2dd325/ts_candidate.extxyz",
+      "symbols": [
+        "O",
+        "C",
+        "O",
+        "C",
+        "C",
+        "O",
+        "H",
+        "H",
+        "H",
+        "H"
+      ],
+      "positions_A": [
+        [
+          2.95196049,
+          0.05455693,
+          -0.16091839
+        ],
+        [
+          1.81263778,
+          0.0333898,
+          -0.0994224
+        ],
+        [
+          0.56856117,
+          1.43971747,
+          -0.16042066
+        ],
+        [
+          -0.64014539,
+          1.05620484,
+          -0.05925272
+        ],
+        [
+          -0.58994369,
+          -1.07913774,
+          0.12660406
+        ],
+        [
+          0.63583044,
+          -1.41805013,
+          0.09208321
+        ],
+        [
+          -1.16004122,
+          1.19389912,
+          0.90020021
+        ],
+        [
+          -1.26306306,
+          1.02707653,
+          -0.96527616
+        ],
+        [
+          -1.10852154,
+          -1.07114443,
+          1.09646634
+        ],
+        [
+          -1.20685076,
+          -1.23731902,
+          -0.77004675
+        ]
+      ],
+      "numbers": [
+        8,
+        6,
+        8,
+        6,
+        6,
+        8,
+        1,
+        1,
+        1,
+        1
+      ],
+      "formula": "C3H4O3",
+      "endpoints": {
+        "reactant": {
+          "symbols": [
+            "O",
+            "C",
+            "O",
+            "C",
+            "C",
+            "O",
+            "H",
+            "H",
+            "H",
+            "H"
+          ],
+          "positions_A": [
+            [
+              2.68534732,
+              0.05012099,
+              -0.1481436
+            ],
+            [
+              1.49599147,
+              0.02788897,
+              -0.08213797
+            ],
+            [
+              0.71076417,
+              1.11418402,
+              0.11780057
+            ],
+            [
+              -0.65619504,
+              0.74731642,
+              -0.04620435
+            ],
+            [
+              -0.61881536,
+              -0.77161109,
+              0.11600582
+            ],
+            [
+              0.73455083,
+              -1.0875206,
+              -0.1959876
+            ],
+            [
+              -1.25272942,
+              1.25607061,
+              0.71208036
+            ],
+            [
+              -0.99087584,
+              1.05625021,
+              -1.04132044
+            ],
+            [
+              -0.83226442,
+              -1.08965564,
+              1.14130926
+            ],
+            [
+              -1.2753495,
+              -1.30385053,
+              -0.5733853
+            ]
+          ]
+        },
+        "product": {
+          "symbols": [
+            "O",
+            "C",
+            "O",
+            "C",
+            "C",
+            "O",
+            "H",
+            "H",
+            "H",
+            "H"
+          ],
+          "positions_A": [
+            [
+              2.66720819,
+              -0.09207436,
+              -0.43466604
+            ],
+            [
+              1.53708315,
+              -0.05742291,
+              -0.33069906
+            ],
+            [
+              0.71791106,
+              2.78021264,
+              -0.11366225
+            ],
+            [
+              -0.46049461,
+              2.53709412,
+              -0.0530069
+            ],
+            [
+              -0.58905965,
+              -2.50193667,
+              0.24464062
+            ],
+            [
+              0.57340384,
+              -2.80780721,
+              0.16375707
+            ],
+            [
+              -1.22298992,
+              3.33794951,
+              0.02173596
+            ],
+            [
+              -0.84558785,
+              1.49824274,
+              -0.06810973
+            ],
+            [
+              -0.92679137,
+              -1.45130348,
+              0.14501394
+            ],
+            [
+              -1.38350499,
+              -3.2537291,
+              0.42327532
+            ]
+          ]
+        }
+      },
+      "expected_vibrational_modes": 24
+    },
+    {
+      "job_id": "rxn9456-pyscf-r2",
+      "reaction": "rxn9456",
+      "purpose": "sole_extra_recovery_independent_engine_diagnostic",
+      "engine": "PySCF-geomeTRIC",
+      "source_attempt": "498df471bf2dd325",
+      "source_candidate": "results/v0.5.0/attempts/mh1-finetuned/rxn9456/498df471bf2dd325/ts_candidate.extxyz",
+      "symbols": [
+        "O",
+        "C",
+        "O",
+        "C",
+        "C",
+        "O",
+        "H",
+        "H",
+        "H",
+        "H"
+      ],
+      "positions_A": [
+        [
+          2.95196049,
+          0.05455693,
+          -0.16091839
+        ],
+        [
+          1.81263778,
+          0.0333898,
+          -0.0994224
+        ],
+        [
+          0.56856117,
+          1.43971747,
+          -0.16042066
+        ],
+        [
+          -0.64014539,
+          1.05620484,
+          -0.05925272
+        ],
+        [
+          -0.58994369,
+          -1.07913774,
+          0.12660406
+        ],
+        [
+          0.63583044,
+          -1.41805013,
+          0.09208321
+        ],
+        [
+          -1.16004122,
+          1.19389912,
+          0.90020021
+        ],
+        [
+          -1.26306306,
+          1.02707653,
+          -0.96527616
+        ],
+        [
+          -1.10852154,
+          -1.07114443,
+          1.09646634
+        ],
+        [
+          -1.20685076,
+          -1.23731902,
+          -0.77004675
+        ]
+      ],
+      "numbers": [
+        8,
+        6,
+        8,
+        6,
+        6,
+        8,
+        1,
+        1,
+        1,
+        1
+      ],
+      "formula": "C3H4O3",
+      "endpoints": {
+        "reactant": {
+          "symbols": [
+            "O",
+            "C",
+            "O",
+            "C",
+            "C",
+            "O",
+            "H",
+            "H",
+            "H",
+            "H"
+          ],
+          "positions_A": [
+            [
+              2.68534732,
+              0.05012099,
+              -0.1481436
+            ],
+            [
+              1.49599147,
+              0.02788897,
+              -0.08213797
+            ],
+            [
+              0.71076417,
+              1.11418402,
+              0.11780057
+            ],
+            [
+              -0.65619504,
+              0.74731642,
+              -0.04620435
+            ],
+            [
+              -0.61881536,
+              -0.77161109,
+              0.11600582
+            ],
+            [
+              0.73455083,
+              -1.0875206,
+              -0.1959876
+            ],
+            [
+              -1.25272942,
+              1.25607061,
+              0.71208036
+            ],
+            [
+              -0.99087584,
+              1.05625021,
+              -1.04132044
+            ],
+            [
+              -0.83226442,
+              -1.08965564,
+              1.14130926
+            ],
+            [
+              -1.2753495,
+              -1.30385053,
+              -0.5733853
+            ]
+          ]
+        },
+        "product": {
+          "symbols": [
+            "O",
+            "C",
+            "O",
+            "C",
+            "C",
+            "O",
+            "H",
+            "H",
+            "H",
+            "H"
+          ],
+          "positions_A": [
+            [
+              2.66720819,
+              -0.09207436,
+              -0.43466604
+            ],
+            [
+              1.53708315,
+              -0.05742291,
+              -0.33069906
+            ],
+            [
+              0.71791106,
+              2.78021264,
+              -0.11366225
+            ],
+            [
+              -0.46049461,
+              2.53709412,
+              -0.0530069
+            ],
+            [
+              -0.58905965,
+              -2.50193667,
+              0.24464062
+            ],
+            [
+              0.57340384,
+              -2.80780721,
+              0.16375707
+            ],
+            [
+              -1.22298992,
+              3.33794951,
+              0.02173596
+            ],
+            [
+              -0.84558785,
+              1.49824274,
+              -0.06810973
+            ],
+            [
+              -0.92679137,
+              -1.45130348,
+              0.14501394
+            ],
+            [
+              -1.38350499,
+              -3.2537291,
+              0.42327532
+            ]
+          ]
+        }
+      },
+      "expected_vibrational_modes": 24
+    }
+  ],
+  "mac": {
+    "xc": "wb97x",
+    "basis": "6-31g(d)",
+    "cart": true,
+    "charge": 0,
+    "spin": 0,
+    "grid_radial": 99,
+    "grid_angular": 590,
+    "grid_pruning": null,
+    "scf_conv_tol": 1e-09,
+    "scf_max_cycles": 128,
+    "memory_mb": 4000,
+    "threads": 4,
+    "irc_workers": 2,
+    "max_ts_steps": 80,
+    "max_minimum_steps": 100,
+    "max_irc_steps": 300,
+    "irc_trust_A": 0.05,
+    "imaginary_threshold_cm1": 50,
+    "comparison_energy_tolerance_hartree": 0.0001,
+    "comparison_ts_rmsd_A": 0.05,
+    "comparison_imaginary_frequency_tolerance_cm1": 50,
+    "comparison_barrier_tolerance_eV": 0.01
+  },
+  "revision_reason": "Gaussian A.03 checkpoint continuation failed at point 162 before a minimum, reporting PESDtA IPoint=162 Max Points=161. Replay from the same original candidate using an initial 320-point allocation. Independently test the same candidate with the calibrated Mac engine."
+}

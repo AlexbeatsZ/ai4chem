@@ -135,7 +135,7 @@ def assess(protocol, reaction, folder, engine):
         result["electronic_barrier_eV"] = (ts["energy_hartree"]-reactant["energy_hartree"])*units.Hartree
     candidate = atoms_from_record(job, job["numbers"])
     result["mlip_to_dft_ts_rmsd_A"] = rmsd(candidate, ts_atoms)
-    if engine == "mac":
+    if engine == "mac" and job["purpose"] == "known_positive_full_DFT_engine_calibration":
         reference = json.loads((Path(__file__).resolve().parents[1]/"configs/v0.6.0-pilot"/reaction/"gaussian_reference.json").read_text())
         saved = json.loads((Path(__file__).resolve().parents[1]/"configs/v0.6.0-pilot"/reaction/"gaussian_ts_geometry.json").read_text())
         rmsd_reference = rmsd(atoms_from_record(saved, job["numbers"]), ts_atoms)

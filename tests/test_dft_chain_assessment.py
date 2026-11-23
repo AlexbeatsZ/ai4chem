@@ -1,5 +1,6 @@
 """Regression for real parser/geometry failure boundaries of the portable pilot."""
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -12,9 +13,27 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("dft_assessment", ROOT/"scripts/assess_dft_chain.py")
 assessment = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(assessment)
+task_spec = importlib.util.spec_from_file_location("gaussian_task", ROOT/"scripts/prepare_gaussian_chain.py")
+gaussian_task = importlib.util.module_from_spec(task_spec)
+task_spec.loader.exec_module(gaussian_task)
 
 
 class AssessmentBoundaries(unittest.TestCase):
+    def test_gaussian_initial_budget_defaults_and_explicit_replay(self):
+        protocol = json.loads((ROOT/"configs/v0.6.0-pilot/protocol.json").read_text())
+        with tempfile.TemporaryDirectory() as temporary:
+            original = Path(temporary)/"original"
+            gaussian_task.prepare(protocol, "rxn9456", original)
+            self.assertIn("maxpoints=160", (original/"irc_forward.gjf").read_text())
+            self.assertIn("maxpoints=320", (original/"irc_forward_extended.gjf").read_text())
+            protocol["dft_policy"]["irc_initial_max_points"] = 320
+            replay = Path(temporary)/"replay"
+            gaussian_task.prepare(protocol, "rxn9456", replay)
+            self.assertIn("rcfc,forward,lqa,maxpoints=320", (replay/"irc_forward.gjf").read_text())
+            protocol["dft_policy"]["irc_initial_max_points"] = 321
+            with self.assertRaises(ValueError):
+                gaussian_task.prepare(protocol, "rxn9456", Path(temporary)/"invalid")
+
     def test_separated_fragments_preserve_mapping_without_global_alignment(self):
         expected = Atoms("COH2", positions=[[0,0,0],[1.13,0,0],[5,0,0],[5.74,0,0]])
         moved = expected.copy()
