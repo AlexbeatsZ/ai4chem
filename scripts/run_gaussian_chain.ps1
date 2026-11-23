@@ -8,13 +8,13 @@ $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $JobDirectory = (Resolve-Path -LiteralPath $JobDirectory).Path
 $taskFile = Join-Path $JobDirectory 'task.json'
-$task = Get-Content -LiteralPath $taskFile -Raw | ConvertFrom-Json
+$task = [IO.File]::ReadAllText($taskFile) | ConvertFrom-Json
 $stateFile = Join-Path $JobDirectory 'worker-state.json'
 $project = Split-Path -Parent $PSScriptRoot
 if (-not $Worker) {
     if (Test-Path -LiteralPath $stateFile) {
         if (-not $Resume) { throw 'Existing worker state requires diagnosis and explicit -Resume.' }
-        $previous = Get-Content -LiteralPath $stateFile -Raw | ConvertFrom-Json
+        $previous = [IO.File]::ReadAllText($stateFile) | ConvertFrom-Json
         if ($previous.status -eq 'running' -or $previous.raw_chain_completed -or
             (Get-Process -Id $previous.owner_pid -ErrorAction SilentlyContinue)) { throw 'Previous worker is active or already completed.' }
     } elseif ($Resume) { throw 'No previous state to resume.' }

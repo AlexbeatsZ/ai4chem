@@ -3,13 +3,14 @@ param(
     [switch]$RemoveArchive
 )
 $ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $JobDirectory = (Resolve-Path -LiteralPath $JobDirectory).Path
 $archive = Join-Path $JobDirectory 'return.zip'
 if ($RemoveArchive) {
     if (Test-Path -LiteralPath $archive) { Remove-Item -LiteralPath $archive }
     return
 }
-$state = Get-Content -LiteralPath (Join-Path $JobDirectory 'worker-state.json') -Raw | ConvertFrom-Json
+$state = [IO.File]::ReadAllText((Join-Path $JobDirectory 'worker-state.json')) | ConvertFrom-Json
 if ($state.status -eq 'running' -or (Get-Process -Id $state.owner_pid -ErrorAction SilentlyContinue)) {
     throw 'Worker still active; export only terminal raw evidence.'
 }

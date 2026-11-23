@@ -2,7 +2,7 @@ param([Parameter(Mandatory=$true)][string]$JobDirectory)
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $JobDirectory = (Resolve-Path -LiteralPath $JobDirectory).Path
-$state = Get-Content -LiteralPath (Join-Path $JobDirectory 'worker-state.json') -Raw | ConvertFrom-Json
+$state = [IO.File]::ReadAllText((Join-Path $JobDirectory 'worker-state.json')) | ConvertFrom-Json
 $logs = @(Get-ChildItem -LiteralPath $JobDirectory -Filter '*.log' | ForEach-Object {
     [ordered]@{name=$_.Name;length=$_.Length;last_write_utc=$_.LastWriteTimeUtc.ToString('o')}
 })

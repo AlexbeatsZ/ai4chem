@@ -1,6 +1,6 @@
 # 多设备计算与交接
 
-最后核实：2026-11-23 03:30 America/Los_Angeles（11:30Z）。
+最后核实：2026-11-23 03:40 America/Los_Angeles（11:40Z）。
 先读根 `AGENTS.md` 和 `docs/design/v0.6.0-pilot.md`。v0.5.0 已完成发布，
 本轮继续单独的 v0.6.0-pilot。原始 OMEN 对话「测试 MACE 水分子 GPU 推理」
 ID 为 `01a1e76a-d5bf-7881-8023-349081a2e012`；Mac 接续对话为
@@ -11,7 +11,7 @@ ID 为 `01a1e76a-d5bf-7881-8023-349081a2e012`；Mac 接续对话为
 | 任务 | 节点 | 当前证据 | 尚待完成 |
 | --- | --- | --- | --- |
 | rxn9456 唯一额外恢复的 DFT 诊断 | 室友 Windows / Gaussian 16W A.03 | TS 优化和 24 模频率通过，唯一虚频 -721.2605 cm⁻¹ | 双向 LQA IRC、稳定末端和映射端点验收 |
-| rxn0666 十原子 DFT 引擎校准 | Mac / PySCF 2.15.1 + geomeTRIC 1.1.1 | 相同原始 MLIP 初值；TS 五次评价收敛 | DFT 频率、双向 IRC、稳定末端和 Gaussian 数值对照 |
+| rxn0666 十原子 DFT 引擎校准 | Mac / PySCF 2.15.1 + geomeTRIC 1.1.1 | 相同原始 MLIP 初值；TS 五次评价收敛，24 模且唯一虚频 -1568.0823 cm⁻¹ | 双向 IRC、稳定末端和 Gaussian 最终数值对照 |
 
 协议和输入在 11:19:00Z 固定并提交，先于任何新计算。它们属于看过旧结果后的
 定向诊断和已知正对照，不构成新 holdout。正式输出使用 `results/v0.6.0-pilot/`，
@@ -34,6 +34,13 @@ ID 为 `01a1e76a-d5bf-7881-8023-349081a2e012`；Mac 接续对话为
 任务日志，worker AGENTS 和 task.json 必须随分配更新。
 
 ## 查看与恢复
+
+一次性 Mac 接力器 PID 15336 已在独立会话中运行（新连接实测 PPID=1），
+`results/coordination/v06/state.json` 是两节点的实时任务板；每 60 秒观察，最多 8 小时。
+完成后自动回收原始 Gaussian 日志/checkpoint、独立几何验收，输出同目录 `report.md`，
+并更新用户 outputs 中 `ai4chem-next-investigation.md/.json`。结束于 ready_for_review；
+异常保留，不重算、不改协议、不自动发布。终态导出/传输已用真实 TS 日志往返验证。
+不要重复启动接力器或 Gaussian；程序和科学任务的 PID 分别记录。
 
 Mac 查看 `summary.json` 及各分支 `result.json`；现有进程运行时禁止重启。
 原生 DFT 每支四线程，双向并行，避免外层再开三反应造成 24 线程嵌套。

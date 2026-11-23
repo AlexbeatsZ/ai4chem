@@ -80,12 +80,16 @@ Mac DFT full-chain computation.
   resumed at 11:29Z and reuses completed TS after a fixed MatchCollection parser
   bug. Scientific logs/checkpoint and initial failed worker JSON are retained.
 - Mac: `scripts/run_mac_dft_chain.py` started rxn0666 at 11:22:56Z, from exactly
-  the original MLIP candidate. TS optimization converged in five evaluations;
-  full DFT frequencies/IRC/minima are still running. Output on Mac is
+  the original MLIP candidate. TS converged in five evaluations;
+  24 DFT modes with one -1568.0823 cm^-1 negative mode passed. Both IRC directions
+  are running in separate four-thread processes; minima remain pending. Output on Mac is
   `results/v0.6.0-pilot/mac/rxn0666-r1/`, process 5437 at last verification.
 - `scripts/assess_dft_chain.py` independently evaluates completed raw chains in
   the analysis .venv. A raw worker completion is not DFT verification. Require
   full modes, correct saddle order, both stable mapped endpoints and IRC success.
+- One-shot independent Mac coordinator PID 15336 observes both existing jobs,
+  returns terminal Gaussian evidence and writes final assessment/report without
+  restarting calculations. Authoritative live state: `results/coordination/v06/state.json`.
 - Multi-device entry: `docs/coordination/README.md`. Host access details remain
   in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`, not public Git.
 - ROG was unreachable; its audit environment is prepared but not accepted. The

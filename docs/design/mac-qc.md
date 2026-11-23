@@ -105,3 +105,12 @@ Gaussian 官方平台表确认该版本支持 M 系列和共享内存并行，�
 - https://pyscf.org/user/geomopt.html
 - https://pyscf.org/user/hessian.html
 - https://geometric.readthedocs.io/en/latest/irc.html
+
+## v0.6.0-pilot 的十原子 DFT 进展
+
+2026-11-23 后续单独固定 rxn0666 已知正对照，使用同一 MLIP 初值。
+`run_mac_dft_chain.py` 实际 TS 优化五次评价收敛，解析 Hessian 得到完整 24 模，
+唯一负频率 -1568.0823 cm⁻¹；与已有 Gaussian -1568.9618 cm⁻¹ 相差 0.8795。
+TS 对齐 RMSD 4.5423e-5 Å、能量差 -2.2704e-5 Ha。当前并行双向 IRC 正在运行，
+尚未完成稳定末端或全链 DFT 验收；这不是 v0.5 的新增样本。
+接续读取 `docs/design/v0.6.0-pilot.md` 和 `results/coordination/v06/state.json`。
