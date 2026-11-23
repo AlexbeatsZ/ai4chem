@@ -1,10 +1,16 @@
 # Goal
 
-Maintain reproducible Transition1x benchmarks, fine-tuning and endpoint-driven
-transition-state searches on OMEN WSL CUDA. v0.5.0 compares bounded multi-start
-and failure-aware recovery using the existing CI-NEB and DFT validation workflow.
-The separate v0.6.0 pilot diagnoses its sole extra recovery and calibrates native
-Mac DFT full-chain computation.
+Complete the Artificial Intelligence in Chemistry course research project on
+small-data MACE fine-tuning and failure-aware adaptive transition-state search.
+Read `docs/project-background.md` first for course requirements, related papers,
+the two research levels, measured evidence and actual deliverables.
+Study how model accuracy and bounded search recovery affect verified TS success
+and compute cost, using endpoint-driven CI-NEB, frequency, IRC and independent DFT.
+v0.5.0 is released. The separate v0.6.0 pilot checks the sole extra recovery and
+calibrates native Mac DFT. Next deliverables are completed pilot interpretation,
+comparative analysis, the course report, slides and actual contribution records.
+Reported course presentation dates are December 7 and 14, 2026. Original course
+instructions still determine the group's assigned slot and submission details.
 
 # Current State
 
@@ -161,6 +167,8 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 
 # Docs Index
 
+- `docs/project-background.md` is the research and course entrypoint. Read before
+  planning new work; it integrates motivation, related literature and priorities.
 - `docs/design/v0.6.0-pilot.md` fixes the post-hoc candidate, Mac control, budgets
   and acceptance before either new full-chain computation starts.
 
