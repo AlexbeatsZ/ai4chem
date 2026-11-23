@@ -2,6 +2,7 @@
 
 import argparse
 from collections import Counter
+import csv
 import json
 from pathlib import Path
 
@@ -14,10 +15,16 @@ from ase import Atoms
 from ase.data import covalent_radii
 from ase.io import read
 
-from benchmark_transition1x import write_csv
 from diagnose_ts_search import force_history
 from prepare_v05_reactions import ROOT
 from ts_search import bond_set, save_json
+
+
+def write_csv(path, rows):
+    with path.open("w", newline="", encoding="utf-8") as output:
+        writer = csv.DictWriter(output, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def collect(output, manifest, models):
@@ -124,6 +131,8 @@ def endpoint_changes(output, manifest, models):
             endpoint_folder = output / "endpoints" / model / item["reaction"]
             if not (endpoint_folder / "endpoints.json").exists():
                 continue
+            statuses = json.loads((endpoint_folder / "endpoints.json").read_text())["statuses"]
+            converged = len(statuses) == 2 and all(status["converged"] for status in statuses)
             for side in ("reactant", "product"):
                 path = endpoint_folder / f"{side}_relaxed.extxyz"
                 if not path.exists():
@@ -132,6 +141,7 @@ def endpoint_changes(output, manifest, models):
                 relaxed = read(path)
                 for left, right in sorted(bond_set(original) ^ bond_set(relaxed)):
                     changes.append({"model": model, "reaction": item["reaction"], "role": item["role"],
+                                    "both_endpoints_converged": converged,
                                     "endpoint": side, "atom_indices": [left, right],
                                     "symbols": [original[left].symbol, original[right].symbol],
                                     "input_distance_A": float(original.get_distance(left, right)),
@@ -298,6 +308,20 @@ def main():
                                    "definition": "sum of measured jobs, excluding driver/model-load overhead"}
     summary["paired_comparisons"] = paired_comparisons(rows, models)
     summary["endpoint_bond_changes"] = endpoint_changes(args.output, manifest, models)
+    changed_pairs = {}
+    for change in summary["endpoint_bond_changes"]:
+        changed_pairs.setdefault((change["model"], change["reaction"]), []).append(change)
+    hh_only = {key for key, changes in changed_pairs.items()
+               if all(change["symbols"] == ["H", "H"] and change["both_endpoints_converged"]
+                      for change in changes)}
+    summary["converged_endpoints_with_hh_only_graph_changes"] = [
+        {"model": model, "reaction": reaction} for model, reaction in sorted(hh_only)]
+    for group_key, values in summary["groups"].items():
+        role, model, strategy = group_key.split("/")
+        values["endpoint_failures_with_hh_only_graph_changes"] = sum(
+            row["role"] == role and row["model"] == model and row["strategy"] == strategy
+            and row["primary_failure"] == "endpoint_failure" and (model, row["reaction"]) in hh_only
+            for row in rows)
     dft_rows = dft_metrics(args.output, manifest)
     dft_complete = all(row["status"] in {"completed", "failed", "no_candidate"} for row in dft_rows)
     summary["dft_evaluation_complete"] = dft_complete
@@ -381,8 +405,8 @@ def main():
                               f"{group['neb_converged']}/{denominator} | {group['verified_saddles']}/{denominator} | "
                               f"{group['strict_pipeline']}/{denominator} | {attempts} | {median} |")
         report.append("")
-    report += ["", "鞍点与 IRC 通过允许 NEB 达到步数预算，要求端点、驻点受力、单显著虚频及双向连接通过。",
-               "全阶段通过额外要求 NEB 收敛。全部预定反应保留在分母中。", "",
+    report += ["", "验证鞍点计数来自模型势能面，要求端点检查、TS 最大受力不超过 0.01 eV/Å、一个超过 50 cm⁻¹ 的显著虚频及双向 IRC 连接通过。",
+               "IRC 末端逐连通片段 RMSD 阈值为 0.5 Å。全阶段通过额外要求 NEB 收敛至 0.05 eV/Å。全部预定反应保留在分母中。", "",
                "## 成本与配对比较", "",
                f"策略引用 {len(unique)} 次唯一搜索，含共享端点的实际计算累计 {actual:.1f} s，"
                f"各策略独立执行的理论累计 {theoretical:.1f} s，复用节省 {theoretical - actual:.1f} s。", "",
@@ -403,6 +427,10 @@ def main():
     for change in summary["endpoint_bond_changes"]:
         report.append(f"| {change['model']} | {change['reaction']} | {change['endpoint']} | {change['atom_indices']} | "
                       f"{change['input_distance_A']:.4f} | {change['relaxed_distance_A']:.4f} | {change['bond_cutoff_A']:.4f} |")
+    if hh_only:
+        descriptions = [f"{model} {reaction}" for model, reaction in sorted(hh_only)]
+        report += ["", "端点均已收敛、键图变化仅涉及 H-H 的组合为 " + ", ".join(descriptions) + "。",
+                   "该表提供几何判据的次级诊断，主结果采用预注册的验收规则。各策略对应端点失败数见 summary.json。"]
     report += ["", "连接阈值附近的微小位移可能改变几何键集合，当前统计保留该验收规则及其敏感性。", "",
                "## Gaussian 验证", "",
                "DFT 反应在搜索前按三种端点变化类别固定为 " + ", ".join(manifest["dft_reactions"]) + "。",

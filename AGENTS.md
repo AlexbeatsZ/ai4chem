@@ -15,7 +15,7 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   0.3.17 and ASE 3.29.0. Initial download and cached rerun both passed.
 - Water energy is -2081.1162109375 eV with finite 3x3 forces. Saved ASE
   results passed readback checks. Full outputs are under `results/`.
-- Private remote is `https://github.com/AlexbeatsZ/ai4chem`.
+- Remote is `https://github.com/AlexbeatsZ/ai4chem`; GitHub reported public on 2026-11-22.
 - v0.2.0 reads ten test reactions selected with seed 42 from the pinned JMP
   Hugging Face export. `data/transition1x_test_10.h5` retains 13,348 source
   configurations and the benchmark evaluates 100 final-band images on CUDA float64.
@@ -59,6 +59,15 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 
 # Active Work
 
+- Multi-device handoff starts at `docs/coordination/README.md`. OMEN remains the
+  sole writer of this frozen CUDA experiment; Mac handles CPU reporting and ROG
+  audits completed result snapshots. Each host uses its standard ai4chem checkout.
+- `scripts/continue_v05.py` attaches to the existing OMEN search before running
+  the unchanged DFT/verification pipeline. Its runtime state, PIDs and stage logs
+  are under `results/coordination/`; inspect them before restarting any process.
+- The user can arrange group-member compute for large independent batches with
+  roughly one-day turnaround. Prepare concrete versioned task packages first;
+  no group-member jobs have been sent or launched in this experiment.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
 - Run the frozen twelve-reaction holdout matrix, then the preselected Gaussian
@@ -99,6 +108,10 @@ mamba run -n ai4chem python adaptive_ts_search.py --freeze
 mamba run -n ai4chem python adaptive_ts_search.py --role holdout
 mamba run -n ai4chem python validate_ts_dft_v05.py
 mamba run -n ai4chem python summarize_ts_search_v05.py
+python scripts/experiment_status.py
+# Only on OMEN WSL, after checking existing coordinator state:
+# Foreground WSL: bash scripts/run_v05_omen.sh
+# Durable background: PowerShell scripts/launch_v05_omen.ps1 -Mode coordinator
 ```
 
 The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
@@ -135,3 +148,5 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
   Gaussian integration and numerical acceptance thresholds. Read before changing searches.
 - `docs/design/v0.5.0-protocol.md` fixes the failure-aware search experiment,
   endpoint-only project holdouts, shared costs, cache identity and evaluation rules.
+- `docs/coordination/README.md` is the cross-device task board and recovery entry;
+  node records distinguish installed environments and verification scope.

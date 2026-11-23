@@ -1,6 +1,8 @@
 """Guard endpoint-only selection, deterministic starts, budgets and cache identity."""
 
 import json
+from contextlib import redirect_stdout
+import io
 from pathlib import Path
 import tempfile
 import unittest
@@ -16,7 +18,7 @@ from diagnose_ts_search import diagnose
 from prepare_v05_reactions import diverse_selection, endpoint_candidates, excluded_ids
 from ts_search import perturb_band
 from ase.io import write
-from validate_ts_dft_v05 import candidates
+from validate_ts_dft_v05 import candidates, main as dft_main, ready_reactions
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -199,6 +201,89 @@ class AdaptiveSearchTests(unittest.TestCase):
             self.assertEqual(candidates(root, manifest, config), jobs)
             with self.assertRaises(ValueError):
                 candidates(root, manifest, {**config, "electronic_state_verified": False})
+
+    def test_partial_dft_candidates_leave_canonical_selection_and_final_identity_unchanged(self):
+        manifest = {"dft_reactions": ["rxn1", "rxn2", "rxn3"],
+                    "protocol": {"strategies": ["S0", "S1", "S2"]},
+                    "reactions": [{"reaction": f"rxn{i}", "formula": "H2", "atomic_numbers": [1, 1]}
+                                  for i in range(1, 4)]}
+        config = {"electronic_state_verified": True, "charge": 0, "multiplicity": 1}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for reaction in manifest["dft_reactions"]:
+                folder = root / "attempts" / reaction
+                folder.mkdir(parents=True)
+                write(folder / "ts_candidate.extxyz", Atoms("H2", positions=[[0, 0, 0], [1, 0, 0]]))
+                for strategy in manifest["protocol"]["strategies"]:
+                    strategy_folder = root / "holdout/mh1-finetuned" / reaction / strategy
+                    strategy_folder.mkdir(parents=True)
+                    (strategy_folder / "result.json").write_text(json.dumps({
+                        "selected_folder": str(folder), "selected_attempt": reaction, "status": "completed",
+                        "mlip_verified": True, "saddle_irc_verified": True}))
+            partial_manifest = {**manifest, "dft_reactions": ["rxn1"]}
+            partial = candidates(root, partial_manifest, config, save_selection=False)
+            canonical = root / "dft/selection.json"
+            self.assertFalse(canonical.exists())
+            complete = candidates(root, manifest, config)
+            self.assertEqual(len(complete), 3)
+            self.assertTrue(all(complete[key] == job for key, job in partial.items()))
+            saved = canonical.read_bytes()
+            self.assertEqual(candidates(root, partial_manifest, config, save_selection=False), partial)
+            self.assertEqual(canonical.read_bytes(), saved)
+            self.assertEqual(len(json.loads(saved)["strategy_units"]), 9)
+
+    def test_ready_only_preparation_waits_for_all_strategy_results_and_preserves_no_candidate(self):
+        manifest = {"dft_reactions": ["rxn1", "rxn2", "rxn3"],
+                    "protocol": {"strategies": ["S0", "S1", "S2"]},
+                    "reactions": [{"reaction": f"rxn{i}", "formula": "H2", "atomic_numbers": [1, 1]}
+                                  for i in range(1, 4)]}
+        config = {"electronic_state_verified": True, "charge": 0, "multiplicity": 1}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "results/v0.5.0"
+            configs = root / "configs"
+            configs.mkdir()
+            (configs / "v0.5.0_reactions.json").write_text(json.dumps(manifest))
+            (configs / "v0.5.0_dft.json").write_text(json.dumps(config))
+            for reaction in ("rxn1", "rxn2"):
+                for strategy in manifest["protocol"]["strategies"]:
+                    folder = output / "holdout/mh1-finetuned" / reaction / strategy
+                    folder.mkdir(parents=True)
+                    (folder / "result.json").write_text(json.dumps({
+                        "status": "running" if reaction == "rxn2" and strategy == "S2" else "completed",
+                        "selected_folder": str(output / "attempts" / reaction), "selected_attempt": reaction,
+                        "mlip_verified": False, "saddle_irc_verified": False}))
+            self.assertEqual(ready_reactions(output, manifest), ["rxn1"])
+            with patch("validate_ts_dft_v05.ROOT", root), \
+                    patch("sys.argv", ["validate_ts_dft_v05.py", "--output", str(output),
+                                       "--ready-only", "--prepare-only"]), redirect_stdout(io.StringIO()):
+                dft_main()
+            self.assertFalse((output / "dft/selection.json").exists())
+            scheduling = json.loads((root / "results/coordination/dft-ready-selection.json").read_text())
+            self.assertEqual(scheduling["ready_reactions"], ["rxn1"])
+            self.assertEqual(scheduling["pending_reactions"], ["rxn2", "rxn3"])
+            self.assertFalse(scheduling["canonical_selection_written"])
+            self.assertTrue(scheduling["provisional"])
+            self.assertIn("recorded_at_utc", scheduling)
+            self.assertEqual(scheduling["unique_jobs"], {})
+            self.assertEqual(scheduling["ready_search_strategy_units"], 3)
+            for reaction in manifest["dft_reactions"]:
+                for strategy in manifest["protocol"]["strategies"]:
+                    folder = output / "holdout/mh1-finetuned" / reaction / strategy
+                    folder.mkdir(parents=True, exist_ok=True)
+                    (folder / "result.json").write_text(json.dumps({
+                        "status": "completed", "selected_folder": str(output / "attempts" / reaction),
+                        "selected_attempt": reaction, "mlip_verified": False, "saddle_irc_verified": False}))
+            with patch("validate_ts_dft_v05.ROOT", root), \
+                    patch("sys.argv", ["validate_ts_dft_v05.py", "--output", str(output),
+                                       "--ready-only", "--prepare-only"]), redirect_stdout(io.StringIO()):
+                dft_main()
+            selection = json.loads((output / "dft/selection.json").read_text())
+            self.assertEqual(len(selection["strategy_units"]), 9)
+            self.assertTrue(all(unit["status"] == "no_candidate" for unit in selection["strategy_units"]))
+            scheduling = json.loads((root / "results/coordination/dft-ready-selection.json").read_text())
+            self.assertTrue(scheduling["canonical_selection_written"])
+            self.assertEqual(scheduling["pending_reactions"], [])
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from ts_search import save_json
 from validate_ts_dft import validate_one
 
 
-def candidates(output, manifest, config):
+def candidates(output, manifest, config, save_selection=True):
     if not config.get("electronic_state_verified"):
         raise ValueError("Verify the source electronic-state convention before Gaussian")
     selected = []
@@ -52,12 +53,25 @@ def candidates(output, manifest, config):
     record = {"preselected_reactions": manifest["dft_reactions"], "configuration": config,
               "strategy_units": selected, "unique_jobs": jobs,
               "deduplication": "identical mapped coordinates and DFT configuration"}
-    path = output / "dft/selection.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if path.exists() and json.loads(path.read_text()) != record:
-        raise ValueError("DFT candidate selection changed after jobs were prepared")
-    save_json(path, record)
+    if save_selection:
+        path = output / "dft/selection.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists() and json.loads(path.read_text()) != record:
+            raise ValueError("DFT candidate selection changed after jobs were prepared")
+        save_json(path, record)
     return jobs
+
+
+def ready_reactions(output, manifest):
+    ready = []
+    for reaction in manifest["dft_reactions"]:
+        for strategy in manifest["protocol"]["strategies"]:
+            path = output / "holdout/mh1-finetuned" / reaction / strategy / "result.json"
+            if not path.exists() or json.loads(path.read_text()).get("status") != "completed":
+                break
+        else:
+            ready.append(reaction)
+    return ready
 
 
 def main():
@@ -65,6 +79,8 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("results/v0.5.0"))
     parser.add_argument("--jobs", type=int, default=2)
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--ready-only", action="store_true",
+                        help="Run preselected reactions whose three strategy searches are completed")
     parser.add_argument("--retry-failed", action="store_true")
     parser.add_argument("--reactions", nargs="+")
     args = parser.parse_args()
@@ -74,7 +90,24 @@ def main():
     config = json.loads((ROOT / "configs/v0.5.0_dft.json").read_text())
     if args.reactions and set(args.reactions) - set(manifest["dft_reactions"]):
         parser.error("Reaction is outside the preselected DFT subset")
-    jobs = candidates(args.output, manifest, config)
+    if args.ready_only:
+        ready = ready_reactions(args.output, manifest)
+        all_ready = len(ready) == len(manifest["dft_reactions"])
+        jobs = candidates(args.output, {**manifest, "dft_reactions": ready}, config,
+                          save_selection=all_ready)
+        record = {"scope": "scheduling-only; the canonical DFT selection retains all nine units",
+                  "provisional": True, "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
+                  "preselected_reactions": manifest["dft_reactions"],
+                  "ready_reactions": ready,
+                  "pending_reactions": [reaction for reaction in manifest["dft_reactions"] if reaction not in ready],
+                  "ready_search_strategy_units": len(ready) * len(manifest["protocol"]["strategies"]),
+                  "canonical_selection_written": all_ready,
+                  "configuration": config, "unique_jobs": jobs}
+        path = args.output.parent / "coordination/dft-ready-selection.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        save_json(path, record)
+    else:
+        jobs = candidates(args.output, manifest, config)
     if args.prepare_only:
         print(json.dumps(jobs, indent=2))
         return
