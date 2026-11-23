@@ -3,6 +3,8 @@
 Maintain reproducible Transition1x benchmarks, fine-tuning and endpoint-driven
 transition-state searches on OMEN WSL CUDA. v0.5.0 compares bounded multi-start
 and failure-aware recovery using the existing CI-NEB and DFT validation workflow.
+The separate v0.6.0 pilot diagnoses its sole extra recovery and calibrates native
+Mac DFT full-chain computation.
 
 # Current State
 
@@ -67,50 +69,35 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 
 # Active Work
 
-- New v0.6.0-pilot frozen in configs/v0.6.0-pilot/protocol.json at 11:19:00Z:
-  one post-hoc Gaussian diagnostic of the sole extra recovered rxn9456, plus
-  complete native Mac DFT TS/frequency/IRC calibration on known-positive rxn0666.
-  Read docs/design/v0.6.0-pilot.md first; outputs stay separate from v0.5.0.
-
-- Multi-device handoff starts at `docs/coordination/README.md`. OMEN remains the
-  sole writer of this frozen CUDA experiment; Mac handles CPU reporting and ROG
-  audits completed result snapshots. Each host uses its standard ai4chem checkout.
-- `scripts/continue_v05.py` attaches to the existing OMEN search before running
-  the unchanged DFT/verification pipeline. Its runtime state, PIDs and stage logs
-  are under `results/coordination/`; inspect them before restarting any process.
-- The user can arrange group-member compute for large independent batches with
-  roughly one-day turnaround. Prepare concrete versioned task packages first;
-  no group-member jobs have been sent or launched in this experiment.
-- Independent Gaussian reaction jobs can run on different group members' hosts.
-  The frozen OMEN CUDA identity concerns the MACE comparison, not a requirement
-  that DFT runs on OMEN. Keep scientific inputs/settings and acceptance fixed,
-  record execution provenance, and deduplicate by candidate identity. Prefer
-  assigning complete TS/Freq -> IRC -> minimum/Freq reaction chains.
-- The roommate Gaussian node is authorized and passed an actual water Opt/Freq
-  check on 2026-11-23 (16W A.03, i9-14900HX, 16 GB RAM). Its minimal PowerShell
-  worker uses C:\G16W and no new installation. See docs/coordination/roommate-gaussian.md;
-  access details are in the synchronized task log. No formal reaction assigned yet.
-- Mac is M3 Max / 128 GiB / 12P+4E cores. Its separate project-local Pixi PySCF
-  environment passed three concurrent 4-thread single-point/gradient jobs on saved
-  Gaussian TS geometries (18.47 s batch). This is readiness, not Gaussian TS/IRC
-  acceptance. PySCF/geomeTRIC also passed a complete HCN/HNC HF TS/frequency/IRC
-  capability example; Gaussian is optional, needed only to use that engine.
-- The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
-  docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
-- Search, preselected Gaussian subset and final verification are complete. All
-  three strategies have 3/3 DFT passes, reusing the same three candidates; conditional
-  fine-tuned barrier MAE is 0.206068 eV. v0.5.0 release delivery is complete; future
-  production Mac DFT chains or broader experiments need separate task definitions.
-- The 210-reaction final set was opened after validation selection and has now
-  been reported. Further method choices informed by these results require a new
-  independent evaluation design.
-- Official full HDF5 download returned HTTP 403. Current empirical input is a
-  public export with float32 positions/forces, with source revision and precision
-  recorded in the manifest. Numeric comparison against the official original is pending.
-- Full train-pool coverage, multiple seeds, longer training, pretraining-overlap
-  checks and Mac execution remain future work.
-- Expanded independent search evaluation and multiple path initializations remain
-  future work. v0.4.0 uses ten exposed reactions and one IDPP initialization each.
+- v0.5.0 is published and complete. Its CUDA searches and formal three-candidate
+  Gaussian subset must not be restarted or silently changed.
+- User renewed investigation on 2026-11-23. `configs/v0.6.0-pilot/protocol.json`
+  was fixed at 11:19:00Z before computation, committed/pushed as 5889368.
+  Read `docs/design/v0.6.0-pilot.md` before changing these two bounded tasks.
+- Roommate node: rxn9456, sole extra S1/S2 recovered saddle; Gaussian TS/Freq
+  passed (24 modes, one -721.2605 cm^-1), full two-way IRC/minimum validation
+  remains pending. Worker folder `results/rxn9456-v06-r1`; native owner 35464
+  resumed at 11:29Z and reuses completed TS after a fixed MatchCollection parser
+  bug. Scientific logs/checkpoint and initial failed worker JSON are retained.
+- Mac: `scripts/run_mac_dft_chain.py` started rxn0666 at 11:22:56Z, from exactly
+  the original MLIP candidate. TS optimization converged in five evaluations;
+  full DFT frequencies/IRC/minima are still running. Output on Mac is
+  `results/v0.6.0-pilot/mac/rxn0666-r1/`, process 5437 at last verification.
+- `scripts/assess_dft_chain.py` independently evaluates completed raw chains in
+  the analysis .venv. A raw worker completion is not DFT verification. Require
+  full modes, correct saddle order, both stable mapped endpoints and IRC success.
+- Multi-device entry: `docs/coordination/README.md`. Host access details remain
+  in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`, not public Git.
+- ROG was unreachable; its audit environment is prepared but not accepted. The
+  two current tasks do not depend on ROG. Mac uses isolated native Pixi PySCF;
+  roommate uses existing Gaussian without installing or changing global settings.
+- Larger independent batches may use group members with roughly one-day return.
+  Prepare versioned unique reaction packages first. No messages were sent to them.
+- The new pilot is post-hoc diagnostic plus known-positive engine calibration,
+  not a new unseen holdout or a general success-rate estimate. Any changed search
+  policy informed by these outcomes needs a separate independent evaluation.
+- Full HDF5 source download returned 403. Current data uses pinned float32 public
+  export; original numerical equivalence and pretraining overlap remain unresolved.
 
 # Build / Run / Test
 

@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$JobDirectory,
     [string]$GaussianDirectory = 'C:\G16W',
-    [switch]$Worker
+    [switch]$Worker,
+    [switch]$Resume
 )
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
@@ -11,7 +12,12 @@ $task = Get-Content -LiteralPath $taskFile -Raw | ConvertFrom-Json
 $stateFile = Join-Path $JobDirectory 'worker-state.json'
 $project = Split-Path -Parent $PSScriptRoot
 if (-not $Worker) {
-    if (Test-Path -LiteralPath $stateFile) { throw 'Existing worker state requires diagnosis; use a new job directory for a retry.' }
+    if (Test-Path -LiteralPath $stateFile) {
+        if (-not $Resume) { throw 'Existing worker state requires diagnosis and explicit -Resume.' }
+        $previous = Get-Content -LiteralPath $stateFile -Raw | ConvertFrom-Json
+        if ($previous.status -eq 'running' -or $previous.raw_chain_completed -or
+            (Get-Process -Id $previous.owner_pid -ErrorAction SilentlyContinue)) { throw 'Previous worker is active or already completed.' }
+    } elseif ($Resume) { throw 'No previous state to resume.' }
     if (-not (Test-Path -LiteralPath (Join-Path $GaussianDirectory 'g16.exe'))) { throw 'Gaussian executable missing.' }
     $os = Get-CimInstance Win32_OperatingSystem
     if ($os.FreePhysicalMemory -lt 6MB) { throw 'Require at least 6 GiB available physical memory for this 4 GB job.' }
@@ -19,6 +25,11 @@ if (-not $Worker) {
     if ($active.Count) { throw 'Another native Gaussian job is present; inspect before sharing this worker.' }
     $powershell = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
     $command = "`"$powershell`" -NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -JobDirectory `"$JobDirectory`" -GaussianDirectory `"$GaussianDirectory`" -Worker"
+    if ($Resume) {
+        $archive = Join-Path $JobDirectory ('previous-worker-state-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'.json')
+        Copy-Item -LiteralPath $stateFile -Destination $archive
+        $command += ' -Resume'
+    }
     $startup = New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly -Property @{ShowWindow=[uint16]0}
     $created = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
         CommandLine=$command;CurrentDirectory=$project;ProcessStartupInformation=$startup
@@ -50,7 +61,7 @@ function Read-Stage([string]$name) {
     })
     $energyMatches = [regex]::Matches($text,'SCF Done:.*?=\s*([-\d.]+)')
     $energy = $null
-    if ($energyMatches.Count) { $energy = [double]::Parse($energyMatches[-1].Groups[1].Value,$culture) }
+    if ($energyMatches.Count) { $energy = [double]::Parse($energyMatches[$energyMatches.Count-1].Groups[1].Value,$culture) }
     $minimum = $text.Contains('PES minimum detected')
     $complete = $text -match 'Calculation of (FORWARD|REVERSE) path complete'
     $postError = $text.Contains('PESDtA: Invalid IPoint.') -and $minimum -and $complete -and
@@ -70,7 +81,19 @@ function Run-Stage([string]$name,[bool]$allowPostprocessingError=$false) {
     $state.stage = $name
     Save-State
     $log = Join-Path $JobDirectory "$name.log"
-    if (Test-Path -LiteralPath $log) { throw "Existing log requires diagnosis: $log" }
+    if (Test-Path -LiteralPath $log) {
+        if (-not $Resume) { throw "Existing log requires diagnosis: $log" }
+        $record = Read-Stage $name
+        if (-not ($record.normal_termination -or ($allowPostprocessingError -and $record.postprocessing_error))) {
+            throw "Incomplete/failed stage requires diagnosis; refusing overwrite: $log"
+        }
+        $record.elapsed_seconds = 0
+        $record.reused_existing_stage = $true
+        if (-not $record.normal_termination) { $record.recovered_postprocessing_error = $true }
+        $state.stages += $record
+        Save-State
+        return $record
+    }
     $clock = [Diagnostics.Stopwatch]::StartNew()
     try {
         & (Join-Path $project 'run_gaussian_job.ps1') -InputFile (Join-Path $JobDirectory "$name.gjf") -GaussianDirectory $GaussianDirectory | Out-Null
@@ -117,6 +140,7 @@ try {
 } catch {
     $state.status = 'failed'
     $state.error = $_.Exception.ToString()
+    $state.script_stack_trace = $_.ScriptStackTrace
 } finally {
     $state.finished_at_utc = [DateTime]::UtcNow.ToString('o')
     Save-State
