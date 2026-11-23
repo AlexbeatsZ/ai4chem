@@ -1,7 +1,8 @@
 # Goal
 
 Maintain reproducible Transition1x benchmarks, fine-tuning and endpoint-driven
-transition-state searches on OMEN WSL CUDA. v0.4.0 adds CI-NEB and DFT validation.
+transition-state searches on OMEN WSL CUDA. v0.5.0 compares bounded multi-start
+and failure-aware recovery using the existing CI-NEB and DFT validation workflow.
 
 # Current State
 
@@ -45,22 +46,24 @@ transition-state searches on OMEN WSL CUDA. v0.4.0 adds CI-NEB and DFT validatio
   verification.json. 31 regression tests, pip check and CUDA smoke test passed.
 - MH-1 optional TorchScript compiled export failed upstream in v0.3.0. Standard
   .model serialization and loaded inference passed for every experiment.
+- v0.5.0 fixes four development and twelve project holdout reactions, excluding
+  all prior project reaction IDs. Train export shards 0 and 1 provide 223 complete
+  unused endpoint pairs, including four formation-class cases.
+- All 24 development strategy units completed with 25 unique attempts. Verified
+  saddles for original S0/S1/S2 are 0/4, 1/4, 0/4 and fine-tuned are 0/4, 1/4, 1/4.
+- configs/v0.5.0_frozen.json was written after pilot verification and before any
+  holdout search. The original draft's recovery rules remain fixed for evaluation.
+- 45 tests and two rxn1961 baseline regressions passed. The shared-endpoint S0
+  entrypoint matched the old barrier within 1.1e-10 eV and frequencies within
+  1.1e-6 cm^-1. Pilot verification also checked actual perturbations and continuation.
 
 # Active Work
 
-- v0.5.0 implements failure diagnosis and bounded S0/S1/S2 searches using the two
-  existing models. Four development and twelve project holdout reactions are fixed
-  in configs/v0.5.0_reactions.json, excluding all prior project reaction IDs.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
-- Train export files are frame-sharded. Shards 0 and 1 provide 223 unused complete
-  endpoint pairs, with 193 rearrangement, 26 cleavage and 4 formation cases.
-- Development searches are running on OMEN WSL. Complete and review all 24
-  development strategy units before creating configs/v0.5.0_frozen.json and opening
-  the twelve holdout reactions. Gaussian subset is preselected as rxn2737,
-  rxn8204 and rxn0666. Record all nine strategy units and deduplicate identical TSs.
-- Baseline rxn1961 rerun matched v0.4.0 decisions, barrier within 9.1e-12 eV and
-  projected frequencies within 2.1e-7 cm^-1. New tests currently bring the suite to 45.
+- Run the frozen twelve-reaction holdout matrix, then the preselected Gaussian
+  subset rxn2737, rxn8204 and rxn0666. Preserve all nine strategy units and
+  deduplicate identical TS coordinates. Complete report, verification and release.
 - The 210-reaction final set was opened after validation selection and has now
   been reported. Further method choices informed by these results require a new
   independent evaluation design.
@@ -117,6 +120,9 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
   energy, omitting those unusable parsed forces.
 - Compare separated molecular products using mapped bonds and rigid alignment per
   connected component. Whole-system RMSD conflates fragment arrangement with chemistry.
+- The H-H geometric bond cutoff is 0.744 A at the current radius multiplier.
+  rxn8080 crossed it after a 0.002 A H-H distance change. Inspect mapped pair
+  distances before interpreting an endpoint graph mismatch chemically.
 
 # Docs Index
 

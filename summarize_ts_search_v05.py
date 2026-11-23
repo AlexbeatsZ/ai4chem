@@ -121,8 +121,11 @@ def endpoint_changes(output, manifest, models):
     changes = []
     for item in manifest["reactions"]:
         for model in models:
+            endpoint_folder = output / "endpoints" / model / item["reaction"]
+            if not (endpoint_folder / "endpoints.json").exists():
+                continue
             for side in ("reactant", "product"):
-                path = output / "endpoints" / model / item["reaction"] / f"{side}_relaxed.extxyz"
+                path = endpoint_folder / f"{side}_relaxed.extxyz"
                 if not path.exists():
                     continue
                 original = Atoms(item["atomic_numbers"], positions=item[f"{side}_positions"])
@@ -185,7 +188,7 @@ def make_plots(output, rows, summary, models):
                 row = lookup[(model, reaction, strategy)]
                 if row["status"] == "completed":
                     cells[i, j] = 3 if row["mlip_verified"] else 2 if row["saddle_irc_verified"] else 1
-                    axis.text(j, i, str(row["attempts"]), ha="center", va="center", color="white", fontsize=9)
+                    axis.text(j, i, str(row["attempts"]), ha="center", va="center", color="#111111", fontsize=9)
         axis.imshow(cells, cmap=palette, vmin=0, vmax=3, aspect="auto")
         axis.set(yticks=np.arange(3), yticklabels=strategies, xticks=np.arange(len(reactions)),
                  xticklabels=reactions, title=model)
@@ -358,19 +361,26 @@ def main():
     save_json(args.output / "summary.json", summary)
     report = ["# v0.5.0 失败感知自适应过渡态搜索", "",
               "四条开发反应与十二条项目保留反应，比较两个固定模型和三种搜索策略。",
+              "模型为原始 MH-1/omol 与 v0.3.0 的 mh1_full_256，使用 OMEN RTX 4060 CUDA float64 和 JAX CPU。",
+              "S0 执行一次十图像 IDPP。S1 依次尝试标准、0.03 Å 扰动和十四图像 IDPP。",
+              "S2 根据端点、NEB、鞍点和 IRC 诊断选择恢复，含最多额外 250 步的路径续算。每种策略最多三次尝试，验证鞍点后停止。",
               "源数据为固定 revision 的 train 构型分片 0 和 1，排除全部既有项目反应。",
               "端点和保留反应清单在搜索前固定。" + ("控制器已在开发阶段后冻结。" if frozen else "控制器待开发阶段复核后冻结。"), "",
-              f"计划 {len(rows)} 个策略评价单元，已完成 {len(records)} 个。", "",
-              "## 保留反应结果", "",
-              "| 模型 | 策略 | 完成 / 计划 | NEB 至少一次 | 鞍点与 IRC | 全阶段 | 平均尝试 | 成本中位数 / s |",
-              "| --- | --- | --- | --- | --- | --- | --- | --- |"]
-    for model in models:
-        for strategy in manifest["protocol"]["strategies"]:
-            group = summary["groups"][f"holdout/{model}/{strategy}"]
-            attempts = f"{group['average_attempts']:.2f}" if group["average_attempts"] is not None else "pending"
-            median = f"{group['time_median_q1_q3_seconds'][0]:.1f}" if group["time_median_q1_q3_seconds"] else "pending"
-            report.append(f"| {model} | {strategy} | {group['completed']}/{group['planned']} | "
-                          f"{group['neb_converged']}/12 | {group['verified_saddles']}/12 | {group['strict_pipeline']}/12 | {attempts} | {median} |")
+              f"计划 {len(rows)} 个策略评价单元，已完成 {len(records)} 个。", ""]
+    for role, title in (("development", "开发反应结果"), ("holdout", "保留反应结果")):
+        report += [f"## {title}", "",
+                   "| 模型 | 策略 | 完成 / 计划 | NEB 至少一次 | 鞍点与 IRC | 全阶段 | 平均尝试 | 成本中位数 / s |",
+                   "| --- | --- | --- | --- | --- | --- | --- | --- |"]
+        for model in models:
+            for strategy in manifest["protocol"]["strategies"]:
+                group = summary["groups"][f"{role}/{model}/{strategy}"]
+                attempts = f"{group['average_attempts']:.2f}" if group["average_attempts"] is not None else "pending"
+                median = f"{group['time_median_q1_q3_seconds'][0]:.1f}" if group["time_median_q1_q3_seconds"] else "pending"
+                denominator = group["planned"]
+                report.append(f"| {model} | {strategy} | {group['completed']}/{denominator} | "
+                              f"{group['neb_converged']}/{denominator} | {group['verified_saddles']}/{denominator} | "
+                              f"{group['strict_pipeline']}/{denominator} | {attempts} | {median} |")
+        report.append("")
     report += ["", "鞍点与 IRC 通过允许 NEB 达到步数预算，要求端点、驻点受力、单显著虚频及双向连接通过。",
                "全阶段通过额外要求 NEB 收敛。全部预定反应保留在分母中。", "",
                "## 成本与配对比较", "",
@@ -402,12 +412,27 @@ def main():
                "| --- | --- | --- | --- | --- |"]
     for strategy, values in summary["dft"].items():
         error = values["conditional_barrier_mae_eV"]
-        error_text = f"{error:.6f}" if error is not None else "pending"
+        missing_error = "无通过候选" if dft_complete else "pending"
+        error_text = f"{error:.6f}" if error is not None else missing_error
         report.append(f"| {strategy} | {values['candidates']}/3 | {values['verified']}/3 | "
                       f"{error_text} | {values['statuses']} |")
+    report += ["", "### 逐反应与策略结果", "",
+               "| 反应 | 策略 | 状态 | TS 负频率数 | DFT 通过 | TS RMSD / Å | 电子能垒 / eV | IRC 后处理恢复 |",
+               "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
+    for row in dft_rows:
+        rmsd = f"{row['mlip_to_dft_ts_rmsd_A']:.4f}" if row["mlip_to_dft_ts_rmsd_A"] is not None else "—"
+        barrier = f"{row['dft_electronic_barrier_eV']:.6f}" if row["dft_electronic_barrier_eV"] is not None else "—"
+        imaginary = row["ts_imaginary_modes"] if row["ts_imaginary_modes"] is not None else "—"
+        report.append(f"| {row['reaction']} | {row['strategy']} | {row['status']} | {imaginary} | "
+                      f"{row['dft_verified']} | {rmsd} | {barrier} | {row['recovered_irc_postprocessing_error']} |")
+    recovered = sorted({row["reaction"] for row in dft_rows if row["recovered_irc_postprocessing_error"]})
+    if recovered:
+        report += ["", "IRC 后处理恢复涉及 " + ", ".join(recovered) + "。对应日志保留 normal_termination=false。",
+                   "综合验证继续要求错误前的最小值检测与路径完成、保存的 checkpoint，以及另行正常结束的端点优化、完整频率和映射几何检查。"]
     report += ["", "DFT 使用 ωB97X/6-31G(d)，电荷零、单重态遵循原始 Transition1x ORCA 生成器及其 ASE 默认值。",
                "LQA 步长 5、160 点和最多 320 点 checkpoint 续算在保留阶段之前固定，保留全部异常及恢复记录。",
                "电子能垒为精修 TS 减去 IRC 所连优化反应物的电子能量，采用 DFT 验证通过的候选计算条件误差。", "",
+               "未通过验证的中间数值供失败诊断使用，完整错误、逐方向 IRC 和端点检查见 dft_metrics.csv 与各候选 result.json。", "",
                "## 解释范围", "",
                "十二条反应用于项目保留评价，两个模型的预训练重叠尚未排除。端点变化类别采用共价半径启发式。",
                "仅两片中具有完整端点对的反应参与候选池，构型分片覆盖会影响抽样分布。",

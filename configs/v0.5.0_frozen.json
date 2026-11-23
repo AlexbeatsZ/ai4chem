@@ -1,0 +1,104 @@
+{
+  "policy": {
+    "version": "v0.5.0",
+    "protocol_revision": 1,
+    "source_revision": "fac02fc7019ae95a6957b0723b467f6e56745fd2",
+    "sources": [
+      "data/raw/transition1x_train_00.parquet",
+      "data/raw/transition1x_train_01.parquet"
+    ],
+    "seed": 20261119,
+    "development_count": 4,
+    "holdout_count": 12,
+    "baseline_config": "configs/v0.4.0.json",
+    "maximum_attempts": 3,
+    "perturbation_rms_A": 0.03,
+    "high_resolution_images": 14,
+    "continuation_steps": 250,
+    "improving_ratio": 0.9,
+    "improving_final_fmax_eV_A": 0.1,
+    "dft_count": 3,
+    "strategies": [
+      "S0",
+      "S1",
+      "S2"
+    ]
+  },
+  "baseline": {
+    "version": "v0.4.0",
+    "input": "data/v0.3.0/final.h5",
+    "split": "test",
+    "count": 10,
+    "selection": "one reaction per formula, then missing endpoint-change classes and distinct change signatures; smallest bond-change count then reaction ID",
+    "models": {
+      "mh1-original": {
+        "path": "models/mh1-omol.model",
+        "head": "omol"
+      },
+      "mh1-finetuned": {
+        "path": "models/v0.3.0/mh1_full_256.model",
+        "head": "Default"
+      }
+    },
+    "device": "cuda",
+    "dtype": "float64",
+    "images": 10,
+    "spring_eV_A2": 0.1,
+    "endpoint_fmax_eV_A": 0.02,
+    "endpoint_steps": 250,
+    "neb_warmup_steps": 150,
+    "neb_warmup_fmax_eV_A": 0.15,
+    "neb_climb_steps": 500,
+    "neb_fmax_eV_A": 0.05,
+    "ts_steps": 150,
+    "ts_fmax_eV_A": 0.01,
+    "hessian_delta_A": 0.005,
+    "imaginary_threshold_cm1": 50.0,
+    "irc_dx_A_sqrt_amu": 0.1,
+    "irc_steps": 400,
+    "irc_fmax_eV_A": 0.05,
+    "irc_endpoint_rmsd_A": 0.5,
+    "dft_count": 5,
+    "dft_method": "wB97X/6-31G(d)",
+    "dft_nproc": 4,
+    "dft_mem": "4GB"
+  },
+  "manifest_sha256": "7fdb6bbfee274b1ff1a3a8f8e1d8e70cb40c8b93a743188b93377a587c0113e9",
+  "models": {
+    "mh1-original": {
+      "name": "mh1-original",
+      "path": "models/mh1-omol.model",
+      "head": "omol",
+      "sha256": "396237646f56b000d27282644ded368b1739e3b47c081cb348231654444a77c2"
+    },
+    "mh1-finetuned": {
+      "name": "mh1-finetuned",
+      "path": "models/v0.3.0/mh1_full_256.model",
+      "head": "Default",
+      "sha256": "e0bd2d8ccc5845389629f6b706e8e8a9114fe40fd5cf7339746c98bdbeff9350"
+    }
+  },
+  "software": {
+    "python": "3.12.16",
+    "packages": {
+      "torch": "2.15.0+cu134",
+      "mace-torch": "0.3.17",
+      "ase": "3.29.0",
+      "sella": "2.6.0",
+      "jax": "0.12.0.1",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1"
+    },
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 617.42",
+    "host": "OMEN Windows / WSL Ubuntu-24.04",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "implementation": {
+    "ts_search.py": "368c6f4eec0e0b99e07402d60303972f8582570249608274826d32e2bec9678d",
+    "mace_neb.py": "a5a1ad1a557ae9ce635734982d0c537d8c122e439d33e5a99cbced0a783aed70",
+    "adaptive_ts_search.py": "0a45c260baec040aa402ccad613dec405ce2cd10e52927277d9a1eb30602d467",
+    "diagnose_ts_search.py": "745d8f05a53035162a2c3159c39311c3e342257da9f767ea880e8f360f82aaab",
+    "prepare_v05_reactions.py": "f30ab29d6b10f7f25b6e8da6d960fd0d7ab8d2a8309f340bfabbd9efe31dd4cf"
+  },
+  "freeze_time_utc": "2026-11-23T02:36:35Z"
+}
