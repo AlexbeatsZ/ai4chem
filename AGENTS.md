@@ -48,6 +48,19 @@ transition-state searches on OMEN WSL CUDA. v0.4.0 adds CI-NEB and DFT validatio
 
 # Active Work
 
+- v0.5.0 implements failure diagnosis and bounded S0/S1/S2 searches using the two
+  existing models. Four development and twelve project holdout reactions are fixed
+  in configs/v0.5.0_reactions.json, excluding all prior project reaction IDs.
+- The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
+  docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
+- Train export files are frame-sharded. Shards 0 and 1 provide 223 unused complete
+  endpoint pairs, with 193 rearrangement, 26 cleavage and 4 formation cases.
+- Development searches are running on OMEN WSL. Complete and review all 24
+  development strategy units before creating configs/v0.5.0_frozen.json and opening
+  the twelve holdout reactions. Gaussian subset is preselected as rxn2737,
+  rxn8204 and rxn0666. Record all nine strategy units and deduplicate identical TSs.
+- Baseline rxn1961 rerun matched v0.4.0 decisions, barrier within 9.1e-12 eV and
+  projected frequencies within 2.1e-7 cm^-1. New tests currently bring the suite to 45.
 - The 210-reaction final set was opened after validation selection and has now
   been reported. Further method choices informed by these results require a new
   independent evaluation design.
@@ -76,6 +89,13 @@ mamba run -n ai4chem python run_research_evaluation.py
 OMP_NUM_THREADS=4 JAX_PLATFORMS=cpu mamba run -n ai4chem python ts_search.py
 mamba run -n ai4chem python validate_ts_dft.py
 mamba run -n ai4chem python summarize_ts_search.py
+mamba run -n ai4chem python prepare_v05_reactions.py
+mamba run -n ai4chem python diagnose_ts_search.py
+mamba run -n ai4chem python adaptive_ts_search.py --role development
+mamba run -n ai4chem python adaptive_ts_search.py --freeze
+mamba run -n ai4chem python adaptive_ts_search.py --role holdout
+mamba run -n ai4chem python validate_ts_dft_v05.py
+mamba run -n ai4chem python summarize_ts_search_v05.py
 ```
 
 The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
@@ -107,3 +127,5 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 - `docs/design/finetuning.md` covers v0.3.0 partitions, training and selection ordering.
 - `docs/design/ts-search.md` covers endpoint-only initialization, saddle/IRC checks,
   Gaussian integration and numerical acceptance thresholds. Read before changing searches.
+- `docs/design/v0.5.0-protocol.md` fixes the failure-aware search experiment,
+  endpoint-only project holdouts, shared costs, cache identity and evaluation rules.

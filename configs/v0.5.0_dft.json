@@ -1,0 +1,20 @@
+{
+  "version": "v0.5.0",
+  "dft_method": "wB97X/6-31G(d)",
+  "dft_nproc": 4,
+  "dft_mem": "4GB",
+  "irc_endpoint_rmsd_A": 0.5,
+  "charge": 0,
+  "multiplicity": 1,
+  "electronic_state_verified": true,
+  "electronic_state_basis": "The pinned original Transition1x NEB script constructs ASE ORCA calculators without overriding charge or multiplicity. ASE 3.22.1 ORCA defaults explicitly set charge=0 and mult=1. The v0.5.0 DFT calculations reproduce this reference electronic-state convention. Each selected reaction is additionally checked for even electron count and preserved atomic mapping.",
+  "electronic_state_sources": [
+    "https://gitlab.com/matschreiner/Transition1x/-/raw/08f728925d76e22ce04ec1ab3b75770d32e617ca/scripts/neb.py",
+    "https://gitlab.com/ase/ase/-/raw/3.22.1/ase/calculators/orca.py"
+  ],
+  "dft_policy": {
+    "irc_algorithm": "LQA",
+    "irc_restart_max_points": 320,
+    "decision_basis": "Uniform LQA with step 5 and 160 points is fixed before the v0.5.0 holdout, using the v0.4.0 observations of HPC corrector failures. Existing checkpoint extension and guarded PESDtA recovery remain in effect."
+  }
+}

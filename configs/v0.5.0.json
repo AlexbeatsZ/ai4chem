@@ -1,0 +1,18 @@
+{
+  "version": "v0.5.0",
+  "protocol_revision": 1,
+  "source_revision": "fac02fc7019ae95a6957b0723b467f6e56745fd2",
+  "sources": ["data/raw/transition1x_train_00.parquet", "data/raw/transition1x_train_01.parquet"],
+  "seed": 20261119,
+  "development_count": 4,
+  "holdout_count": 12,
+  "baseline_config": "configs/v0.4.0.json",
+  "maximum_attempts": 3,
+  "perturbation_rms_A": 0.03,
+  "high_resolution_images": 14,
+  "continuation_steps": 250,
+  "improving_ratio": 0.9,
+  "improving_final_fmax_eV_A": 0.10,
+  "dft_count": 3,
+  "strategies": ["S0", "S1", "S2"]
+}

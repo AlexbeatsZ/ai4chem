@@ -76,7 +76,7 @@ def write_input(path, route, title, config, atoms=None, old_checkpoint=None):
     lines += [f"%chk={path.stem}.chk", f"%mem={config['dft_mem']}",
               f"%nprocshared={config['dft_nproc']}", f"#p {config['dft_method']} {route}", ""]
     if atoms is not None:
-        lines += [title, "", "0 1"]
+        lines += [title, "", f"{config.get('charge', 0)} {config.get('multiplicity', 1)}"]
         lines += [f"{symbol} {x:.12f} {y:.12f} {z:.12f}"
                   for symbol, (x, y, z) in zip(atoms.get_chemical_symbols(), atoms.positions)]
     path.write_text("\n".join(lines) + "\n\n", encoding="ascii")
@@ -90,7 +90,7 @@ def run_job(folder, name, config, atoms=None, old_checkpoint=None, route=""):
         return parse_output(output_path)
     if output_path.exists():
         raise RuntimeError(f"Earlier incomplete Gaussian job needs inspection: {output_path}")
-    write_input(input_path, route, f"ai4chem v0.4.0 {folder.name} {name}", config,
+    write_input(input_path, route, f"ai4chem {config.get('version', 'v0.4.0')} {folder.name} {name}", config,
                 atoms=atoms, old_checkpoint=old_checkpoint)
     print(f"Starting Gaussian {folder.name} {name}", flush=True)
     powershell = shutil.which("powershell.exe") or "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
@@ -106,8 +106,8 @@ def run_irc_job(folder, direction, config, common):
     settings = [(f"irc_{direction}", 80, 10, 20, ""),
                 (f"irc_{direction}_smallstep", 160, 5, 80, ""),
                 (f"irc_{direction}_lqa", 160, 5, 80, ",lqa")]
-    policy = json.loads(Path("configs/v0.4.0_dft_selection.json").read_text())
-    if folder.name in policy.get("lqa_reactions", []):
+    policy = config.get("dft_policy") or json.loads(Path("configs/v0.4.0_dft_selection.json").read_text())
+    if policy.get("irc_algorithm") == "LQA" or folder.name in policy.get("lqa_reactions", []):
         for name, _, _, _, _ in settings[:-1]:
             path = folder / f"{name}.log"
             if path.exists():
@@ -205,7 +205,7 @@ def prepare_candidates(root, config):
 
 
 def validate_one(root, item, config):
-    folder = root / "dft" / item["reaction"]
+    folder = Path(item.get("output_folder", root / "dft" / item["reaction"]))
     folder.mkdir(parents=True, exist_ok=True)
     with (folder / ".validation.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
@@ -214,7 +214,7 @@ def validate_one(root, item, config):
 
 def validate_locked(root, item, config):
     reaction = item["reaction"]
-    folder = root / "dft" / reaction
+    folder = Path(item.get("output_folder", root / "dft" / reaction))
     folder.mkdir(parents=True, exist_ok=True)
     result = {"reaction": reaction, "formula": item["formula"], "method": config["dft_method"],
               "status": "running", "dft_verified": False, "stage": "ts"}
@@ -222,7 +222,7 @@ def validate_locked(root, item, config):
     start = time.monotonic()
     common = "scf=(xqc,maxcycle=128) int=ultrafine nosymm"
     try:
-        candidate = read(root / "mh1-finetuned" / reaction / "ts_candidate.extxyz")
+        candidate = read(item.get("candidate_path", root / "mh1-finetuned" / reaction / "ts_candidate.extxyz"))
         result["ts"] = run_job(folder, "ts", config, atoms=candidate,
                                route=f"opt=(ts,calcfc,noeigentest,maxcycles=80) freq {common}")
         ts = read_geometry(folder / "ts.log", candidate.numbers, result["ts"]["energy_hartree"])
@@ -237,7 +237,8 @@ def validate_locked(root, item, config):
             return result
         result["stage"] = "irc"
         save_json(folder / "result.json", result)
-        expected = [read(root / "inputs" / reaction / f"{name}.xyz") for name in ("reactant", "product")]
+        input_folder = Path(item.get("input_folder", root / "inputs" / reaction))
+        expected = [read(input_folder / f"{name}.xyz") for name in ("reactant", "product")]
         branches = []
         result["branches"] = branches
         for direction in ("forward", "reverse"):

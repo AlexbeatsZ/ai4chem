@@ -170,7 +170,10 @@ def prepare(config, output):
 
 def frozen_result(atoms):
     saved = atoms.copy()
-    saved.calc = SinglePointCalculator(saved, energy=atoms.get_potential_energy(), forces=atoms.get_forces())
+    energy, forces = atoms.get_potential_energy(), atoms.get_forces()
+    if not (np.isfinite(energy) and np.isfinite(forces).all() and np.isfinite(atoms.positions).all()):
+        raise ValueError("Non-finite model energy, forces or positions")
+    saved.calc = SinglePointCalculator(saved, energy=energy, forces=forces)
     return saved
 
 
@@ -257,30 +260,67 @@ def run_irc(ts, calc, endpoints, folder, config):
     return assess_irc_branches(branches, minima, endpoints, config["irc_endpoint_rmsd_A"])
 
 
-def search_one(item, calc, folder, config):
+def perturb_band(images, seed, rms):
+    """Displace internal images reproducibly, preserving endpoints and atom order."""
+    rng = np.random.default_rng(seed)
+    for image in images[1:-1]:
+        displacement = rng.normal(size=image.positions.shape)
+        displacement -= displacement.mean(axis=0)
+        displacement *= rms / np.sqrt(np.mean(np.sum(displacement ** 2, axis=1)))
+        image.positions += displacement
+
+
+def search_one(item, calc, folder, config, *, prepared_endpoints=None, initialization=None):
     from sella import Sella
     folder.mkdir(parents=True, exist_ok=True)
     result = {"reaction": item["reaction"], "formula": item["formula"], "status": "running",
               "mlip_verified": False, "stage": "endpoints", "neb_backend": "batched MACE"}
     start = time.monotonic()
+    timings = {}
+    stage_start = start
+    initialization = initialization or {"type": "idpp"}
     try:
         endpoints, endpoint_status = [], []
-        for name, atoms in zip(("reactant", "product"), item["endpoints"]):
-            relaxed, status = relax_endpoint(atoms, calc, folder, name, config)
-            endpoints.append(relaxed)
-            endpoint_status.append(status)
+        if prepared_endpoints is None:
+            for name, atoms in zip(("reactant", "product"), item["endpoints"]):
+                relaxed, status = relax_endpoint(atoms, calc, folder, name, config)
+                endpoints.append(relaxed)
+                endpoint_status.append(status)
+        else:
+            endpoints = [atoms.copy() for atoms in prepared_endpoints[0]]
+            endpoint_status = prepared_endpoints[1]
+            for name, atoms in zip(("reactant", "product"), endpoints):
+                atoms.calc = calc
+                write(folder / f"{name}_relaxed.extxyz", frozen_result(atoms))
         minimize_rotation_and_translation(endpoints[0], endpoints[1])
         result["endpoints"] = endpoint_status
+        timings["endpoints"] = time.monotonic() - stage_start
+        stage_start = time.monotonic()
         images = [endpoints[0]] + [endpoints[0].copy() for _ in range(config["images"] - 2)] + [endpoints[1]]
+        if initialization["type"] == "continuation":
+            images = read(initialization["band"], index=":")
+            if len(images) != config["images"]:
+                raise ValueError("Continuation image count differs from its parent band")
+            for image in images:
+                np.testing.assert_array_equal(image.numbers, endpoints[0].numbers)
+            # Preserve the recorded parent geometry, including its aligned endpoints.
+            for endpoint, image in zip(endpoints, (images[0], images[-1])):
+                np.testing.assert_allclose(endpoint.get_all_distances(), image.get_all_distances(),
+                                           atol=1e-7, rtol=0)
         for image in images:
             image.calc = calc
         neb = NEB(images, k=config["spring_eV_A2"], method="improvedtangent",
                   allow_shared_calculator=True, remove_rotation_and_translation=True)
         result["stage"] = "idpp"
-        neb.interpolate(method="idpp")
+        if initialization["type"] != "continuation":
+            neb.interpolate(method="idpp")
+        if initialization["type"] == "perturbed_idpp":
+            perturb_band(images, initialization["seed"], initialization["rms_A"])
         write(folder / "initial_band.extxyz", images, write_results=False)
         result["batch_parity"] = check_batch_parity(images, calc)
         MACEBand(images, calc).attach()
+        timings["initialization"] = time.monotonic() - stage_start
+        stage_start = time.monotonic()
         result["stage"] = "neb"
         warmup = FIRE(neb, logfile=str(folder / "neb_warmup.log"), maxstep=0.1)
         warmup.run(fmax=config["neb_warmup_fmax_eV_A"], steps=config["neb_warmup_steps"])
@@ -296,6 +336,8 @@ def search_one(item, calc, folder, config):
                          "climb_steps": climbing.nsteps, "fmax_eV_A": neb_force,
                          "peak_image": peak, "relative_energies_eV": (energies - energies[0]).tolist(),
                          "sampled_barrier_eV": float(max(energies) - energies[0])}
+        timings["neb"] = time.monotonic() - stage_start
+        stage_start = time.monotonic()
         result["stage"] = "saddle"
         ts = images[peak].copy()
         ts.calc = calc
@@ -306,6 +348,8 @@ def search_one(item, calc, folder, config):
         result["saddle"] = {"converged": saddle_converged, "steps": saddle.nsteps,
                             "fmax_eV_A": max_force(ts),
                             "barrier_eV": float(ts.get_potential_energy() - endpoints[0].get_potential_energy())}
+        timings["saddle"] = time.monotonic() - stage_start
+        stage_start = time.monotonic()
         result["stage"] = "hessian"
         hessian = numerical_hessian(ts, config["hessian_delta_A"])
         frequencies, modes = projected_frequencies(ts, hessian)
@@ -316,10 +360,13 @@ def search_one(item, calc, folder, config):
                                 "imaginary_modes_above_threshold": strong_negative,
                                 "all_negative_modes": int(np.count_nonzero(frequencies < 0)),
                                 "rigid_modes_removed": 3 * len(ts) - len(frequencies)}
+        timings["hessian"] = time.monotonic() - stage_start
+        stage_start = time.monotonic()
         stationary = max_force(ts) <= config["ts_fmax_eV_A"]
         if saddle_converged and stationary and strong_negative == 1:
             result["stage"] = "irc"
             result["irc"] = run_irc(ts, calc, endpoints, folder, config)
+            timings["irc"] = time.monotonic() - stage_start
         result["mlip_verified"] = verified_result(result, config)
         result["saddle_irc_verified"] = verified_saddle(result, config)
         result["status"] = "completed"
@@ -329,6 +376,7 @@ def search_one(item, calc, folder, config):
         result["error"] = f"{type(error).__name__}: {error}"
         (folder / "error.txt").write_text(traceback.format_exc(), encoding="utf-8")
     result["elapsed_seconds"] = time.monotonic() - start
+    result["stage_seconds"] = timings
     save_json(folder / "result.json", result)
     return result
 
