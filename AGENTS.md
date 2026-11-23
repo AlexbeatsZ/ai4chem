@@ -59,9 +59,9 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 - All 96 v0.5.0 strategy units now finished with 83 unique attempts. On the 12
   holdout reactions, original S0/S1/S2 saddle+IRC counts are 3/3/3; fine-tuned are
   5/6/6. Strict pipeline counts are 3/3/3 and 5/5/5 respectively. All 49 tests passed.
-- At 2026-11-23T10:02:12Z, rxn0666 and rxn2737 completed and passed full DFT
-  validation. rxn8204 passed forward IRC/minimum and is in reverse IRC (point 8); final DFT
-  acceptance and v0.5 release remain pending. Check OMEN for live state.
+- At 2026-11-23T10:56:30Z, all three Gaussian reactions completed and passed full
+  TS/frequency/IRC/minimum validation. Nine strategy units reuse these three jobs.
+  Final verification.json passed; coordinator is ready_for_review. Release packaging is active.
 
 # Active Work
 
@@ -90,9 +90,9 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   capability example; Gaussian is optional, needed only to use that engine.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
-- Finish the preselected Gaussian subset rxn2737, rxn8204 and rxn0666. Preserve
-  all nine strategy units and deduplicate identical TS coordinates. Complete report,
-  verification and release after all native calculations reach terminal outcomes.
+- Search, preselected Gaussian subset and final verification are complete. All
+  three strategies have 3/3 DFT passes, reusing the same three candidates; conditional
+  fine-tuned barrier MAE is 0.206068 eV. Complete packaging and release delivery.
 - The 210-reaction final set was opened after validation selection and has now
   been reported. Further method choices informed by these results require a new
   independent evaluation design.

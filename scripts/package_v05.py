@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
+import sys
 import zipfile
+root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root))
 from adaptive_ts_search import digest, file_digest, implementation_identity
-root = Path.cwd()
 output = root / 'results/v0.5.0'
 verification = json.loads((output / 'verification.json').read_text())
 assert verification['passed'] and verification['strategy_units'] == 96
