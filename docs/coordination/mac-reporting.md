@@ -1,7 +1,7 @@
 # Mac CPU reporting and regression checks
 
 - Task Key: ai4chem--v05-mac-reporting
-- Host: Mac, `/Users/meta/Project/Workspaces/ai4chem`
+- Host: Mac, `/Users/meta/Developer/ai4chem`
 - Last Verified: 2026-11-23T10:55:30Z (02:55 America/Los_Angeles)
 - Status: Native PySCF parallel checks and HF TS/frequency/two-way IRC example passed
 

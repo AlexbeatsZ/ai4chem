@@ -33,21 +33,21 @@ def alive(pid):
 
 
 def write_report(state, folder, deliverables):
-    lines = ["# v0.6.0-pilot 后续诊断", "", f"更新时间：{utc_now()}", "",
-             "这是单个事后选择候选的 DFT 诊断和已知正对照的引擎校准。v0.5.0 统计不变。", ""]
+    lines = ["# v0.6.0-pilot 后续诊断", "", f"更新于 {utc_now()}", "",
+             "本轮分析事后选择候选，并单独记录引擎校准。结果沿用相应版本的协议和任务身份。", ""]
     for name, entry in state["jobs"].items():
-        lines += [f"## {name}", "", f"状态：{entry['status']}", ""]
+        lines += [f"## {name}", "", f"当前状态为 {entry['status']}。", ""]
         if "assessment" in entry:
             result = entry["assessment"]
-            lines += [f"完整 DFT 验证：{result['dft_verified']}；预期端点连接：{result['expected_connectivity']}。", "",
-                      f"TS 负频率：{[f for f in result['ts']['frequencies_cm1'] if f < 0]} cm⁻¹。", ""]
+            lines += [f"完整 DFT 验证为 {result['dft_verified']}，预期端点连接为 {result['expected_connectivity']}。", "",
+                      f"TS 负频率为 {[f for f in result['ts']['frequencies_cm1'] if f < 0]} cm⁻¹。", ""]
             if "electronic_barrier_eV" in result:
-                lines += [f"电子势垒：{result['electronic_barrier_eV']:.8f} eV。", ""]
+                lines += [f"电子势垒为 {result['electronic_barrier_eV']:.8f} eV。", ""]
             if "gaussian_comparison" in result:
-                lines += ["Gaussian 对照：", "", "```json", json.dumps(result["gaussian_comparison"], indent=2), "```", ""]
+                lines += ["Gaussian 对照结果如下。", "", "```json", json.dumps(result["gaussian_comparison"], indent=2), "```", ""]
         if entry.get("error"):
-            lines += ["保留的异常：", "", "```text", entry["error"], "```", ""]
-    lines += ["## 交接", "", "原始日志与判定保留在 results/v0.6.0-pilot；运行状态在 results/coordination/v06。",
+            lines += ["原始异常已保留。", "", "```text", entry["error"], "```", ""]
+    lines += ["## 交接", "", f"原始日志与判定保留在 results/v0.6.0-pilot，运行状态位于 {folder}。",
               "读取根 AGENTS.md 和 docs/design/v0.6.0-pilot.md 后继续。后续策略改变需要独立评价。", ""]
     content = "\n".join(lines)
     (folder/"report.md").write_text(content)
@@ -62,6 +62,10 @@ def main():
     parser.add_argument("--worker-ssh", required=True)
     parser.add_argument("--worker-root", required=True)
     parser.add_argument("--worker-job", required=True)
+    parser.add_argument("--protocol", type=Path, default=ROOT/"configs/v0.6.0-pilot/protocol.json")
+    parser.add_argument("--mac-reaction", default="rxn0666")
+    parser.add_argument("--gaussian-reaction", default="rxn9456")
+    parser.add_argument("--received-folder", type=Path, default=ROOT/"results/v0.6.0-pilot/gaussian/rxn9456-return-r1")
     parser.add_argument("--mac-folder", type=Path, default=ROOT/"results/v0.6.0-pilot/mac/rxn0666-r1")
     parser.add_argument("--output", type=Path, default=ROOT/"results/coordination/v06")
     parser.add_argument("--deliverables", type=Path)
@@ -76,11 +80,13 @@ def main():
         if any(c.isspace() or c in "\"';&|`$" for c in value):
             parser.error("Worker transport/path must be a simple space-free value")
     args.output.mkdir(parents=True, exist_ok=False)
-    protocol = json.loads((ROOT/"configs/v0.6.0-pilot/protocol.json").read_text())
+    protocol = json.loads(args.protocol.read_text())
+    mac_key = args.mac_reaction+"_mac"
+    gaussian_key = args.gaussian_reaction+"_gaussian"
     state = {"status": "running", "pid": os.getpid(), "started_at_utc": utc_now(),
              "protocol_frozen_at_utc": protocol["frozen_at_utc"],
              "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-             "jobs": {"rxn0666_mac": {"status": "waiting"}, "rxn9456_gaussian": {"status": "waiting"}}}
+             "jobs": {mac_key: {"status": "waiting"}, gaussian_key: {"status": "waiting"}}}
     started = time.monotonic()
 
     def remote(script, *extra):
@@ -96,20 +102,20 @@ def main():
         if time.monotonic()-started > args.max_hours*3600:
             state["status"] = "stopped_deadline"
             break
-        mac = state["jobs"]["rxn0666_mac"]
+        mac = state["jobs"][mac_key]
         if mac["status"] not in ("assessed", "failed"):
             try:
                 source = json.loads((args.mac_folder/"summary.json").read_text())
                 mac.update(status="running", stage=source["stage"], source_pid=source["pid"])
                 if source["raw_chain_completed"]:
-                    result = assess(protocol, "rxn0666", args.mac_folder, "mac")
+                    result = assess(protocol, args.mac_reaction, args.mac_folder, "mac")
                     save_json(args.mac_folder/"assessment.json", result)
                     mac.update(status="assessed", assessment=result)
                 elif source["status"] == "failed" or not alive(source["pid"]):
                     mac.update(status="failed", error=source.get("error", "Recorded Mac process no longer exists; inspect raw evidence"))
             except Exception:
                 mac.update(status="failed", error=traceback.format_exc())
-        gaussian = state["jobs"]["rxn9456_gaussian"]
+        gaussian = state["jobs"][gaussian_key]
         if gaussian["status"] not in ("assessed", "failed"):
             try:
                 observed = json.loads(remote("status_gaussian_chain.ps1"))
@@ -122,7 +128,7 @@ def main():
                     subprocess.run(["scp", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
                                     args.worker_ssh+":"+exported["archive"].replace("\\", "/"), str(archive)],
                                    capture_output=True, text=True, timeout=180, check=True)
-                    received = ROOT/"results/v0.6.0-pilot/gaussian/rxn9456-return-r1"
+                    received = args.received_folder
                     received.mkdir(parents=True, exist_ok=False)
                     with zipfile.ZipFile(archive) as bundle:
                         for name in bundle.namelist():
@@ -133,7 +139,7 @@ def main():
                     remote("export_gaussian_chain.ps1", "-RemoveArchive")
                     gaussian["received_folder"] = str(received)
                     if source["raw_chain_completed"]:
-                        result = assess(protocol, "rxn9456", received, "gaussian")
+                        result = assess(protocol, args.gaussian_reaction, received, "gaussian")
                         save_json(received/"assessment.json", result)
                         gaussian.update(status="assessed", assessment=result)
                     else:

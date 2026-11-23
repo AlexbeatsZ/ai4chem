@@ -80,22 +80,25 @@ instructions still determine the group's assigned slot and submission details.
 - User renewed investigation on 2026-11-23. `configs/v0.6.0-pilot/protocol.json`
   was fixed at 11:19:00Z before computation, committed/pushed as 5889368.
   Read `docs/design/v0.6.0-pilot.md` before changing these two bounded tasks.
-- Roommate node: rxn9456, sole extra S1/S2 recovered saddle; Gaussian TS/Freq
-  passed (24 modes, one -721.2605 cm^-1), full two-way IRC/minimum validation
-  remains pending. Worker folder `results/rxn9456-v06-r1`; native owner 35464
-  resumed at 11:29Z and reuses completed TS after a fixed MatchCollection parser
-  bug. Scientific logs/checkpoint and initial failed worker JSON are retained.
-- Mac: `scripts/run_mac_dft_chain.py` started rxn0666 at 11:22:56Z, from exactly
-  the original MLIP candidate. TS converged in five evaluations;
-  24 DFT modes with one -1568.0823 cm^-1 negative mode passed. Both IRC directions
-  are running in separate four-thread processes; minima remain pending. Output on Mac is
-  `results/v0.6.0-pilot/mac/rxn0666-r1/`, process 5437 at last verification.
+- Revision 1 is terminal. Mac rxn0666 full DFT chain passed independent assessment
+  at 11:45:57Z, with both stable mapped endpoints and electronic barrier
+  2.758896621 eV. Gaussian barrier difference is -2.8283e-5 eV; all preset
+  engine tolerances passed. Raw evidence was returned to OMEN.
+- Gaussian rxn9456 r1 passed TS/24 modes (one -721.2605 cm^-1), then exhausted
+  160 forward IRC points without a minimum. Checkpoint continuation failed at
+  point 162 with PESDtA Max Points=161. Keep its failed state and all raw evidence.
+- `protocol-r2.json` froze the same candidate at 13:37:54Z, pushed as 45103f7
+  before new computation. Gaussian starts both directions with 320 points and
+  stops at that budget. Mac independently runs the calibrated full DFT chain.
+- Roommate r2 is `results/rxn9456-v06-r2`, native owner 39032, started 13:39:07Z.
+  Mac r2 is `results/v0.6.0-pilot/mac/rxn9456-r2`, PID 20826, started 13:39:50Z.
+  Mac checkout was externally moved to `/Users/meta/Developer/ai4chem`; its locked
+  environment imports successfully. OMEN direct SSH public-key access now works.
 - `scripts/assess_dft_chain.py` independently evaluates completed raw chains in
   the analysis .venv. A raw worker completion is not DFT verification. Require
   full modes, correct saddle order, both stable mapped endpoints and IRC success.
-- One-shot independent Mac coordinator PID 15336 observes both existing jobs,
-  returns terminal Gaussian evidence and writes final assessment/report without
-  restarting calculations. Authoritative live state: `results/coordination/v06/state.json`.
+- Revision 1 coordinator finished at 12:14:50Z. Its state is retained in
+  `results/coordination/v06/state.json`. Revision 2 uses a distinct output folder.
 - Multi-device entry: `docs/coordination/README.md`. Host access details remain
   in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`, not public Git.
 - ROG was unreachable; its audit environment is prepared but not accepted. The

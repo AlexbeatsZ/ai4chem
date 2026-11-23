@@ -19,7 +19,7 @@ ID 为 `01a1e76a-d5bf-7881-8023-349081a2e012`；Mac 接续对话为
 
 ## 设备和权威目录
 
-- Mac：`/Users/meta/Project/Workspaces/ai4chem`，协调、分析、原生 CPU 量化。
+- Mac：`/Users/meta/Developer/ai4chem`，协调、分析、原生 CPU 量化。
   原生环境 `environments/mac-qc/` 的 Pixi lock；分析环境 `.venv`。M3 Max / 128 GiB。
   当前全链在 `results/v0.6.0-pilot/mac/rxn0666-r1/`，主进程 5437。
 - 室友：`%USERPROFILE%\Project\Workspaces\ai4chem-worker`，最小原生 PowerShell
