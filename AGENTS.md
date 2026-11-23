@@ -11,6 +11,8 @@ calibrates native Mac DFT. On November 23 the user clarified that they will writ
 the report later and that roughly two weeks should be used to improve the model.
 The active priority is controlled data/optimization studies, repeated training,
 prospective evaluation and targeted DFT labels where they improve the potential.
+For long calculations, stay active through waits (including overnight), inspect
+completion and advance the next authorized stage; keep handoff logs current.
 Reported course presentation dates are December 7 and 14, 2026. Original course
 instructions still determine the group's assigned slot and submission details.
 
@@ -85,7 +87,7 @@ instructions still determine the group's assigned slot and submission details.
   records are in `configs/v0.7.0_partitions.json`, frozen before new training.
 - No prospective holdout labels are opened by the screening runner. The old 287
   test reactions are already used; never call them unseen or fit the new router on them.
-- Download all 13 pinned train shards; source files are frame-sharded. The first
+- All 13 pinned train shards are downloaded; source files are frame-sharded. The first
   shard has portions of 9,561 reactions and incomplete histories for all old 256.
   Final paths require complete contiguous fid histories across the full source.
 - First-stage arms: anchor256_long, path2048, random4096, path4096; same MH-1
