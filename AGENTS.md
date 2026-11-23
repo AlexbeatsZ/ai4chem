@@ -59,8 +59,9 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 - All 96 v0.5.0 strategy units now finished with 83 unique attempts. On the 12
   holdout reactions, original S0/S1/S2 saddle+IRC counts are 3/3/3; fine-tuned are
   5/6/6. Strict pipeline counts are 3/3/3 and 5/5/5 respectively. All 49 tests passed.
-- Gaussian validation is still running. Early rxn0666 and the remaining preselected
-  candidates use the same fixed settings; no final DFT claim or v0.5 release yet.
+- At 2026-11-23T09:29:56Z, rxn0666 and rxn2737 completed and passed full DFT
+  validation. rxn8204 is still in forward IRC (point 61 observed); final DFT
+  acceptance and v0.5 release remain pending. Check OMEN for live state.
 
 # Active Work
 
@@ -73,6 +74,11 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 - The user can arrange group-member compute for large independent batches with
   roughly one-day turnaround. Prepare concrete versioned task packages first;
   no group-member jobs have been sent or launched in this experiment.
+- Independent Gaussian reaction jobs can run on different group members' hosts.
+  The frozen OMEN CUDA identity concerns the MACE comparison, not a requirement
+  that DFT runs on OMEN. Keep scientific inputs/settings and acceptance fixed,
+  record execution provenance, and deduplicate by candidate identity. Prefer
+  assigning complete TS/Freq -> IRC -> minimum/Freq reaction chains.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
 - Finish the preselected Gaussian subset rxn2737, rxn8204 and rxn0666. Preserve
