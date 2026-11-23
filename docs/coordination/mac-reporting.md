@@ -2,8 +2,8 @@
 
 - Task Key: ai4chem--v05-mac-reporting
 - Host: Mac, `/Users/meta/Project/Workspaces/ai4chem`
-- Last Verified: 2026-11-23T10:23:17Z (02:23 America/Los_Angeles)
-- Status: Search snapshot reporting/audit complete; native PySCF 3x4 parallel checks passed
+- Last Verified: 2026-11-23T10:55:30Z (02:55 America/Los_Angeles)
+- Status: Native PySCF parallel checks and HF TS/frequency/two-way IRC example passed
 
 ## Scope and ownership
 
@@ -132,3 +132,15 @@ changing this module, its input conventions, resources or acceptance.
 For native Gaussian jobs, obtain Gaussian 16 C.02 Apple M-Series binaries and
 applicable license. Official macOS coverage currently found in the 2025-03-18
 table stops at macOS 15; the installed 26.6.2 needs actual compatibility testing.
+
+Gaussian is not a requirement for Mac TS/frequency/IRC capability. Added geomeTRIC
+1.1.1 to the project environment and ran the official HCN/HNC HF/3-21G example
+through TS optimization, one imaginary mode (-1215.845 cm^-1), both IRC branches,
+separate minimum optimizations and stable frequencies at distinct HCN/HNC endpoints.
+Both IRC directions ran concurrently. Full small-example run passed in 2.53 s.
+This is separate from the ten-atom DFT production matrix.
+
+The initial direct PySCF adapter call failed because geomeTRIC IRC needed topology
+not built by that wrapper. Its original failure is preserved; the project IRC
+adapter uses the public PySCFEngine/customengine interface with build_topology().
+See docs/design/mac-qc.md for commands, evidence and acceptance boundaries.

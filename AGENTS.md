@@ -86,7 +86,8 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 - Mac is M3 Max / 128 GiB / 12P+4E cores. Its separate project-local Pixi PySCF
   environment passed three concurrent 4-thread single-point/gradient jobs on saved
   Gaussian TS geometries (18.47 s batch). This is readiness, not Gaussian TS/IRC
-  acceptance. Gaussian is absent; native C.02 M-Series software is the next tool need.
+  acceptance. PySCF/geomeTRIC also passed a complete HCN/HNC HF TS/frequency/IRC
+  capability example; Gaussian is optional, needed only to use that engine.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
 - Finish the preselected Gaussian subset rxn2737, rxn8204 and rxn0666. Preserve

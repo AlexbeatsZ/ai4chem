@@ -8,3 +8,4 @@ platforms = ["osx-arm64"]
 [dependencies]
 python = "3.12.*"
 pyscf = ">=2.14,<3"
+geometric = ">=1.1,<2"
