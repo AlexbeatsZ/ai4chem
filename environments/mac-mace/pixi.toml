@@ -1,0 +1,15 @@
+[workspace]
+name = "ai4chem-mac-mace"
+version = "0.1.0"
+channels = ["conda-forge"]
+platforms = [{ platform = "osx-arm64", macos = "14.0" }]
+
+[dependencies]
+python = "3.12.*"
+
+[pypi-dependencies]
+torch = "==2.15.0"
+mace-torch = "==0.3.17"
+pyarrow = "==26.0.1"
+h5py = ">=3.12,<4"
+pandas = ">=2.2,<4"

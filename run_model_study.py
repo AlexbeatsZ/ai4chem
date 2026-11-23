@@ -179,6 +179,10 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+    except BlockingIOError:
+        # A second invocation must not overwrite the live owner's scientific state.
+        print("Another model-study runner owns this output; inspect its existing state", file=sys.stderr)
+        raise SystemExit(2)
     except Exception as error:
         state("failed", error=f"{type(error).__name__}: {error}")
         raise

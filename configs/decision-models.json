@@ -1,0 +1,37 @@
+{
+  "seed": 20261123,
+  "models": {
+    "tabpfn_regressor": {
+      "repo": "Prior-Labs/TabPFN-v2-reg",
+      "revision": "02a44705ff7790b50cded404bc59adb94da456a1",
+      "file": "tabpfn-v2-regressor-v2_default.ckpt",
+      "local": "models/decision/tabpfn-v2-reg",
+      "license_file": "LICENSE.txt"
+    },
+    "tabpfn_classifier": {
+      "repo": "Prior-Labs/TabPFN-v2-clf",
+      "revision": "275f19d2add9c2c0de38f9ebaded3856599fa2e7",
+      "file": "tabpfn-v2-classifier-v2_default.ckpt",
+      "local": "models/decision/tabpfn-v2-clf",
+      "license_file": "LICENSE.txt"
+    },
+    "tabicl_regressor": {
+      "repo": "jingang/TabICL",
+      "revision": "4dcd344ece2c00be9e831fdd35bed57b5ad83e19",
+      "file": "tabicl-regressor-v2-20260212.ckpt",
+      "local": "models/decision/tabicl-v2"
+    },
+    "tabicl_classifier": {
+      "repo": "jingang/TabICL",
+      "revision": "4dcd344ece2c00be9e831fdd35bed57b5ad83e19",
+      "file": "tabicl-classifier-v2-20260212.ckpt",
+      "local": "models/decision/tabicl-v2"
+    },
+    "jevmlx": {
+      "repo": "mlx-community/Qwen2.5-7B-Instruct-4bit",
+      "revision": "c26a38f6a37d0a51b4e9a1eb3026530fa35d9fed",
+      "local": "models/decision/jevmlx-qwen7b",
+      "implementation_revision": "5f94ae262c1cf4f226b436433946be281ec1ac99"
+    }
+  }
+}

@@ -7,6 +7,7 @@ export PYTHONPATH="$project_root"
 mkdir -p /tmp/.agents
 case "${1:-study}" in
   download) entry=scripts/download_transition1x_train.py ;;
+  prepare) entry=scripts/prepare_model_study.py ;;
   study) entry=run_model_study.py ;;
   *) exit 2 ;;
 esac

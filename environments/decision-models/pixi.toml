@@ -1,0 +1,20 @@
+[workspace]
+name = "ai4chem-decision-models"
+version = "0.1.0"
+channels = ["conda-forge"]
+platforms = [{ platform = "osx-arm64", macos = "14.0" }]
+
+[dependencies]
+python = "3.12.*"
+
+[pypi-dependencies]
+torch = "==2.15.0"
+tabpfn = "==10.2.0"
+tabicl = "==2.2.0"
+jevmlx = { git = "https://github.com/bnsd55/jevmlx.git", rev = "5f94ae262c1cf4f226b436433946be281ec1ac99" }
+pyarrow = "==26.0.1"
+ase = "==3.29.0"
+h5py = ">=3.12,<4"
+
+[tasks]
+smoke = "python ../../scripts/smoke_decision_models.py"

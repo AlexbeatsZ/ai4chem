@@ -1,6 +1,7 @@
 .venv/
 environments/mac-qc/.pixi/
 environments/decision-models/.pixi/
+environments/mac-mace/.pixi/
 __pycache__/
 *.pyc
 results/

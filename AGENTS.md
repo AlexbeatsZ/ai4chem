@@ -102,6 +102,9 @@ instructions still determine the group's assigned slot and submission details.
   under `results/coordination/model-v07/`. Check actual owner before restarting.
 - Mac: isolated `environments/decision-models` for local MLX/MPS inference.
   Package installation, real weight inference and chemistry benefit are separate checks.
+- Local TabPFN/TabICL MPS and jevmlx MLX inference passed. The 128-reaction static
+  meta pilot shows no force-safe oracle gain with the old expert pool; see
+  `docs/reports/v0.7.0-routing/README.md`. Endpoint-search benefit is still untested.
 - v0.5 is complete/published and must not be restarted. v0.6 r2 is terminal:
   Gaussian rxn9456 full chain passed (barrier 4.677548685 eV); Mac same-candidate
   chain failed with a real negative-curvature endpoint and exhausted backward IRC.
@@ -146,6 +149,8 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 
 # Durable Lessons
 
+- MACE 0.3.17 non-distributed patience logs "stopping" but its exit flag is None;
+  check actual termination and logged epochs. v0.7 retains its 40-epoch ceiling.
 - When invoking WSL from PowerShell, write UTF-8 without BOM and LF shell scripts
   to the approved temporary directory and execute them through their `/mnt/c` path.
   PowerShell's stdin pipeline introduced a BOM and a trailing CR in this session.

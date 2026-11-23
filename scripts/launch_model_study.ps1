@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('download','study')][string]$Stage = 'study',
+    [ValidateSet('download','prepare','study')][string]$Stage = 'study',
     [switch]$Worker
 )
 $ErrorActionPreference = 'Stop'
@@ -35,8 +35,7 @@ $process = Start-Process -FilePath (Join-Path $env:WINDIR 'System32\wsl.exe') `
 $record = [ordered]@{host='OMEN';stage=$Stage;owner_pid=$PID;wsl_pid=$process.Id;
     started_at_utc=[DateTime]::UtcNow.ToString('o');log=$log;error_log=$errorLog}
 $record | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $runtime "$Stage-launch.json") -Encoding UTF8
-Wait-Process -Id $process.Id
-$process.Refresh()
+$process.WaitForExit()
 $record['exit_code'] = $process.ExitCode
 $record['finished_at_utc'] = [DateTime]::UtcNow.ToString('o')
 $record | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $runtime "$Stage-launch.json") -Encoding UTF8

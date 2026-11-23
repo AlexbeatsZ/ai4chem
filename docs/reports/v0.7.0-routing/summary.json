@@ -1,0 +1,428 @@
+{
+  "status": "partial",
+  "scope": "meta-development formula-grouped OOF on fixed DFT path geometries; router inputs are endpoint-only",
+  "prospective_holdout_opened": false,
+  "reactions": 128,
+  "formulas": 42,
+  "endpoint_features": 38,
+  "folds": "5, grouped by chemical formula; one row per reaction",
+  "data_limits": {
+    "rearrangement": 118,
+    "cleavage": 10,
+    "formation": 0
+  },
+  "fixed_expert_metrics": {
+    "off23-small": {
+      "barrier_MAE_eV": 0.5355465021745616,
+      "barrier_absolute_error_p90_eV": 1.1083705470771748,
+      "force_global_component_RMSE_eV_per_A": 0.5160281976471118,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.720763070513271,
+      "reaction_energy_MAE_eV": 0.4671642484163243,
+      "error_over_0.1eV_fraction": 0.828125
+    },
+    "mh1-omol": {
+      "barrier_MAE_eV": 0.3033762803738469,
+      "barrier_absolute_error_p90_eV": 0.5144295396291454,
+      "force_global_component_RMSE_eV_per_A": 0.1764359068266209,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.1945409639064718,
+      "reaction_energy_MAE_eV": 0.18414067676970802,
+      "error_over_0.1eV_fraction": 0.875
+    },
+    "mh0-rgd1": {
+      "barrier_MAE_eV": 0.6953578948798054,
+      "barrier_absolute_error_p90_eV": 1.0859988042750046,
+      "force_global_component_RMSE_eV_per_A": 0.1913743719796297,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.2418708083918332,
+      "reaction_energy_MAE_eV": 0.3834083846138441,
+      "error_over_0.1eV_fraction": 0.9765625
+    },
+    "legacy_mh1_256": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.127660447109421,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "error_over_0.1eV_fraction": 0.546875
+    }
+  },
+  "headroom": {
+    "scope": "post-hoc diagnostic on meta-development only; every oracle uses true evaluation labels and cannot be deployed",
+    "force_best_expert_counts": {
+      "off23-small": 0,
+      "mh1-omol": 0,
+      "mh0-rgd1": 0,
+      "legacy_mh1_256": 128
+    },
+    "alternate_force_improvement_cases": 0,
+    "guards": {
+      "force": "per-reaction force RMSE no worse than fixed fine-tuned expert",
+      "multi_metric": "also TS-region force RMSE and reaction-energy absolute error no worse per reaction"
+    },
+    "reactions": 128,
+    "results": {
+      "fixed_finetuned": {
+        "barrier_MAE_eV": 0.13157462861627778,
+        "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+        "reaction_energy_MAE_eV": 0.06648164593789119,
+        "changed_expert_reactions": 0
+      },
+      "barrier_oracle": {
+        "barrier_MAE_eV": 0.08947608517847527,
+        "force_global_component_RMSE_eV_per_A": 0.2567832353770582,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.25738372550138633,
+        "reaction_energy_MAE_eV": 0.09442027970153077,
+        "changed_expert_reactions": 43
+      },
+      "force_guarded_oracle": {
+        "barrier_MAE_eV": 0.13157462861627778,
+        "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+        "reaction_energy_MAE_eV": 0.06648164593789119,
+        "changed_expert_reactions": 0
+      },
+      "multi_metric_guarded_oracle": {
+        "barrier_MAE_eV": 0.13157462861627778,
+        "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+        "reaction_energy_MAE_eV": 0.06648164593789119,
+        "changed_expert_reactions": 0
+      }
+    }
+  },
+  "routing_metrics": {
+    "ridge": {
+      "barrier_MAE_eV": 0.16353759204849183,
+      "barrier_absolute_error_p90_eV": 0.3340343019645843,
+      "force_global_component_RMSE_eV_per_A": 0.19143984793856134,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.20207122947372974,
+      "reaction_energy_MAE_eV": 0.08249993719614679,
+      "error_over_0.1eV_fraction": 0.546875,
+      "expert_selection_accuracy_vs_oracle": 0.671875,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.03196296343221405,
+        "formula_cluster_ci95_eV": [
+          0.0030836349222635416,
+          0.06967189014887795
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 0.010243041004287079,
+      "fold_seconds": [
+        0.005701583999325521,
+        0.0012764159982907586,
+        0.001088250006432645,
+        0.0011487910014693625,
+        0.0010279999987687916
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "extratrees": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.127660447109421,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "error_over_0.1eV_fraction": 0.546875,
+      "expert_selection_accuracy_vs_oracle": 0.6640625,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.0,
+        "formula_cluster_ci95_eV": [
+          0.0,
+          0.0
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 0.36075775000063004,
+      "fold_seconds": [
+        0.07718000000022585,
+        0.07580020900059026,
+        0.0708879580051871,
+        0.06730458299716702,
+        0.06958499999745982
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "tabpfn": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.127660447109421,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "error_over_0.1eV_fraction": 0.546875,
+      "expert_selection_accuracy_vs_oracle": 0.6640625,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.0,
+        "formula_cluster_ci95_eV": [
+          0.0,
+          0.0
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 8.245061124995118,
+      "fold_seconds": [
+        2.5847957910009427,
+        1.3584949169962783,
+        1.4752564580048784,
+        1.4175743339947076,
+        1.408939624998311
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "tabicl": {
+      "barrier_MAE_eV": 0.13449550340821048,
+      "barrier_absolute_error_p90_eV": 0.2969560796271253,
+      "force_global_component_RMSE_eV_per_A": 0.09303897043691957,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.12864485189935648,
+      "reaction_energy_MAE_eV": 0.06806245728315474,
+      "error_over_0.1eV_fraction": 0.5546875,
+      "expert_selection_accuracy_vs_oracle": 0.65625,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.002920874791932704,
+        "formula_cluster_ci95_eV": [
+          0.0,
+          0.0073405064454450785
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 13.240218290004123,
+      "fold_seconds": [
+        3.2133081659994787,
+        2.5485055000026478,
+        2.4352266670030076,
+        2.5882746659990516,
+        2.454903290999937
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    }
+  },
+  "pending_methods": [
+    "jevmlx"
+  ],
+  "local_runtime_acceptance": {
+    "host": "Mac",
+    "platform": "macOS-26.6.2-arm64-i386-64bit",
+    "machine": "arm64",
+    "started_at_utc": "2026-11-23T18:42:45.989667+00:00",
+    "api_inference_used": false,
+    "scope": "synthetic/specified-answer runtime acceptance only, not chemistry accuracy evidence",
+    "versions": {
+      "torch": "2.15.0",
+      "tabpfn": "10.2.0",
+      "tabicl": "2.2.0",
+      "mlx": "0.32.4",
+      "mlx-lm": "0.32.2",
+      "jevmlx": "0.1.0",
+      "scikit-learn": "1.9.1"
+    },
+    "mps_available": true,
+    "weight_manifest": "configs/decision-models.json",
+    "models": {
+      "tabpfn": {
+        "status": "passed",
+        "elapsed_seconds": 4.8884034999937285,
+        "regressor": {
+          "requested_device": "mps",
+          "fit_predict_seconds": 2.8698938329980592,
+          "predictions": [
+            -62.18626098282586,
+            -166.39813927343158,
+            102.96746258683157,
+            -65.98551916819085,
+            -0.10078928963776512,
+            -175.45696486042362,
+            117.88840685175676,
+            29.952655419791437,
+            -26.480467142470783,
+            234.68580141164279,
+            53.661051762106595,
+            -64.17751672803904,
+            -45.030608317792854,
+            166.27023096306934,
+            177.66462399019963,
+            41.058389630326715,
+            -14.31945477218837,
+            27.346312919335237,
+            -13.787562998403159,
+            -182.18698606520672,
+            -2.06640758372275,
+            -161.74420254733965,
+            -138.94574834153747,
+            -207.00972112040628,
+            157.33006101957645,
+            -108.38382654970115,
+            8.522276613155658,
+            99.32237190928201,
+            -75.45752459928019,
+            -253.37008813331263,
+            -119.12479430118744,
+            121.93782845826071
+          ],
+          "finite": true,
+          "mps_allocated_bytes": 44796160,
+          "score_on_synthetic_example": 13.3853933678075
+        },
+        "classifier": {
+          "requested_device": "mps",
+          "fit_predict_seconds": 0.487545958996634,
+          "predictions": [
+            1,
+            1,
+            0,
+            1,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0,
+            1,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "finite": true,
+          "mps_allocated_bytes": 29259520,
+          "score_on_synthetic_example": 0.90625,
+          "probabilities_normalized": true
+        }
+      },
+      "tabicl": {
+        "status": "passed",
+        "elapsed_seconds": 3.10306012500223,
+        "regressor": {
+          "requested_device": "mps",
+          "fit_predict_seconds": 1.9851767500003916,
+          "predictions": [
+            -59.419715881347656,
+            -163.11495971679688,
+            103.39888000488281,
+            -65.40629577636719,
+            1.467036247253418,
+            -158.8543243408203,
+            110.74629211425781,
+            34.3932991027832,
+            -29.428415298461914,
+            240.94598388671875,
+            64.85144805908203,
+            -51.07352066040039,
+            -49.23699951171875,
+            169.0425567626953,
+            183.05514526367188,
+            46.50408172607422,
+            -18.83041000366211,
+            28.00901985168457,
+            -13.09223461151123,
+            -173.28805541992188,
+            -0.9984539747238159,
+            -158.75436401367188,
+            -137.5767822265625,
+            -223.40017700195312,
+            159.93594360351562,
+            -100.65999603271484,
+            10.77275276184082,
+            101.95905303955078,
+            -74.50335693359375,
+            -248.6337432861328,
+            -125.55062866210938,
+            118.28402709960938
+          ],
+          "finite": true,
+          "mps_allocated_bytes": 114217984,
+          "score_on_synthetic_example": 25.464535885114778
+        },
+        "classifier": {
+          "requested_device": "mps",
+          "fit_predict_seconds": 0.6083574170042994,
+          "predictions": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0,
+            1,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "finite": true,
+          "mps_allocated_bytes": 110210304,
+          "score_on_synthetic_example": 0.9375,
+          "probabilities_normalized": true
+        }
+      },
+      "jevmlx": {
+        "status": "passed",
+        "device": "Apple Metal via MLX",
+        "results": [
+          {
+            "repetition": 0,
+            "wall_seconds": 2.6996813340010704,
+            "expert": "MOLECULAR",
+            "probability": 0.9999994796428949,
+            "probability_margin": 0.9999989592857897,
+            "expected_probe_answer": "MOLECULAR",
+            "correct": true
+          },
+          {
+            "repetition": 1,
+            "wall_seconds": 0.2482570830034092,
+            "expert": "MOLECULAR",
+            "probability": 0.9999994796428949,
+            "probability_margin": 0.9999989592857897,
+            "expected_probe_answer": "MOLECULAR",
+            "correct": true
+          }
+        ],
+        "probability_scope": "restricted option score; not calibrated chemistry correctness"
+      }
+    },
+    "finished_at_utc": "2026-11-23T18:42:49.938579+00:00"
+  },
+  "conclusion": "No demonstrated joint barrier/force improvement with this fixed cross-DFT expert pool. This developmental static benchmark does not establish endpoint-search success or rule out later expert routing."
+}

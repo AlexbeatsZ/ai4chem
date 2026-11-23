@@ -66,6 +66,16 @@ sum w_k F_k - sum E_k grad(w_k)。省略门控导数一般不保守。
 
 ## 原始来源
 
+用户提供的三项相关工作已查原始来源：Liu 等 DPA3 内部 MoE/MoLE 比较
+元素级与构型级路由；Nascimento 等使用 Allegro 空间多保真分区及共同训练
+的一致性约束；Zhang 等的 Cu 多尺度模型从统一能量导出力。它们支持研究
+专家组合及物理一致性的必要性，不证明本项目对独立预训练 MACE 的事后选择
+必然有效，也不支持把本轮 reaction-level wrapper 声称为新架构的首创。
+
+- https://www.nature.com/articles/s44387-026-00144-9
+- https://arxiv.org/abs/2604.26143
+- https://www.nature.com/articles/s41524-026-02280-x
+
 - https://github.com/jevmodel/jev-ai
 - https://typesafe.ai/blog/introducing-system-one-models-and-jev
 - https://github.com/bnsd55/jevmlx
