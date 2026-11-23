@@ -31,3 +31,9 @@ Windows PID 32152、ready-dft Windows PID 50908；Linux PID 与当前阶段见�
 ready-dft owner PID 19496；Linux coordinator PID 41238。在启动 SSH 退出后的
 独立调用中确认 g16.exe PID 15252 和 l502.exe 运行，ts.log 已写出 17 KB，
 证明 Gaussian 已实际启动。前一次基础设施失败仍保留，未计为化学失败。
+
+## Durable handoff checkpoint
+
+At 2026-11-23T06:51:20.960180+00:00, all 96 search units and 49 regression tests passed; coordinator Linux PID 41374 remains running in wait_ready_dft. Native Gaussian processes were separately observed after launcher SSH exit. rxn0666/rxn2737 are in IRC, rxn8204 queued. Formal nine-unit selection exists, deduplicated into three jobs. The two current validator PIDs were [41255, 42193]. These are observations; recheck before recovery.
+
+Task-owned transfer archives and temporary launch/inspection scripts were cleaned after integration. Authoritative scripts are in project scripts/, logs/results remain in results/. Scientific processes and Windows owners were left running. ROG cleanup remains unverified while its connection is unavailable.

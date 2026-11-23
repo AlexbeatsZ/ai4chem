@@ -103,3 +103,7 @@ may be assigned to group members, with results returned about a day later. Futur
 work can package such batches with fixed inputs, commands, acceptance criteria and
 return files. This does not expand the current frozen experiment; no external
 messages were sent as part of this reporting task.
+
+## Complete search snapshot
+
+The 2026-11-23T06:28:57Z terminal snapshot was reconstructed on Mac: 96/96 units, 83 unique attempts. Independent audit passed 14,084 checks with 0 issues/skips (results/coordination/mac-final-search-audit.json). Holdout original saddle+IRC 3/3/3 and strict 3/3/3; fine-tuned 5/6/6 and strict 5/5/5, all denominators 12. Strategy and reaction-matrix plots were visually checked. The shared stage-axis label was clarified without changing counts. DFT remains live on OMEN; this snapshot is not final DFT acceptance.
