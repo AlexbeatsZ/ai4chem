@@ -30,8 +30,9 @@
 
 接管时 OMEN 原始搜索 Python PID 为 39916，来自临时
 `ai4chem-v05-holdout.sh`。PID 只是观察记录，恢复时必须重新检查实际进程。
-原始模型 36/36 个保留策略单元完成，S0/S1/S2 各验证 3/12 个鞍点与 IRC；
-微调模型继续运行。这是中间结果，不是 v0.5 完成声明。
+搜索矩阵现已完成 96/96 单元、83 次唯一尝试。保留集原始 S0/S1/S2 的鞍点与
+IRC 通过为 3/3/3，微调为 5/6/6；全阶段通过为 3/3/3 与 5/5/5，分母均为十二反应。
+Gaussian 仍在运行，最终 DFT 验收和 release 未完成。
 
 `scripts/continue_v05.py` 会先等待现有 OMEN 搜索，随后按现有入口运行
 剩余矩阵、回归、Gaussian、报告、依赖检查、水分子 CUDA 验证和最终产物核验。
@@ -69,6 +70,8 @@ WMI 创建独立进程，避免 SSH 会话结束时连带终止；未添加计�
 ```powershell
 powershell -NoProfile -File C:\Users\Meta\Project\Workspaces\ai4chem\scripts\launch_v05_omen.ps1 -Mode coordinator
 powershell -NoProfile -File C:\Users\Meta\Project\Workspaces\ai4chem\scripts\launch_v05_omen.ps1 -Mode ready-dft
+# 搜索全部结束后，可由协调节点显式并行补齐预选 DFT；不重复已运行候选：
+powershell -NoProfile -File C:\Users\Meta\Project\Workspaces\ai4chem\scripts\launch_v05_omen.ps1 -Mode dft
 ```
 
 前台 OMEN WSL 的等价命令（应先读取状态并确认没有同一 coordinator）：

@@ -163,7 +163,7 @@ def make_plots(output, rows, summary, models):
                             color=colors[strategy], label=strategy)
             axis.bar_label(bars, fontsize=8)
         axis.set(xticks=np.arange(3), xticklabels=["Any NEB", "Saddle + IRC", "Full pipeline"],
-                 ylim=(0, 13), ylabel="Verified reactions / 12", title=model)
+                 ylim=(0, 13), ylabel="Reactions passing each stage / 12", title=model)
         axis.legend(fontsize=8)
         axis.grid(axis="y", alpha=0.2)
     x = np.arange(6)

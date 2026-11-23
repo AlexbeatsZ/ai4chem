@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('coordinator','ready-dft')][string]$Mode = 'coordinator',
+    [ValidateSet('coordinator','ready-dft','dft')][string]$Mode = 'coordinator',
     [switch]$RetryFailed,
     [switch]$Worker
 )
@@ -10,6 +10,7 @@ $runtime = Join-Path $project 'results\coordination'
 New-Item -ItemType Directory -Path $runtime -Force | Out-Null
 $shellScript = 'run_v05_omen.sh'
 if($Mode -eq 'ready-dft') { $shellScript = 'run_ready_dft_omen.sh' }
+if($Mode -eq 'dft') { $shellScript = 'run_dft_omen.sh' }
 $active = Get-CimInstance Win32_Process | Where-Object {
     $_.Name -eq 'wsl.exe' -and $_.CommandLine -like "*$shellScript*"
 }

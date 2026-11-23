@@ -53,9 +53,14 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   saddles for original S0/S1/S2 are 0/4, 1/4, 0/4 and fine-tuned are 0/4, 1/4, 1/4.
 - configs/v0.5.0_frozen.json was written after pilot verification and before any
   holdout search. The original draft's recovery rules remain fixed for evaluation.
-- 45 tests and two rxn1961 baseline regressions passed. The shared-endpoint S0
+- Two rxn1961 baseline regressions passed. The shared-endpoint S0
   entrypoint matched the old barrier within 1.1e-10 eV and frequencies within
   1.1e-6 cm^-1. Pilot verification also checked actual perturbations and continuation.
+- All 96 v0.5.0 strategy units now finished with 83 unique attempts. On the 12
+  holdout reactions, original S0/S1/S2 saddle+IRC counts are 3/3/3; fine-tuned are
+  5/6/6. Strict pipeline counts are 3/3/3 and 5/5/5 respectively. All 49 tests passed.
+- Gaussian validation is still running. Early rxn0666 and the remaining preselected
+  candidates use the same fixed settings; no final DFT claim or v0.5 release yet.
 
 # Active Work
 
@@ -70,9 +75,9 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   no group-member jobs have been sent or launched in this experiment.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
-- Run the frozen twelve-reaction holdout matrix, then the preselected Gaussian
-  subset rxn2737, rxn8204 and rxn0666. Preserve all nine strategy units and
-  deduplicate identical TS coordinates. Complete report, verification and release.
+- Finish the preselected Gaussian subset rxn2737, rxn8204 and rxn0666. Preserve
+  all nine strategy units and deduplicate identical TS coordinates. Complete report,
+  verification and release after all native calculations reach terminal outcomes.
 - The 210-reaction final set was opened after validation selection and has now
   been reported. Further method choices informed by these results require a new
   independent evaluation design.
