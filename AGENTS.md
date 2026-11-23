@@ -59,8 +59,8 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 - All 96 v0.5.0 strategy units now finished with 83 unique attempts. On the 12
   holdout reactions, original S0/S1/S2 saddle+IRC counts are 3/3/3; fine-tuned are
   5/6/6. Strict pipeline counts are 3/3/3 and 5/5/5 respectively. All 49 tests passed.
-- At 2026-11-23T09:29:56Z, rxn0666 and rxn2737 completed and passed full DFT
-  validation. rxn8204 is still in forward IRC (point 61 observed); final DFT
+- At 2026-11-23T10:02:12Z, rxn0666 and rxn2737 completed and passed full DFT
+  validation. rxn8204 passed forward IRC/minimum and is in reverse IRC (point 8); final DFT
   acceptance and v0.5 release remain pending. Check OMEN for live state.
 
 # Active Work
@@ -79,6 +79,10 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   that DFT runs on OMEN. Keep scientific inputs/settings and acceptance fixed,
   record execution provenance, and deduplicate by candidate identity. Prefer
   assigning complete TS/Freq -> IRC -> minimum/Freq reaction chains.
+- The roommate Gaussian node is authorized and passed an actual water Opt/Freq
+  check on 2026-11-23 (16W A.03, i9-14900HX, 16 GB RAM). Its minimal PowerShell
+  worker uses C:\G16W and no new installation. See docs/coordination/roommate-gaussian.md;
+  access details are in the synchronized task log. No formal reaction assigned yet.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
 - Finish the preselected Gaussian subset rxn2737, rxn8204 and rxn0666. Preserve
@@ -161,3 +165,5 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
   endpoint-only project holdouts, shared costs, cache identity and evaluation rules.
 - `docs/coordination/README.md` is the cross-device task board and recovery entry;
   node records distinguish installed environments and verification scope.
+- `docs/coordination/roommate-gaussian.md` records the added Gaussian worker,
+  tested command, resource limits and remaining background-launch acceptance.

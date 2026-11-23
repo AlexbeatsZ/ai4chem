@@ -1,7 +1,7 @@
 # 多设备计算与交接
 
-最后核实：2026-11-23 01:29（用户时区 America/Los_Angeles），
-即 2026-11-23T09:29:56Z。时间戳文件统一使用 UTC。
+最后核实：2026-11-23 02:02（用户时区 America/Los_Angeles），
+即 2026-11-23T10:02:12Z。时间戳文件统一使用 UTC。
 
 ## 从这里继续
 
@@ -21,6 +21,7 @@
 | OMEN | `C:\Users\Meta\Project\Workspaces\ai4chem` | 唯一 v0.5 CUDA 搜索和 Gaussian DFT 写入节点 | WSL Ubuntu-24.04 / Mamba ai4chem，RTX 4060 8 GB，现有 Gaussian 16W A.03 |
 | Mac | `/Users/meta/Project/Workspaces/ai4chem` | 协调、代码与 CPU 报告测试、图表检查、发布整合 | 项目隔离 uv `.venv`，分析依赖单独记录 |
 | ROG | `C:\Users\Meta\Project\Workspaces\ai4chem` | 已完成结果快照的独立文件与数值核验 | Ryzen Z1 Extreme；无已安装 Gaussian/ORCA；分析环境准备中 |
+| 室友节点 | `%USERPROFILE%\Project\Workspaces\ai4chem-worker` | 已实测可用的额外 Gaussian 节点，正式反应尚未分配 | i9-14900HX / 16 GB / Gaussian 16W A.03，水分子 Opt/Freq 通过 |
 
 代码和人工交接记录通过 `AlexbeatsZ/ai4chem` 的当前分支同步。
 模型、原始数据和计算结果沿用被 Git 忽略的 `models/`、`data/`、`results/`，
@@ -34,8 +35,8 @@
 搜索矩阵现已完成 96/96 单元、83 次唯一尝试。保留集原始 S0/S1/S2 的鞍点与
 IRC 通过为 3/3/3，微调为 5/6/6；全阶段通过为 3/3/3 与 5/5/5，分母均为十二反应。
 Gaussian 已完成 rxn0666 和 rxn2737，两个均通过完整 DFT 验证。
-rxn8204 仍在正向 IRC，第 61 点附近，原生 g16/link 进程存在且日志持续更新。
-其反向 IRC 和端点验证仍待执行，最终 DFT 验收和 release 未完成。
+rxn8204 正向 IRC 在第 83 点完成并检测到极小值，正向端点优化/频率与输入映射匹配。
+当前反向 IRC 约第 8 点；其反向端点验证、最终 DFT 验收和 release 未完成。
 
 `scripts/continue_v05.py` 会先等待现有 OMEN 搜索，随后按现有入口运行
 剩余矩阵、回归、Gaussian、报告、依赖检查、水分子 CUDA 验证和最终产物核验。
@@ -108,5 +109,5 @@ cd /mnt/c/Users/Meta/Project/Workspaces/ai4chem
 - 后续多随机种子、更多独立反应与更大训练数据规模尚未启动，须在新实验协议下分配。
 
 节点详情见同目录下的 `mac-reporting.md`、`rog-readiness.md`、`rog-audit.md`
-及 `omen.md`（各文件随实测创建）。
+、`omen.md` 和 `roommate-gaussian.md`（各文件随实测创建）。
 同步任务入口：`~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`。
