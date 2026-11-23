@@ -24,7 +24,7 @@ def atomic_json(path, payload):
     temporary.replace(path)
 
 
-def task_pids(root, script, required_argument):
+def task_pids(root, script, required_argument=None):
     matches = []
     for entry in Path("/proc").iterdir():
         if not entry.name.isdigit():
@@ -32,7 +32,7 @@ def task_pids(root, script, required_argument):
         try:
             argv = (entry / "cmdline").read_bytes().decode().split("\0")
             if (argv and Path(argv[0]).name.startswith("python")
-                    and script in argv and required_argument in argv
+                    and script in argv and (required_argument is None or required_argument in argv)
                     and (entry / "cwd").resolve() == root):
                 matches.append(int(entry.name))
         except (FileNotFoundError, ProcessLookupError, PermissionError, UnicodeDecodeError):
@@ -104,7 +104,7 @@ def main():
             if experiment_status(root)["completed_strategy_units"] != 96:
                 raise RuntimeError("The complete 96-unit matrix is required before DFT")
             run("regression", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
-            while (pids := task_pids(root, "validate_ts_dft_v05.py", "--ready-only")):
+            while (pids := task_pids(root, "validate_ts_dft_v05.py")):
                 update(stage="wait_ready_dft", attached_dft_pids=pids)
                 time.sleep(30)
             update(attached_dft_pids=[])

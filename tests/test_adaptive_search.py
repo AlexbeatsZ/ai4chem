@@ -285,6 +285,55 @@ class AdaptiveSearchTests(unittest.TestCase):
             self.assertTrue(scheduling["canonical_selection_written"])
             self.assertEqual(scheduling["pending_reactions"], [])
 
+    def test_explicit_dft_retries_preserve_each_failure_and_keep_completed_jobs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "results/v0.5.0"
+            configs = root / "configs"
+            configs.mkdir()
+            (configs / "v0.5.0_reactions.json").write_text(json.dumps({"dft_reactions": ["rxn1", "rxn2"]}))
+            (configs / "v0.5.0_dft.json").write_text("{}")
+            failed = output / "dft/rxn1/failed-job"
+            completed = output / "dft/rxn2/completed-job"
+            failed.mkdir(parents=True)
+            completed.mkdir(parents=True)
+            old_result = b'{"status":"failed","error":"first failure","dft_verified":false}\n'
+            old_error = b"first traceback\nwith detail\n"
+            completed_result = b'{"status":"completed","dft_verified":true}\n'
+            (failed / "result.json").write_bytes(old_result)
+            (failed / "error.txt").write_bytes(old_error)
+            (completed / "result.json").write_bytes(completed_result)
+            jobs = {"failed-key": {"reaction": "rxn1", "output_folder": str(failed)},
+                    "completed-key": {"reaction": "rxn2", "output_folder": str(completed)}}
+
+            def fail_again(output, item, config):
+                self.assertEqual(item["reaction"], "rxn1")
+                result = {"status": "failed", "error": "retry failure", "dft_verified": False}
+                (failed / "result.json").write_text(json.dumps(result))
+                (failed / "error.txt").write_text("retry traceback\n")
+                return result
+
+            with patch("validate_ts_dft_v05.ROOT", root), \
+                    patch("validate_ts_dft_v05.candidates", return_value=jobs), \
+                    patch("validate_ts_dft_v05.validate_one", side_effect=fail_again) as validate, \
+                    redirect_stdout(io.StringIO()):
+                with patch("sys.argv", ["validate_ts_dft_v05.py", "--output", str(output)]):
+                    dft_main()
+                self.assertEqual(validate.call_count, 0)
+                self.assertFalse((failed / "previous_attempts").exists())
+                for _ in range(2):
+                    with patch("sys.argv", ["validate_ts_dft_v05.py", "--output", str(output), "--retry-failed"]):
+                        dft_main()
+                self.assertEqual(validate.call_count, 2)
+            archives = sorted((failed / "previous_attempts").iterdir())
+            self.assertEqual(len(archives), 2)
+            self.assertEqual((archives[0] / "result.json").read_bytes(), old_result)
+            self.assertEqual((archives[0] / "error.txt").read_bytes(), old_error)
+            self.assertEqual(json.loads((archives[1] / "result.json").read_text())["error"], "retry failure")
+            self.assertEqual((archives[1] / "error.txt").read_text(), "retry traceback\n")
+            self.assertEqual((completed / "result.json").read_bytes(), completed_result)
+            self.assertFalse((completed / "previous_attempts").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

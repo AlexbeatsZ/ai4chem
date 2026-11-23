@@ -44,9 +44,11 @@ def export_snapshot(root, destination):
         include(results / name)
     include(results / "baseline_regression")
     selection_path = results / "dft/selection.json"
-    if selection_path.exists():
-        include(selection_path)
-        selection = json.loads(selection_path.read_text())
+    provisional_path = root / "results/coordination/dft-ready-selection.json"
+    readable_selection = selection_path if selection_path.exists() else provisional_path
+    if readable_selection.exists():
+        include(readable_selection)
+        selection = json.loads(readable_selection.read_text())
         for key, item in selection["unique_jobs"].items():
             folder = results / "dft" / item["reaction"] / key[:16]
             result_path = folder / "result.json"

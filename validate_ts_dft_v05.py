@@ -5,6 +5,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import shutil
+import tempfile
 
 import numpy as np
 from ase.io import read
@@ -74,6 +76,18 @@ def ready_reactions(output, manifest):
     return ready
 
 
+def archive_previous_attempt(folder):
+    previous = folder / "previous_attempts"
+    previous.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ-")
+    archive = Path(tempfile.mkdtemp(prefix=stamp, dir=previous))
+    for name in ("result.json", "error.txt"):
+        source = folder / name
+        if source.exists():
+            shutil.copy2(source, archive / name)
+    return archive
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("results/v0.5.0"))
@@ -122,6 +136,8 @@ def main():
                 if previous["status"] == "completed" or not args.retry_failed:
                     print(f"Keeping recorded DFT outcome {item['reaction']} {key[:16]}", flush=True)
                     continue
+                archive = archive_previous_attempt(path.parent)
+                print(f"Archived prior DFT outcome at {archive}", flush=True)
             pending[executor.submit(validate_one, args.output, item, config)] = (key, item)
         for future in as_completed(pending):
             key, item = pending[future]
