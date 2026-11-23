@@ -61,7 +61,9 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   5/6/6. Strict pipeline counts are 3/3/3 and 5/5/5 respectively. All 49 tests passed.
 - At 2026-11-23T10:56:30Z, all three Gaussian reactions completed and passed full
   TS/frequency/IRC/minimum validation. Nine strategy units reuse these three jobs.
-  Final verification.json passed; coordinator is ready_for_review. Release packaging is active.
+  Final verification.json passed. v0.5.0 was published at 2026-11-23T11:10:37Z;
+  all eight assets and ZIP sizes were verified. Coordinator ready_for_review is a
+  retained runtime snapshot; release completion is recorded here.
 
 # Active Work
 
@@ -92,7 +94,8 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
 - Search, preselected Gaussian subset and final verification are complete. All
   three strategies have 3/3 DFT passes, reusing the same three candidates; conditional
-  fine-tuned barrier MAE is 0.206068 eV. Complete packaging and release delivery.
+  fine-tuned barrier MAE is 0.206068 eV. v0.5.0 release delivery is complete; future
+  production Mac DFT chains or broader experiments need separate task definitions.
 - The 210-reaction final set was opened after validation selection and has now
   been reported. Further method choices informed by these results require a new
   independent evaluation design.

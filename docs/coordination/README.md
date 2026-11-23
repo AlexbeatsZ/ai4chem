@@ -37,7 +37,9 @@ IRC 通过为 3/3/3，微调为 5/6/6；全阶段通过为 3/3/3 与 5/5/5，分
 三个预选 Gaussian 反应全部完成，TS 单虚频、双向 IRC、稳定最小值与映射端点均通过。
 九策略单元复用三个候选，每种策略 DFT 3/3，微调条件能垒 MAE 0.206068 eV。
 最终报告、依赖检查、CUDA 烟测与 verification.json 通过，coordinator 为 ready_for_review。
-四张正式图已目视复核，当前进行 v0.5.0 打包发布。
+四张正式图已目视复核。v0.5.0 已于 2026-11-23T11:10:37Z 发布，8 个资产
+均 uploaded，结果 ZIP 247730512 字节、精确模型 ZIP 75589596 字节，大小核对通过。
+coordinator 的 ready_for_review 是发布前快照；发布结果以本交接及 GitHub 为准。
 
 `scripts/continue_v05.py` 会先等待现有 OMEN 搜索，随后按现有入口运行
 剩余矩阵、回归、Gaussian、报告、依赖检查、水分子 CUDA 验证和最终产物核验。
