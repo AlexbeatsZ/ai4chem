@@ -10,11 +10,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import binomtest
+from ase import Atoms
+from ase.data import covalent_radii
+from ase.io import read
 
 from benchmark_transition1x import write_csv
 from diagnose_ts_search import force_history
 from prepare_v05_reactions import ROOT
-from ts_search import save_json
+from ts_search import bond_set, save_json
 
 
 def collect(output, manifest, models):
@@ -114,6 +117,27 @@ def dft_metrics(output, manifest):
     return rows
 
 
+def endpoint_changes(output, manifest, models):
+    changes = []
+    for item in manifest["reactions"]:
+        for model in models:
+            for side in ("reactant", "product"):
+                path = output / "endpoints" / model / item["reaction"] / f"{side}_relaxed.extxyz"
+                if not path.exists():
+                    continue
+                original = Atoms(item["atomic_numbers"], positions=item[f"{side}_positions"])
+                relaxed = read(path)
+                for left, right in sorted(bond_set(original) ^ bond_set(relaxed)):
+                    changes.append({"model": model, "reaction": item["reaction"], "role": item["role"],
+                                    "endpoint": side, "atom_indices": [left, right],
+                                    "symbols": [original[left].symbol, original[right].symbol],
+                                    "input_distance_A": float(original.get_distance(left, right)),
+                                    "relaxed_distance_A": float(relaxed.get_distance(left, right)),
+                                    "bond_cutoff_A": float(1.2 * (covalent_radii[original.numbers[left]]
+                                                                 + covalent_radii[original.numbers[right]]))})
+    return changes
+
+
 def make_plots(output, rows, summary, models):
     colors = {"S0": "#587185", "S1": "#dc9b45", "S2": "#318c83"}
     strategies = list(colors)
@@ -125,7 +149,7 @@ def make_plots(output, rows, summary, models):
             bars = axis.bar(np.arange(3) + (index - 1) * 0.24, values, 0.24,
                             color=colors[strategy], label=strategy)
             axis.bar_label(bars, fontsize=8)
-        axis.set(xticks=np.arange(3), xticklabels=["NEB", "Saddle + IRC", "Full pipeline"],
+        axis.set(xticks=np.arange(3), xticklabels=["Any NEB", "Saddle + IRC", "Full pipeline"],
                  ylim=(0, 13), ylabel="Verified reactions / 12", title=model)
         axis.legend(fontsize=8)
         axis.grid(axis="y", alpha=0.2)
@@ -193,6 +217,53 @@ def case_plot(output, records):
     plt.close(fig)
 
 
+def stage_plot(output, records, models):
+    fig, axes = plt.subplots(2, 2, figsize=(13, 9), layout="constrained")
+    colors = ["#587185", "#dc9b45", "#318c83"]
+    strategies = ["S0", "S1", "S2"]
+    selected_counts = {}
+    for row, model in enumerate(models):
+        for index, strategy in enumerate(strategies):
+            group = [record for record in records if record["role"] == "holdout"
+                     and record["model"] == model and record["strategy"] == strategy]
+            counts = np.zeros(5, dtype=int)
+            for record in group:
+                result = json.loads((Path(record["selected_folder"]) / "result.json").read_text())
+                endpoints = result.get("endpoints", [])
+                counts += [len(endpoints) == 2 and all(item["converged"] and item["input_bonds_preserved"] for item in endpoints),
+                           result.get("neb", {}).get("converged", False),
+                           result.get("saddle", {}).get("converged", False)
+                           and result.get("saddle", {}).get("fmax_eV_A", 1e10) <= 0.01,
+                           result.get("vibrations", {}).get("imaginary_modes_above_threshold") == 1,
+                           result.get("irc", {}).get("converged_and_connected", False)]
+            selected_counts[f"{model}/{strategy}"] = dict(zip(
+                ("endpoints", "neb", "saddle", "single_significant_imaginary", "irc"), counts.tolist()))
+            bars = axes[row, 0].bar(np.arange(5) + (index - 1) * 0.24, counts, 0.24,
+                                    label=strategy, color=colors[index])
+            axes[row, 0].bar_label(bars, fontsize=7)
+        axes[row, 0].set(xticks=np.arange(5), xticklabels=["Endpoints", "NEB", "TS force", "One imag.", "IRC + match"],
+                         ylim=(0, 13), ylabel="Selected-candidate stage passes / 12", title=model)
+        axes[row, 0].legend(fontsize=8)
+        axes[row, 0].grid(axis="y", alpha=0.2)
+        failures = sorted({record["primary_failure"] for record in records
+                           if record["role"] == "holdout" and record["model"] == model})
+        left = np.zeros(3)
+        for failure in failures:
+            values = [sum(record["role"] == "holdout" and record["model"] == model
+                          and record["strategy"] == strategy and record["primary_failure"] == failure
+                          for record in records) for strategy in strategies]
+            axes[row, 1].barh(strategies, values, left=left, label="verified" if failure == "none" else failure)
+            left += values
+        axes[row, 1].set(xlabel="Reactions / 12", xlim=(0, 12), title=f"{model} final diagnosis")
+        if failures:
+            axes[row, 1].legend(fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
+    fig.suptitle("Locked holdout stage checks and failure distributions")
+    fig.savefig(output / "stage_diagnostics.png", dpi=180)
+    fig.savefig(output / "stage_diagnostics.pdf")
+    plt.close(fig)
+    return selected_counts
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("results/v0.5.0"))
@@ -204,7 +275,9 @@ def main():
     rows, records, unique = collect(args.output, manifest, models)
     if not args.allow_incomplete and any(row["status"] == "pending" for row in rows):
         raise RuntimeError("Complete all 96 planned strategy units before the final report")
-    summary = {"planned_strategy_units": len(rows), "completed_strategy_units": len(records), "groups": {}}
+    frozen = (ROOT / "configs/v0.5.0_frozen.json").exists()
+    summary = {"planned_strategy_units": len(rows), "completed_strategy_units": len(records),
+               "holdout_policy_frozen": frozen, "groups": {}}
     for role in ("development", "holdout"):
         for model in models:
             for strategy in manifest["protocol"]["strategies"]:
@@ -221,7 +294,12 @@ def main():
                                    "reuse_saved_compute_seconds": theoretical - actual,
                                    "definition": "sum of measured jobs, excluding driver/model-load overhead"}
     summary["paired_comparisons"] = paired_comparisons(rows, models)
+    summary["endpoint_bond_changes"] = endpoint_changes(args.output, manifest, models)
     dft_rows = dft_metrics(args.output, manifest)
+    dft_complete = all(row["status"] in {"completed", "failed", "no_candidate"} for row in dft_rows)
+    summary["dft_evaluation_complete"] = dft_complete
+    if not args.allow_incomplete and (not frozen or not dft_complete):
+        raise RuntimeError("Freeze the policy and finish every preselected DFT unit before the final report")
     summary["dft"] = {}
     for strategy in manifest["protocol"]["strategies"]:
         group = [row for row in dft_rows if row["strategy"] == strategy]
@@ -231,6 +309,18 @@ def main():
                                    "verified": sum(row["dft_verified"] for row in group),
                                    "conditional_barrier_mae_eV": float(np.mean(errors)) if errors else None,
                                    "statuses": dict(Counter(row["status"] for row in group))}
+    dft_jobs = {(row["reaction"], row["dft_job"]) for row in dft_rows if row["dft_job"]}
+    reported_dft_seconds = 0.0
+    for reaction, key in dft_jobs:
+        path = args.output / "dft" / reaction / key[:16] / "result.json"
+        if path.exists():
+            result = json.loads(path.read_text())
+            stages = result.get("ts", {}).get("gaussian_elapsed_seconds", 0)
+            stages += sum(branch[stage].get("gaussian_elapsed_seconds", 0)
+                          for branch in result.get("branches", []) for stage in ("irc", "minimum"))
+            reported_dft_seconds += result.get("gaussian_reported_elapsed_seconds", stages)
+    summary["dft_compute"] = {"unique_candidate_jobs": len(dft_jobs),
+                              "reported_gaussian_elapsed_seconds_sum": reported_dft_seconds}
     attempt_rows = []
     for attempt in unique.values():
         result = json.loads((Path(attempt["folder"]) / "result.json").read_text())
@@ -240,27 +330,39 @@ def main():
                              "image_step_cost": attempt["image_step_cost"],
                              "saddle_irc_verified": attempt["saddle_irc_verified"], "mlip_verified": attempt["mlip_verified"],
                              "primary_failure": attempt["diagnosis"]["primary_failure"],
+                             "neb_fmax_eV_A": result.get("neb", {}).get("fmax_eV_A"),
+                             "neb_warmup_steps": result.get("neb", {}).get("warmup_steps"),
+                             "neb_climb_steps": result.get("neb", {}).get("climb_steps"),
+                             "saddle_fmax_eV_A": result.get("saddle", {}).get("fmax_eV_A"),
+                             "significant_imaginary_modes": result.get("vibrations", {}).get("imaginary_modes_above_threshold"),
+                             "all_negative_modes": result.get("vibrations", {}).get("all_negative_modes"),
+                             "irc_converged_and_connected": result.get("irc", {}).get("converged_and_connected"),
                              "peak_gpu_allocated_MiB": result.get("peak_gpu_allocated_MiB"),
                              **{f"{stage}_seconds": result.get("stage_seconds", {}).get(stage, 0)
                                 for stage in ("initialization", "neb", "saddle", "hessian", "irc")}})
+    summary["cost_accounting"]["peak_gpu_allocated_MiB"] = max(
+        (row["peak_gpu_allocated_MiB"] or 0 for row in attempt_rows), default=0)
     write_csv(args.output / "strategy_metrics.csv", rows)
     if attempt_rows:
         write_csv(args.output / "attempt_metrics.csv", attempt_rows)
         write_csv(args.output / "diagnostics.csv", [
-            {key: attempt[key] for key in ("cache_key", "role", "model", "reaction", "initialization", "primary_failure")}
+            {key: attempt[key] for key in ("cache_key", "role", "model", "reaction", "initialization", "primary_failure",
+                                         "neb_fmax_eV_A", "saddle_fmax_eV_A", "significant_imaginary_modes",
+                                         "all_negative_modes", "irc_converged_and_connected")}
             for attempt in attempt_rows])
     write_csv(args.output / "dft_metrics.csv", dft_rows)
     save_json(args.output / "policy_trace.json", records)
-    save_json(args.output / "summary.json", summary)
     make_plots(args.output, rows, summary, models)
     case_plot(args.output, records)
+    summary["selected_candidate_stage_counts"] = stage_plot(args.output, records, models)
+    save_json(args.output / "summary.json", summary)
     report = ["# v0.5.0 失败感知自适应过渡态搜索", "",
               "四条开发反应与十二条项目保留反应，比较两个固定模型和三种搜索策略。",
               "源数据为固定 revision 的 train 构型分片 0 和 1，排除全部既有项目反应。",
-              "端点和保留反应清单在搜索前固定，控制器在开发阶段后冻结。", "",
+              "端点和保留反应清单在搜索前固定。" + ("控制器已在开发阶段后冻结。" if frozen else "控制器待开发阶段复核后冻结。"), "",
               f"计划 {len(rows)} 个策略评价单元，已完成 {len(records)} 个。", "",
               "## 保留反应结果", "",
-              "| 模型 | 策略 | 完成 / 计划 | NEB | 鞍点与 IRC | 全阶段 | 平均尝试 | 成本中位数 / s |",
+              "| 模型 | 策略 | 完成 / 计划 | NEB 至少一次 | 鞍点与 IRC | 全阶段 | 平均尝试 | 成本中位数 / s |",
               "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for model in models:
         for strategy in manifest["protocol"]["strategies"]:
@@ -275,7 +377,8 @@ def main():
                f"策略引用 {len(unique)} 次唯一搜索，含共享端点的实际计算累计 {actual:.1f} s，"
                f"各策略独立执行的理论累计 {theoretical:.1f} s，复用节省 {theoretical - actual:.1f} s。", "",
                "成本采用同一 OMEN 的实测作业时间，包含初始化与 CPU 数值步骤，排除驱动和模型加载开销。",
-               "图像步是工作量代理。各阶段耗时、成本四分位距和每个验证鞍点的平均成本见 CSV 与 summary.json。", "",
+               "图像步是工作量代理。每个唯一计算采用本轮单次实测时间，策略成本由这些作业累计估计。",
+               "各阶段耗时、成本四分位距和每个验证鞍点的平均成本见 CSV 与 summary.json。", "",
                "| 模型 | 比较 | 指标 | 配对反应 | 新增通过 | 丢失通过 | 双侧精确 p |",
                "| --- | --- | --- | --- | --- | --- | --- |"]
     for item in summary["paired_comparisons"]:
@@ -283,9 +386,18 @@ def main():
             report.append(f"| {item['model']} | {item['comparison']} | {item['metric']} | {item['paired_reactions']} | "
                           f"{item['gained']} | {item['lost']} | {item['exact_two_sided_p']:.4f} |")
     report += ["", "精确检验采用配对不一致对的二项分布，属于多指标小样本探索性分析。", "",
+               "## 端点连接诊断", "",
+               "以下几何连接变化均按原先的共价半径 × 1.2 规则计为端点检查失败。完整原子对距离见 summary.json。", "",
+               "| 模型 | 反应 | 端点 | 映射原子对 | 初始距离 / Å | 优化距离 / Å | 阈值 / Å |",
+               "| --- | --- | --- | --- | --- | --- | --- |"]
+    for change in summary["endpoint_bond_changes"]:
+        report.append(f"| {change['model']} | {change['reaction']} | {change['endpoint']} | {change['atom_indices']} | "
+                      f"{change['input_distance_A']:.4f} | {change['relaxed_distance_A']:.4f} | {change['bond_cutoff_A']:.4f} |")
+    report += ["", "连接阈值附近的微小位移可能改变几何键集合，当前统计保留该验收规则及其敏感性。", "",
                "## Gaussian 验证", "",
                "DFT 反应在搜索前按三种端点变化类别固定为 " + ", ".join(manifest["dft_reactions"]) + "。",
                "各策略的相同坐标候选复用同一 Gaussian 计算，保留全部九个预选评价单元。", "",
+               f"当前共有 {len(dft_jobs)} 个唯一候选作业，Gaussian 报告的作业耗时累计 {reported_dft_seconds:.1f} s。", "",
                "| 策略 | 候选 / 预选 | DFT 通过 / 预选 | 条件电子能垒 MAE / eV | 状态 |",
                "| --- | --- | --- | --- | --- |"]
     for strategy, values in summary["dft"].items():
@@ -299,6 +411,7 @@ def main():
                "## 解释范围", "",
                "十二条反应用于项目保留评价，两个模型的预训练重叠尚未排除。端点变化类别采用共价半径启发式。",
                "仅两片中具有完整端点对的反应参与候选池，构型分片覆盖会影响抽样分布。",
+               "公开导出副本的坐标与力采用 float32，与官方原始 HDF5 的逐数值一致性尚待核对。",
                "搜索使用单个固定扰动种子和有限预算。报告完整失败及无候选记录，结论限于当前反应与参数。",
                "Gaussian 验证限定在预选的三条反应及数据集参考电子态。另行比较自旋面与参考波函数稳定性仍需后续计算。", ""]
     (args.output / "report.md").write_text("\n".join(report), encoding="utf-8")

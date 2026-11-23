@@ -6,6 +6,7 @@
 - v0.2.0 为 Transition1x 十条反应的数据读取及三个预训练模型的零微调基准。
 - v0.3.0 为扩大基准、短程微调和独立最终集评价。
 - v0.4.0 为端点初始化 CI-NEB、鞍点频率和 IRC 检查，以及 Gaussian DFT 精修。
+- v0.5.0 比较单起点、固定多起点与失败感知自适应搜索，使用新的项目级保留反应。
 
 ## 创建环境
 
@@ -42,6 +43,43 @@ mamba run -n ai4chem python smoke_test.py
 程序以 float32 在 CUDA 上执行。通过条件包括 GPU 矩阵运算成功、模型参数位于
 CUDA、能量为有限值、三个原子的受力均为有限值，以及保存后重新读取的数据一致。
 通过后输出 `PASS - CUDA inference and saved energy/forces verified`。
+
+## 失败感知自适应搜索
+
+v0.5.0 固定四条开发反应和十二条保留反应，与旧版的全部训练、开发和评价
+反应 ID 互斥。使用现有两个模型，比较 S0 单起点、S1 固定多起点、S2 失败感知
+恢复。每种策略最多三次尝试，共享端点优化及相同计算，并分别记录理论成本。
+协议与选择规则位于 [v0.5.0 设计文档](docs/design/v0.5.0-protocol.md)。
+
+继续使用原有 WSL Mamba 环境。`configs/v0.5.0_reactions.json` 已包含精确端点，
+可直接恢复输入。重新生成候选池时读取固定 revision 的 train shards 0 和 1，
+仅使用 fid 0/9、原子元素与坐标。该导出按构型分片，完整端点对需跨分片收集。
+
+```bash
+export OMP_NUM_THREADS=4 JAX_PLATFORMS=cpu
+mamba run -n ai4chem python prepare_v05_reactions.py
+mamba run -n ai4chem python diagnose_ts_search.py
+mamba run -n ai4chem python adaptive_ts_search.py --role development
+mamba run -n ai4chem python adaptive_ts_search.py --freeze
+mamba run -n ai4chem python adaptive_ts_search.py --role holdout
+mamba run -n ai4chem python validate_ts_dft_v05.py
+mamba run -n ai4chem python summarize_ts_search_v05.py
+```
+
+开发阶段完成并复核后冻结策略、模型、实现与环境，保留阶段检查冻结身份。
+正式报告要求全部 96 个策略评价单元和九个预选 Gaussian 评价单元具有终态。
+开发过程可用 `summarize_ts_search_v05.py --allow-incomplete` 查看带 pending 标记的
+中间结果。相同坐标的 Gaussian 候选复用同一作业，失败和无候选记录保留。
+
+结果位于 `results/v0.5.0/`，包含 `strategy_metrics.csv`、`attempt_metrics.csv`、
+`diagnostics.csv`、`dft_metrics.csv`、`policy_trace.json`、`summary.json` 和报告。
+各尝试保存初始与最终路径、轨迹、候选、Hessian、频率、IRC 及失败证据。
+`endpoints/` 保存共享端点，`development/` 和 `holdout/` 保存各策略的决策记录。
+
+模型权重的内容 SHA256 用于计算身份。重建本轮实验时恢复发布资产中的精确
+模型文件，保持 `models/mh1-omol.model` 和
+`models/v0.3.0/mh1_full_256.model` 路径。源代码采用 LF 换行以保持跨平台身份。
+冻结环境对应 OMEN 的这轮同机对照，跨硬件的时间成本应分别记录。
 
 ## 端点驱动的过渡态搜索
 

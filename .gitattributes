@@ -1,0 +1,2 @@
+# Frozen experiment identities include Python source bytes across Windows and WSL.
+*.py text eol=lf
