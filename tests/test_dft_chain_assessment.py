@@ -19,6 +19,36 @@ task_spec.loader.exec_module(gaussian_task)
 
 
 class AssessmentBoundaries(unittest.TestCase):
+    def test_mac_diagnostic_does_not_require_a_known_gaussian_reference(self):
+        reactant = {"symbols": ["C", "O", "H", "H"],
+                    "positions_A": [[0,0,0],[1.2,0,0],[-.5,.9,0],[-.5,-.9,0]]}
+        product = {"symbols": reactant["symbols"],
+                   "positions_A": [[0,0,0],[1.13,0,0],[5,0,0],[5.74,0,0]]}
+        job = {**reactant, "numbers": [6,8,1,1], "reaction": "synthetic",
+               "job_id": "diagnostic", "engine": "PySCF-geomeTRIC",
+               "purpose": "sole_extra_recovery_independent_engine_diagnostic",
+               "expected_vibrational_modes": 6,
+               "endpoints": {"reactant": reactant, "product": product}}
+        protocol = {"jobs": [job], "endpoint_tolerance_A": .5, "study_type": "diagnostic"}
+        source = {"raw_chain_completed": True, "started_at_utc": "start", "finished_at_utc": "end",
+                  "elapsed_seconds": 1, "ts": {**reactant, "energy_hartree": -.9,
+                  "frequencies_cm1": [-100,10,20,30,40,50]}, "branches": []}
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            (folder/"ts").mkdir()
+            (folder/"ts/result.json").write_text(json.dumps({"converged": True}))
+            for direction, geometry in (("forward", product), ("backward", reactant)):
+                source["branches"].append({"direction": direction, "analysis": {
+                    **geometry, "energy_hartree": -1, "frequencies_cm1": [1,2,3,4,5,6]}})
+                for stage in ("irc", "minimum"):
+                    stage_folder = folder/direction/stage
+                    stage_folder.mkdir(parents=True)
+                    (stage_folder/"result.json").write_text(json.dumps({"converged": True}))
+            (folder/"summary.json").write_text(json.dumps(source))
+            result = assessment.assess(protocol, "synthetic", folder, "mac")
+            self.assertTrue(result["dft_verified"])
+            self.assertNotIn("gaussian_comparison", result)
+
     def test_gaussian_initial_budget_defaults_and_explicit_replay(self):
         protocol = json.loads((ROOT/"configs/v0.6.0-pilot/protocol.json").read_text())
         with tempfile.TemporaryDirectory() as temporary:

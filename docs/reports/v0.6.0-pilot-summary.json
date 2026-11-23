@@ -1,0 +1,673 @@
+{
+  "generated_at_utc": "2026-11-23T18:03:28.725948+00:00",
+  "study_type": "post_hoc_diagnostic_and_engine_calibration",
+  "changes_v05_results": false,
+  "source_versions": [
+    "v0.5.0",
+    "v0.6.0-pilot-r1",
+    "v0.6.0-pilot-r2"
+  ],
+  "verification": {
+    "gaussian_fresh_raw_log_assessment_passes": true,
+    "gaussian_matches_previous_assessment": true,
+    "gaussian_same_frozen_candidate": true,
+    "gaussian_same_frozen_settings": true,
+    "mac_same_frozen_protocol": true,
+    "positive_control_full_chain_passes": true,
+    "positive_control_all_preset_tolerances_pass": true,
+    "failed_mac_candidate_remains_failed": true,
+    "negative_curvature_independently_confirmed": true,
+    "curvature_does_not_change_frozen_verdict": true
+  },
+  "gaussian_candidate": {
+    "job_id": "rxn9456-gaussian16w-r2",
+    "reaction": "rxn9456",
+    "engine": "gaussian",
+    "assessed_at_utc": "2026-11-23T18:03:28.713227+00:00",
+    "study_type": "post_hoc_diagnostic_and_engine_calibration",
+    "changes_v05_results": false,
+    "ts_valid": true,
+    "ts": {
+      "normal_termination": true,
+      "optimization_completed": true,
+      "frequencies_cm1": [
+        -721.2605,
+        60.4777,
+        87.2408,
+        103.9576,
+        250.9778,
+        322.0522,
+        459.4292,
+        533.3946,
+        651.8127,
+        808.1266,
+        820.0311,
+        985.7431,
+        1123.202,
+        1244.0962,
+        1272.8586,
+        1429.9363,
+        1493.2626,
+        1603.517,
+        1632.6336,
+        2177.0839,
+        3070.2883,
+        3084.8841,
+        3158.3937,
+        3181.9298
+      ],
+      "energy_hartree": -342.14714257,
+      "irc_path_complete": false,
+      "postprocessing_error": false,
+      "source_log": "ts.log"
+    },
+    "branches": [
+      {
+        "direction": "forward",
+        "irc_complete": true,
+        "stable_minimum": true,
+        "frequencies_cm1": [
+          38.0851,
+          59.7353,
+          86.6611,
+          103.0451,
+          141.3738,
+          151.7906,
+          162.8812,
+          189.9885,
+          230.8502,
+          254.0358,
+          341.708,
+          1202.876,
+          1219.247,
+          1288.2468,
+          1293.4217,
+          1554.2816,
+          1564.1727,
+          1859.3593,
+          1871.7467,
+          2246.7106,
+          3008.435,
+          3008.7848,
+          3073.8529,
+          3090.2244
+        ],
+        "energy_hartree": -342.230217884,
+        "matches_input_bonds": [
+          false,
+          true
+        ],
+        "endpoint_fragment_rmsd_A": [
+          [
+            1.3126516814511293
+          ],
+          [
+            0.00043101179362536326,
+            0.005753557241272926,
+            0.004845056383693991
+          ]
+        ],
+        "endpoint_rmsd_A": [
+          1.3126516814511293,
+          1.7069907979382557
+        ],
+        "matches_input_geometry": [
+          false,
+          true
+        ]
+      },
+      {
+        "direction": "reverse",
+        "irc_complete": true,
+        "stable_minimum": true,
+        "frequencies_cm1": [
+          165.7754,
+          189.791,
+          531.9446,
+          704.9382,
+          734.4297,
+          780.0886,
+          912.0962,
+          931.3756,
+          998.2505,
+          1114.041,
+          1160.1623,
+          1186.6576,
+          1203.4886,
+          1264.1021,
+          1270.7934,
+          1424.5456,
+          1442.5021,
+          1554.2536,
+          1565.7947,
+          1984.9241,
+          3118.8422,
+          3120.6611,
+          3191.9249,
+          3203.1326
+        ],
+        "energy_hartree": -342.319039315,
+        "matches_input_bonds": [
+          true,
+          false
+        ],
+        "endpoint_fragment_rmsd_A": [
+          [
+            0.3567506351100148
+          ],
+          [
+            0.027734525749226257,
+            0.1858425524745535,
+            0.18570078407916982
+          ]
+        ],
+        "endpoint_rmsd_A": [
+          0.3567506351100148,
+          1.5793612762715286
+        ],
+        "matches_input_geometry": [
+          true,
+          false
+        ]
+      }
+    ],
+    "expected_connectivity": true,
+    "dft_verified": true,
+    "source_started_at_utc": "2026-11-23T13:39:07.0764934Z",
+    "source_finished_at_utc": "2026-11-23T15:32:16.6437670Z",
+    "source_elapsed_seconds": 6789.5697929,
+    "electronic_barrier_eV": 4.677548684526391,
+    "mlip_to_dft_ts_rmsd_A": 0.01599285524259965
+  },
+  "irc_points": [
+    {
+      "direction": "forward",
+      "points": 265,
+      "normal_termination": true
+    },
+    {
+      "direction": "reverse",
+      "points": 35,
+      "normal_termination": true
+    }
+  ],
+  "positive_control": {
+    "job_id": "rxn0666-pyscf-r1",
+    "reaction": "rxn0666",
+    "engine": "mac",
+    "assessed_at_utc": "2026-11-23T18:03:28.716915+00:00",
+    "study_type": "post_hoc_diagnostic_and_engine_calibration",
+    "changes_v05_results": false,
+    "ts_valid": true,
+    "ts": {
+      "energy_hartree": -301.2744217968345,
+      "basis_functions": 98,
+      "frequencies_cm1": [
+        -1568.082345288576,
+        273.8304651668261,
+        469.9004927121158,
+        563.2612608567281,
+        639.4368088238587,
+        714.7018887629922,
+        747.2561320421388,
+        759.3469587382189,
+        798.8243452468892,
+        889.5039127790809,
+        952.9138310876791,
+        985.987952978478,
+        1111.0029316581513,
+        1166.1395329884483,
+        1197.8550375600953,
+        1317.7510948849638,
+        1325.9045104728075,
+        1482.2745690916383,
+        1605.4067707966233,
+        1867.0126729586032,
+        2534.6167607304533,
+        3310.345713631941,
+        3333.50392597126,
+        3690.919044950763
+      ],
+      "imaginary_modes": 1,
+      "significant_imaginary_modes": 1,
+      "max_gradient_hartree_per_bohr": 1.1919478722880296e-05,
+      "elapsed_seconds": 139.9291886669962,
+      "symbols": [
+        "O",
+        "C",
+        "C",
+        "N",
+        "C",
+        "N",
+        "H",
+        "H",
+        "H",
+        "H"
+      ],
+      "positions_A": [
+        [
+          -1.1516912575605767,
+          1.9866167307660554,
+          0.6256398457654462
+        ],
+        [
+          -0.5991291528450159,
+          0.9280692037915833,
+          0.3754275032141084
+        ],
+        [
+          -1.01143529278331,
+          -0.4406721780020155,
+          0.30144596994226663
+        ],
+        [
+          0.12980770130518274,
+          -1.294162187612458,
+          0.006448318972217813
+        ],
+        [
+          1.144662799919088,
+          -0.4658975120815188,
+          -0.19118229824213423
+        ],
+        [
+          0.7886073007141652,
+          0.8090169069468701,
+          0.03838878275110027
+        ],
+        [
+          -1.9028264646406419,
+          -0.8895245739414696,
+          0.7137457998468814
+        ],
+        [
+          -0.6748667991677512,
+          -1.2440067073318992,
+          -0.8087237784378595
+        ],
+        [
+          2.1275326633135077,
+          -0.7747387865076412,
+          -0.5204827735075159
+        ],
+        [
+          1.4032770703279798,
+          1.6113128660376241,
+          0.019780585245891096
+        ]
+      ]
+    },
+    "branches": [
+      {
+        "direction": "forward",
+        "irc_complete": true,
+        "stable_minimum": true,
+        "frequencies_cm1": [
+          273.4583814794001,
+          468.92181853986835,
+          517.7437606551119,
+          556.4095152655768,
+          599.8467665029498,
+          663.0462304298064,
+          715.6283041511804,
+          727.4151978215095,
+          742.7739497314307,
+          875.0242931989859,
+          946.6330588186237,
+          1075.9816511644417,
+          1161.9014010585802,
+          1190.1416963407062,
+          1217.675772123588,
+          1352.7383209365394,
+          1437.446457675663,
+          1555.6262682201227,
+          1640.4676150710638,
+          1851.9122625818834,
+          3342.881229452069,
+          3361.5889801385097,
+          3719.3446807194637,
+          3727.1810798747874
+        ],
+        "energy_hartree": -301.340017234366,
+        "matches_input_bonds": [
+          false,
+          true
+        ],
+        "endpoint_fragment_rmsd_A": [
+          [
+            0.7676439377976382
+          ],
+          [
+            0.001602530531124703
+          ]
+        ],
+        "endpoint_rmsd_A": [
+          0.7676439377976382,
+          0.001602530531124703
+        ],
+        "matches_input_geometry": [
+          false,
+          true
+        ]
+      },
+      {
+        "direction": "backward",
+        "irc_complete": true,
+        "stable_minimum": true,
+        "frequencies_cm1": [
+          165.38959464619467,
+          423.5942503155041,
+          468.3907404955518,
+          531.4744512376903,
+          603.0505192069945,
+          687.2086883089343,
+          880.6321906671125,
+          908.9867299138355,
+          944.1142779350581,
+          1012.5680110199605,
+          1042.3763783260015,
+          1095.1276012401167,
+          1209.474258535101,
+          1234.1342014428972,
+          1330.5468781082777,
+          1375.8405935614257,
+          1438.7043938166335,
+          1474.3485449270393,
+          1748.3968543819385,
+          1915.769453486261,
+          3120.7502315268453,
+          3169.017882895594,
+          3257.9578537941848,
+          3719.987616589557
+        ],
+        "energy_hartree": -301.37580937844893,
+        "matches_input_bonds": [
+          true,
+          false
+        ],
+        "endpoint_fragment_rmsd_A": [
+          [
+            0.003269120493993805
+          ],
+          [
+            0.7677457367312014
+          ]
+        ],
+        "endpoint_rmsd_A": [
+          0.003269120493993805,
+          0.7677457367312014
+        ],
+        "matches_input_geometry": [
+          true,
+          false
+        ]
+      }
+    ],
+    "expected_connectivity": true,
+    "dft_verified": true,
+    "source_started_at_utc": "2026-11-23T11:22:56.245640+00:00",
+    "source_finished_at_utc": "2026-11-23T11:45:53.705771+00:00",
+    "source_elapsed_seconds": 1377.2752850420002,
+    "electronic_barrier_eV": 2.758896621388123,
+    "mlip_to_dft_ts_rmsd_A": 0.02092249921619326,
+    "gaussian_comparison": {
+      "ts_energy_difference_hartree": -2.2703834474668838e-05,
+      "ts_rmsd_A": 4.542256601116834e-05,
+      "imaginary_frequency_difference_cm1": 0.8794547114239322,
+      "electronic_barrier_difference_eV": -2.8283121479510953e-05,
+      "within_predefined_tolerances": true
+    }
+  },
+  "changing_mapped_bonds": [
+    {
+      "pair_1based": [
+        2,
+        3
+      ],
+      "elements": "CO",
+      "reactant_A": 1.3552100457483056,
+      "mlip_ts_A": 1.8786178202816424,
+      "dft_ts_A": 1.8968835252502985,
+      "product_input_A": 2.9614731814679236
+    },
+    {
+      "pair_1based": [
+        2,
+        6
+      ],
+      "elements": "CO",
+      "reactant_A": 1.3553199236129938,
+      "mlip_ts_A": 1.8783577360390518,
+      "dft_ts_A": 1.8969398726709819,
+      "product_input_A": 2.9559733548702942
+    },
+    {
+      "pair_1based": [
+        4,
+        5
+      ],
+      "elements": "CC",
+      "reactant_A": 1.5280216491801193,
+      "mlip_ts_A": 2.1440034718525793,
+      "dft_ts_A": 2.14114745154228,
+      "product_input_A": 5.049450892744713
+    }
+  ],
+  "mlip_barrier_eV": 4.68543244322791,
+  "mlip_minus_dft_barrier_eV": 0.007883758701519028,
+  "mac_failed_candidate": {
+    "status": "failed",
+    "elapsed_seconds": 3311.3043443339993,
+    "ts_negative_cm1": -718.4512172975864,
+    "forward": {
+      "irc_converged": true,
+      "minimum_optimization_converged": true,
+      "negative_cm1": -119.68570866144597,
+      "matches_input_bonds": [
+        true,
+        false
+      ],
+      "fragment_rmsd_A": [
+        [
+          0.17695256318484492
+        ],
+        [
+          0.027857400992247663,
+          0.18769424747343774,
+          0.18756131855974598
+        ]
+      ]
+    },
+    "backward": {
+      "reason": "IRC maximum iteration budget reached without convergence",
+      "maxiter": 300,
+      "energy_gradient_evaluations": 367,
+      "last_gradient_hartree_per_bohr": 0.0008918668471550855
+    }
+  },
+  "endpoint_curvature": {
+    "mode_frequency_cm1": -119.68570866144597,
+    "analytic_directional_curvature_hartree_per_bohr2": -0.0011870938493073046,
+    "finite_differences": [
+      {
+        "amplitude_A": 0.005,
+        "directional_curvature_hartree_per_bohr2": -0.0011961785231520976,
+        "relative_difference_from_analytic": -0.007652869105584313,
+        "negative_curvature": true
+      },
+      {
+        "amplitude_A": 0.01,
+        "directional_curvature_hartree_per_bohr2": -0.0011949536667820422,
+        "relative_difference_from_analytic": -0.006621058208097071,
+        "negative_curvature": true
+      }
+    ],
+    "negative_curvature_confirmed": true,
+    "elapsed_seconds": 31.4798644170005
+  },
+  "compute": {
+    "gaussian_r1_all_owner_seconds": 3036.5917262,
+    "gaussian_r1_raw_reported_elapsed_seconds": 2911.6,
+    "gaussian_r2_owner_seconds": 6789.5697929,
+    "gaussian_r2_raw_reported_elapsed_seconds": 6532.900000000001,
+    "gaussian_all_revision_owner_seconds": 9826.1615191,
+    "mac_calibration_wall_seconds": 1377.2752850420002,
+    "mac_candidate_failed_wall_seconds": 3311.3043443339993,
+    "curvature_wall_seconds": 31.4798644170005,
+    "accounting_note": "Owner/session intervals and Gaussian-reported times are separate; overlapping hosts are not summed as study elapsed time. Replays and failures remain in cost."
+  },
+  "search_cost_analysis": {
+    "source_version": "v0.5.0",
+    "analysis_type": "post_hoc_saved_result_decomposition",
+    "cost_definition": "sum of measured jobs, excluding driver/model-load overhead",
+    "costs": [
+      {
+        "model": "mh1-original",
+        "strategy": "S0",
+        "reactions": 12,
+        "verified_saddles": 3,
+        "strict_pipeline": 3,
+        "estimated_seconds": 2211.0921626079944,
+        "seconds_per_saddle": 737.0307208693315,
+        "relative_to_S0": 1.0
+      },
+      {
+        "model": "mh1-original",
+        "strategy": "S1",
+        "reactions": 12,
+        "verified_saddles": 3,
+        "strict_pipeline": 3,
+        "estimated_seconds": 7197.990620825905,
+        "seconds_per_saddle": 2399.3302069419683,
+        "relative_to_S0": 3.255400540308478
+      },
+      {
+        "model": "mh1-original",
+        "strategy": "S2",
+        "reactions": 12,
+        "verified_saddles": 3,
+        "strict_pipeline": 3,
+        "estimated_seconds": 6275.125540533947,
+        "seconds_per_saddle": 2091.7085135113157,
+        "relative_to_S0": 2.838020796533603
+      },
+      {
+        "model": "mh1-finetuned",
+        "strategy": "S0",
+        "reactions": 12,
+        "verified_saddles": 5,
+        "strict_pipeline": 5,
+        "estimated_seconds": 1929.2352773328894,
+        "seconds_per_saddle": 385.8470554665779,
+        "relative_to_S0": 1.0
+      },
+      {
+        "model": "mh1-finetuned",
+        "strategy": "S1",
+        "reactions": 12,
+        "verified_saddles": 6,
+        "strict_pipeline": 5,
+        "estimated_seconds": 6159.240247759968,
+        "seconds_per_saddle": 1026.540041293328,
+        "relative_to_S0": 3.19258118495269
+      },
+      {
+        "model": "mh1-finetuned",
+        "strategy": "S2",
+        "reactions": 12,
+        "verified_saddles": 6,
+        "strict_pipeline": 5,
+        "estimated_seconds": 6085.421859273978,
+        "seconds_per_saddle": 1014.236976545663,
+        "relative_to_S0": 3.154318154334651
+      }
+    ],
+    "reaction_cost_differences": [
+      {
+        "model": "mh1-original",
+        "reaction": "rxn0817",
+        "S1_minus_S2_seconds": 98.94549837999512,
+        "S1_failure": "endpoint_failure",
+        "S2_failure": "endpoint_failure",
+        "endpoint_gate": true
+      },
+      {
+        "model": "mh1-original",
+        "reaction": "rxn3295",
+        "S1_minus_S2_seconds": 352.5280154989741,
+        "S1_failure": "neb_stagnation",
+        "S2_failure": "neb_stagnation",
+        "endpoint_gate": false
+      },
+      {
+        "model": "mh1-original",
+        "reaction": "rxn3549",
+        "S1_minus_S2_seconds": 471.39156641298905,
+        "S1_failure": "endpoint_failure",
+        "S2_failure": "endpoint_failure",
+        "endpoint_gate": true
+      },
+      {
+        "model": "mh1-finetuned",
+        "reaction": "rxn6972",
+        "S1_minus_S2_seconds": 73.81838848599,
+        "S1_failure": "irc_wrong_endpoint",
+        "S2_failure": "irc_wrong_endpoint",
+        "endpoint_gate": false
+      }
+    ],
+    "decomposition": [
+      {
+        "model": "mh1-original",
+        "S1_minus_S2_seconds": 922.8650802919583,
+        "saving_fraction_S1": 0.12821148691439496,
+        "endpoint_gate_seconds": 570.3370647929842,
+        "other_policy_seconds": 352.5280154989741,
+        "S1_equal_endpoint_gate_counterfactual_seconds": 6627.653556032921,
+        "remaining_saving_fraction_counterfactual": 0.05319047118539867
+      },
+      {
+        "model": "mh1-finetuned",
+        "S1_minus_S2_seconds": 73.81838848599,
+        "saving_fraction_S1": 0.011984982809013944,
+        "endpoint_gate_seconds": 0,
+        "other_policy_seconds": 73.81838848599,
+        "S1_equal_endpoint_gate_counterfactual_seconds": 6159.240247759968,
+        "remaining_saving_fraction_counterfactual": 0.011984982809013944
+      }
+    ],
+    "model_paired_comparisons": [
+      {
+        "strategy": "S0",
+        "gained": [
+          "rxn0817",
+          "rxn3549"
+        ],
+        "lost": [],
+        "exact_two_sided_p": 0.5
+      },
+      {
+        "strategy": "S1",
+        "gained": [
+          "rxn0817",
+          "rxn9456",
+          "rxn3549"
+        ],
+        "lost": [],
+        "exact_two_sided_p": 0.25
+      },
+      {
+        "strategy": "S2",
+        "gained": [
+          "rxn0817",
+          "rxn9456",
+          "rxn3549"
+        ],
+        "lost": [],
+        "exact_two_sided_p": 0.25
+      }
+    ],
+    "counterfactual_assumption": "Skip S1 extra attempts when its shared fixed endpoints already fail, retaining its measured first-attempt cost. No new calculation or success reassessment."
+  },
+  "scope": "One post-hoc extra candidate, one known-positive calibration; not a new unseen holdout or a general success rate."
+}

@@ -7,15 +7,18 @@ the two research levels, measured evidence and actual deliverables.
 Study how model accuracy and bounded search recovery affect verified TS success
 and compute cost, using endpoint-driven CI-NEB, frequency, IRC and independent DFT.
 v0.5.0 is released. The separate v0.6.0 pilot checks the sole extra recovery and
-calibrates native Mac DFT. Next deliverables are completed pilot interpretation,
-comparative analysis, the course report, slides and actual contribution records.
+calibrates native Mac DFT. On November 23 the user clarified that they will write
+the report later and that roughly two weeks should be used to improve the model.
+The active priority is controlled data/optimization studies, repeated training,
+prospective evaluation and targeted DFT labels where they improve the potential.
 Reported course presentation dates are December 7 and 14, 2026. Original course
 instructions still determine the group's assigned slot and submission details.
 
 # Current State
 
-- Project directory is the Windows checkout mounted at
-  `/mnt/c/Users/Meta/Project/Workspaces/ai4chem` in WSL.
+- OMEN checkout is `C:\Users\Meta\source\repos\ai4chem`, mounted at
+  `/mnt/c/Users/Meta/source/repos/ai4chem` in WSL. Mac checkout is
+  `/Users/meta/Developer/ai4chem`. Both were externally migrated on November 23.
 - OMEN GPU was detected with 8188 MiB VRAM on 2026-11-16.
 - Existing Mamba is `/home/meta/.local/opt/miniforge3/bin/mamba`, version 2.6.0.
 - Use the isolated `ai4chem` Mamba environment with Python 3.12.
@@ -90,10 +93,14 @@ instructions still determine the group's assigned slot and submission details.
 - `protocol-r2.json` froze the same candidate at 13:37:54Z, pushed as 45103f7
   before new computation. Gaussian starts both directions with 320 points and
   stops at that budget. Mac independently runs the calibrated full DFT chain.
-- Roommate r2 is `results/rxn9456-v06-r2`, native owner 39032, started 13:39:07Z.
-  Mac r2 is `results/v0.6.0-pilot/mac/rxn9456-r2`, PID 20826, started 13:39:50Z.
-  Mac checkout was externally moved to `/Users/meta/Developer/ai4chem`; its locked
-  environment imports successfully. OMEN direct SSH public-key access now works.
+- Both r2 jobs are terminal. Gaussian rxn9456 passed the full chain at 15:33:13Z:
+  one -721.2605 cm^-1 mode, IRC 265/35 points, stable mapped minima, electronic
+  barrier 4.677548685 eV. This is one post-hoc recovery, outside the v0.5 denominator.
+- Mac rxn9456 r2 failed: forward minimum has a -119.6857 cm^-1 mode and backward
+  IRC exhausted its budget. Fixed-displacement gradient checks confirm negative
+  curvature within 1% at both displacement sizes; no acceptance threshold changed.
+- Pilot reports and independent verification: `docs/reports/v0.6.0-pilot.md` and
+  `results/v0.6.0-pilot/final/`. The positive-control calibration remains passed.
 - `scripts/assess_dft_chain.py` independently evaluates completed raw chains in
   the analysis .venv. A raw worker completion is not DFT verification. Require
   full modes, correct saddle order, both stable mapped endpoints and IRC success.
@@ -109,6 +116,12 @@ instructions still determine the group's assigned slot and submission details.
 - The new pilot is post-hoc diagnostic plus known-positive engine calibration,
   not a new unseen holdout or a general success-rate estimate. Any changed search
   policy informed by these outcomes needs a separate independent evaluation.
+- Next model study must preserve the already-opened v0.3 final set's history.
+  Freeze new reaction holdouts before training; select models on validation only.
+- A fresh metadata probe found that train Parquet shards are frame-sharded:
+  shard 0 contains portions of 9,561 reactions, and all 256 old training reactions
+  have incomplete fid sequences there. Complete paths require all 13 source shards.
+  Do not infer a final band from a shard-local frame count.
 - Full HDF5 source download returned 403. Current data uses pinned float32 public
   export; original numerical equivalence and pretraining overlap remain unresolved.
 

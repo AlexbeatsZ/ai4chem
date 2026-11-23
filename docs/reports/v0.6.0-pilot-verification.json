@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": {
+    "gaussian_fresh_raw_log_assessment_passes": true,
+    "gaussian_matches_previous_assessment": true,
+    "gaussian_same_frozen_candidate": true,
+    "gaussian_same_frozen_settings": true,
+    "mac_same_frozen_protocol": true,
+    "positive_control_full_chain_passes": true,
+    "positive_control_all_preset_tolerances_pass": true,
+    "failed_mac_candidate_remains_failed": true,
+    "negative_curvature_independently_confirmed": true,
+    "curvature_does_not_change_frozen_verdict": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "purpose": "Check the real curvature of the failed Mac rxn9456 endpoint without changing its frozen failure verdict",
+  "source": "results/v0.6.0-pilot/mac/rxn9456-r2/forward/frequencies",
+  "method": "wb97x/6-31g(d), cart=True, 99x590 unpruned",
+  "displacements_A": [
+    0.005,
+    0.01
+  ],
+  "scf_conv_tol": 1e-11,
+  "threads_per_worker": 4,
+  "workers": 3,
+  "new_optimizations": 0,
+  "dft_verified_override": false,
+  "fixed_at_utc": "2026-11-23T17:57:13.921972+00:00"
+}
