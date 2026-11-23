@@ -1,0 +1,10 @@
+[workspace]
+name = "ai4chem-mac-qc"
+version = "0.1.0"
+description = "Isolated Apple Silicon PySCF readiness and independent checks"
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[dependencies]
+python = "3.12.*"
+pyscf = ">=2.14,<3"

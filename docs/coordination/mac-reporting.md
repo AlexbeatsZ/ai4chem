@@ -2,8 +2,8 @@
 
 - Task Key: ai4chem--v05-mac-reporting
 - Host: Mac, `/Users/meta/Project/Workspaces/ai4chem`
-- Last Verified: 2026-11-22 (America/Los_Angeles)
-- Status: CPU snapshot report rebuilt; early DFT scheduling entrypoint ready for OMEN
+- Last Verified: 2026-11-23T10:23:17Z (02:23 America/Los_Angeles)
+- Status: Search snapshot reporting/audit complete; native PySCF 3x4 parallel checks passed
 
 ## Scope and ownership
 
@@ -107,3 +107,28 @@ messages were sent as part of this reporting task.
 ## Complete search snapshot
 
 The 2026-11-23T06:28:57Z terminal snapshot was reconstructed on Mac: 96/96 units, 83 unique attempts. Independent audit passed 14,084 checks with 0 issues/skips (results/coordination/mac-final-search-audit.json). Holdout original saddle+IRC 3/3/3 and strict 3/3/3; fine-tuned 5/6/6 and strict 5/5/5, all denominators 12. Strategy and reaction-matrix plots were visually checked. The shared stage-axis label was clarified without changing counts. DFT remains live on OMEN; this snapshot is not final DFT acceptance.
+
+## Native quantum-compute capability
+
+The user authorized using Mac's larger memory for parallel computation. Live
+inventory found M3 Max / 128 GiB / 12 performance + 4 efficiency cores, macOS
+26.6.2, low memory pressure and no swap I/O. No Gaussian/ORCA executable was found
+on PATH or in common installation locations.
+
+Created the project-local Pixi environment `environments/mac-qc` (Python 3.12.16,
+PySCF 2.15.1, osx-arm64), without changing the analysis .venv or global settings.
+Three already completed Gaussian TS geometries were evaluated with independent
+PySCF single points and analytic gradients, 3 simultaneous processes x 4 threads,
+4000 MB memory budget each. Final run finished in 18.47 s with all three SCFs and
+finite Nx3 gradients passing; observed peak concurrency was three, per-process
+peak RSS 1.49-1.68 GiB. This is not a Gaussian TS/frequency/IRC validation.
+
+The initial spherical-basis result is preserved separately. Actual Gaussian logs
+use 6D for 6-31G(d); setting PySCF cart=True and checking 98/111/98 basis functions
+reduced cross-engine energy differences from millihartree to about 2e-5 Hartree.
+Full workflow equivalence is not claimed. Read `docs/design/mac-qc.md` before
+changing this module, its input conventions, resources or acceptance.
+
+For native Gaussian jobs, obtain Gaussian 16 C.02 Apple M-Series binaries and
+applicable license. Official macOS coverage currently found in the 2025-03-18
+table stops at macOS 15; the installed 26.6.2 needs actual compatibility testing.

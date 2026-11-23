@@ -19,7 +19,7 @@
 | 设备 | 项目目录 | 当前职责 | 已核实环境 |
 | --- | --- | --- | --- |
 | OMEN | `C:\Users\Meta\Project\Workspaces\ai4chem` | 唯一 v0.5 CUDA 搜索和 Gaussian DFT 写入节点 | WSL Ubuntu-24.04 / Mamba ai4chem，RTX 4060 8 GB，现有 Gaussian 16W A.03 |
-| Mac | `/Users/meta/Project/Workspaces/ai4chem` | 协调、代码与 CPU 报告测试、图表检查、发布整合 | 项目隔离 uv `.venv`，分析依赖单独记录 |
+| Mac | `/Users/meta/Project/Workspaces/ai4chem` | 协调、报告审计；额外原生 CPU 量化计算 | M3 Max / 128 GiB / 12P+4E；独立 Pixi PySCF 2.15.1 已通过 3×4 并发检查；无 Gaussian |
 | ROG | `C:\Users\Meta\Project\Workspaces\ai4chem` | 已完成结果快照的独立文件与数值核验 | Ryzen Z1 Extreme；无已安装 Gaussian/ORCA；分析环境准备中 |
 | 室友节点 | `%USERPROFILE%\Project\Workspaces\ai4chem-worker` | 已实测可用的额外 Gaussian 节点，正式反应尚未分配 | i9-14900HX / 16 GB / Gaussian 16W A.03，水分子 Opt/Freq 通过 |
 

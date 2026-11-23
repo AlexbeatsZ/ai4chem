@@ -1,4 +1,5 @@
 .venv/
+environments/mac-qc/.pixi/
 __pycache__/
 *.pyc
 results/

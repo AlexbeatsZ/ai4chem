@@ -83,6 +83,10 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
   check on 2026-11-23 (16W A.03, i9-14900HX, 16 GB RAM). Its minimal PowerShell
   worker uses C:\G16W and no new installation. See docs/coordination/roommate-gaussian.md;
   access details are in the synchronized task log. No formal reaction assigned yet.
+- Mac is M3 Max / 128 GiB / 12P+4E cores. Its separate project-local Pixi PySCF
+  environment passed three concurrent 4-thread single-point/gradient jobs on saved
+  Gaussian TS geometries (18.47 s batch). This is readiness, not Gaussian TS/IRC
+  acceptance. Gaussian is absent; native C.02 M-Series software is the next tool need.
 - The linked ChatGPT draft was read in native Chrome on 2026-11-22. Read
   docs/design/v0.5.0-protocol.md before changing controller, cache or new selection.
 - Finish the preselected Gaussian subset rxn2737, rxn8204 and rxn0666. Preserve
@@ -151,6 +155,9 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 - The H-H geometric bond cutoff is 0.744 A at the current radius multiplier.
   rxn8080 crossed it after a 0.002 A H-H distance change. Inspect mapped pair
   distances before interpreting an endpoint graph mismatch chemically.
+- Gaussian 6-31G(d) used 6D while PySCF defaults to spherical functions. For the
+  CHNO/d-only check, cart=True restored matching basis counts; the same basis
+  label alone did not guarantee comparable energies. Higher shells need explicit care.
 
 # Docs Index
 
@@ -163,6 +170,8 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
   Gaussian integration and numerical acceptance thresholds. Read before changing searches.
 - `docs/design/v0.5.0-protocol.md` fixes the failure-aware search experiment,
   endpoint-only project holdouts, shared costs, cache identity and evaluation rules.
+- `docs/design/mac-qc.md` defines the native Mac PySCF checks, concurrency,
+  cross-engine basis conventions and separate Gaussian installation requirement.
 - `docs/coordination/README.md` is the cross-device task board and recovery entry;
   node records distinguish installed environments and verification scope.
 - `docs/coordination/roommate-gaussian.md` records the added Gaussian worker,
