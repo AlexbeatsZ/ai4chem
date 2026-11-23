@@ -78,52 +78,38 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
-- v0.5.0 is published and complete. Its CUDA searches and formal three-candidate
-  Gaussian subset must not be restarted or silently changed.
-- User renewed investigation on 2026-11-23. `configs/v0.6.0-pilot/protocol.json`
-  was fixed at 11:19:00Z before computation, committed/pushed as 5889368.
-  Read `docs/design/v0.6.0-pilot.md` before changing these two bounded tasks.
-- Revision 1 is terminal. Mac rxn0666 full DFT chain passed independent assessment
-  at 11:45:57Z, with both stable mapped endpoints and electronic barrier
-  2.758896621 eV. Gaussian barrier difference is -2.8283e-5 eV; all preset
-  engine tolerances passed. Raw evidence was returned to OMEN.
-- Gaussian rxn9456 r1 passed TS/24 modes (one -721.2605 cm^-1), then exhausted
-  160 forward IRC points without a minimum. Checkpoint continuation failed at
-  point 162 with PESDtA Max Points=161. Keep its failed state and all raw evidence.
-- `protocol-r2.json` froze the same candidate at 13:37:54Z, pushed as 45103f7
-  before new computation. Gaussian starts both directions with 320 points and
-  stops at that budget. Mac independently runs the calibrated full DFT chain.
-- Both r2 jobs are terminal. Gaussian rxn9456 passed the full chain at 15:33:13Z:
-  one -721.2605 cm^-1 mode, IRC 265/35 points, stable mapped minima, electronic
-  barrier 4.677548685 eV. This is one post-hoc recovery, outside the v0.5 denominator.
-- Mac rxn9456 r2 failed: forward minimum has a -119.6857 cm^-1 mode and backward
-  IRC exhausted its budget. Fixed-displacement gradient checks confirm negative
-  curvature within 1% at both displacement sizes; no acceptance threshold changed.
-- Pilot reports and independent verification: `docs/reports/v0.6.0-pilot.md` and
-  `results/v0.6.0-pilot/final/`. The positive-control calibration remains passed.
-- `scripts/assess_dft_chain.py` independently evaluates completed raw chains in
-  the analysis .venv. A raw worker completion is not DFT verification. Require
-  full modes, correct saddle order, both stable mapped endpoints and IRC success.
-- Revision 1 coordinator finished at 12:14:50Z. Its state is retained in
-  `results/coordination/v06/state.json`. Revision 2 uses a distinct output folder.
-- Multi-device entry: `docs/coordination/README.md`. Host access details remain
-  in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`, not public Git.
-- ROG was unreachable; its audit environment is prepared but not accepted. The
-  two current tasks do not depend on ROG. Mac uses isolated native Pixi PySCF;
-  roommate uses existing Gaussian without installing or changing global settings.
-- Larger independent batches may use group members with roughly one-day return.
-  Prepare versioned unique reaction packages first. No messages were sent to them.
-- The new pilot is post-hoc diagnostic plus known-positive engine calibration,
-  not a new unseen holdout or a general success-rate estimate. Any changed search
-  policy informed by these outcomes needs a separate independent evaluation.
-- Next model study must preserve the already-opened v0.3 final set's history.
-  Freeze new reaction holdouts before training; select models on validation only.
-- A fresh metadata probe found that train Parquet shards are frame-sharded:
-  shard 0 contains portions of 9,561 reactions, and all 256 old training reactions
-  have incomplete fid sequences there. Complete paths require all 13 source shards.
-  Do not infer a final band from a shard-local frame count.
-- Full HDF5 source download returned 403. Current data uses pinned float32 public
-  export; original numerical equivalence and pretraining overlap remain unresolved.
+- User has about two weeks and wants better models; they will write the report.
+- Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
+- v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
+  and prospective holdouts of 64 train + 64 val reactions. Concrete IDs/endpoint
+  records are in `configs/v0.7.0_partitions.json`, frozen before new training.
+- No prospective holdout labels are opened by the screening runner. The old 287
+  test reactions are already used; never call them unseen or fit the new router on them.
+- Download all 13 pinned train shards; source files are frame-sharded. The first
+  shard has portions of 9,561 reactions and incomplete histories for all old 256.
+  Final paths require complete contiguous fid histories across the full source.
+- First-stage arms: anchor256_long, path2048, random4096, path4096; same MH-1
+  foundation, up to 40 epochs/patience 12, original loss/lr. All retain old anchors.
+  Data sampling contrasts have equal reaction counts; only the two 4096 arms have
+  equal label/epoch ceilings. Record actual time and updates.
+- Next: optimizer/replay comparisons, three seeds for promising settings, freeze
+  models/router, then prospective static/path-search/DFT validation.
+- User proposed an expert library with a local decision router. First quantify
+  oracle headroom on meta-development, then compare endpoint-only TabPFN/TabICL,
+  Jev-style local decisions and simple baselines with grouped out-of-fold estimates.
+  Fix one expert for an entire reaction path; image-by-image switching is not built.
+- OMEN: `results/v0.7.0/state.json`, official logs under training/, launcher records
+  under `results/coordination/model-v07/`. Check actual owner before restarting.
+- Mac: isolated `environments/decision-models` for local MLX/MPS inference.
+  Package installation, real weight inference and chemistry benefit are separate checks.
+- v0.5 is complete/published and must not be restarted. v0.6 r2 is terminal:
+  Gaussian rxn9456 full chain passed (barrier 4.677548685 eV); Mac same-candidate
+  chain failed with a real negative-curvature endpoint and exhausted backward IRC.
+  `docs/reports/v0.6.0-pilot.md` records this one post-hoc recovery, not a new cohort.
+- Mac rxn0666 positive-control full chain and four engine tolerances passed.
+- Host access/recovery lives in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`.
+  No live coordinators remain from v0.6. ROG availability was not accepted.
+- Source float32 export equivalence and foundation-pretraining overlap are unresolved.
 
 # Build / Run / Test
 
@@ -185,6 +171,8 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 
 - `docs/project-background.md` is the research and course entrypoint. Read before
   planning new work; it integrates motivation, related literature and priorities.
+- `docs/design/model-improvement.md` fixes v0.7 training, data roles and evaluation.
+- `docs/design/decision-routing.md` fixes local expert selection and leakage/physics boundaries.
 - `docs/design/v0.6.0-pilot.md` fixes the post-hoc candidate, Mac control, budgets
   and acceptance before either new full-chain computation starts.
 

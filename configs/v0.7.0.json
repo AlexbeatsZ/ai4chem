@@ -1,0 +1,33 @@
+{
+  "version": "v0.7.0",
+  "source_revision": "fac02fc7019ae95a6957b0723b467f6e56745fd2",
+  "seed": 20261123,
+  "training_seed": 20261116,
+  "validation_count": 60,
+  "prospective_val_holdout_count": 64,
+  "prospective_train_holdout_count": 64,
+  "meta_development_count": 128,
+  "training_reactions": "same 256 reaction IDs and anchor frames as v0.3; complete source histories across all 13 shards",
+  "training": {
+    "epochs": 40,
+    "patience": 12,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "energy_weight": 10.0,
+    "forces_weight": 1.0,
+    "dtype": "float64",
+    "E0s": "estimated"
+  },
+  "experiments": [
+    {"name": "mh1_anchor256_long", "dataset": "anchor256", "train_size": 256},
+    {"name": "mh1_path2048", "dataset": "path2048", "train_size": 2048},
+    {"name": "mh1_random4096", "dataset": "random4096", "train_size": 4096},
+    {"name": "mh1_path4096", "dataset": "path4096", "train_size": 4096}
+  ],
+  "selection": "validation sampled-barrier MAE; tie-break TS-region force RMSE; all runs must finish before selection",
+  "holdouts": "endpoint-only manifests are frozen before training; no holdout reference energies, forces or evaluation are opened by the screening runner",
+  "phase_after_screening": "freeze optimizer/replay comparisons using validation, repeat promising settings at 3 seeds, then freeze models and decision-layer policies before opening prospective evaluation",
+  "compute_comparison": "random4096 and path4096 have equal reaction/configuration/epoch ceilings; actual updates, early stopping and wall time are reported. Different-size arms are not equal-compute experiments.",
+  "meta_study": "TabPFN/TabICL on unused train reactions only; grouped validation, no legacy test reaction labels for fitting. Jev-style local decisions are an exploratory comparator.",
+  "expert_routing": "first quantify the unattainable per-reaction reference oracle headroom; fit endpoint-feature-only expert selection with reaction/formula grouped out-of-fold predictions; compare best fixed expert and charge routing cost. Freeze one expert for the full NEB/IRC chain. No image-by-image switching or claims of a globally smooth mixed PES."
+}
