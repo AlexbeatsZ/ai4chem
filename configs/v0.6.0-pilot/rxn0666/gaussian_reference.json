@@ -1,0 +1,230 @@
+{
+  "reaction": "rxn0666",
+  "formula": "C3H4N2O",
+  "method": "wB97X/6-31G(d)",
+  "status": "completed",
+  "dft_verified": true,
+  "stage": "finished",
+  "ts": {
+    "normal_termination": true,
+    "optimization_completed": true,
+    "frequencies_cm1": [
+      -1568.9618,
+      273.4117,
+      469.7546,
+      562.4874,
+      638.4304,
+      714.8595,
+      746.3715,
+      759.5217,
+      798.5897,
+      889.6075,
+      952.3704,
+      985.9191,
+      1110.7727,
+      1165.4564,
+      1197.8302,
+      1318.0813,
+      1325.9377,
+      1482.2539,
+      1605.37,
+      1867.7794,
+      2533.8076,
+      3311.6229,
+      3334.9973,
+      3691.2169
+    ],
+    "imaginary_modes": 1,
+    "imaginary_modes_above_50_cm1": 1,
+    "energy_hartree": -301.274399093,
+    "gaussian_elapsed_seconds": 479.8,
+    "irc_minimum_detected": false,
+    "irc_direction_complete": false,
+    "irc_postprocessing_error": false,
+    "maximum_steps_reached": false,
+    "irc_path_complete": false,
+    "irc_points": 0
+  },
+  "mlip_to_dft_ts_rmsd_A": 0.020931988127865335,
+  "branches": [
+    {
+      "direction": "forward",
+      "irc": {
+        "normal_termination": true,
+        "optimization_completed": false,
+        "frequencies_cm1": [],
+        "imaginary_modes": 0,
+        "imaginary_modes_above_50_cm1": 0,
+        "energy_hartree": -301.33998268,
+        "gaussian_elapsed_seconds": 2309.2,
+        "irc_minimum_detected": true,
+        "irc_direction_complete": true,
+        "irc_postprocessing_error": false,
+        "maximum_steps_reached": false,
+        "irc_path_complete": true,
+        "irc_points": 66,
+        "job": "irc_forward_lqa",
+        "step_size": 5,
+        "max_points": 160,
+        "max_corrector_cycles": 80,
+        "algorithm": "LQA",
+        "previous_attempts": []
+      },
+      "minimum": {
+        "normal_termination": true,
+        "optimization_completed": true,
+        "frequencies_cm1": [
+          272.9573,
+          468.8901,
+          516.3567,
+          555.8604,
+          598.9863,
+          662.3892,
+          715.7498,
+          726.9216,
+          742.1033,
+          875.2986,
+          946.802,
+          1075.5909,
+          1161.3075,
+          1190.6887,
+          1217.0599,
+          1353.1655,
+          1437.8383,
+          1555.7024,
+          1640.5677,
+          1853.3362,
+          3344.2621,
+          3363.217,
+          3718.6526,
+          3726.7595
+        ],
+        "imaginary_modes": 0,
+        "imaginary_modes_above_50_cm1": 0,
+        "energy_hartree": -301.339998269,
+        "gaussian_elapsed_seconds": 473,
+        "irc_minimum_detected": false,
+        "irc_direction_complete": false,
+        "irc_postprocessing_error": false,
+        "maximum_steps_reached": false,
+        "irc_path_complete": false,
+        "irc_points": 0
+      },
+      "minimum_job": "minimum_forward",
+      "matches_input_bonds": [
+        false,
+        true
+      ],
+      "endpoint_rmsd_A": [
+        0.767560661683045,
+        0.0020247713824494175
+      ],
+      "endpoint_fragment_rmsd_A": [
+        [
+          0.767560661683045
+        ],
+        [
+          0.0020247713824494175
+        ]
+      ],
+      "matches_input_geometry": [
+        false,
+        true
+      ]
+    },
+    {
+      "direction": "reverse",
+      "irc": {
+        "normal_termination": true,
+        "optimization_completed": false,
+        "frequencies_cm1": [],
+        "imaginary_modes": 0,
+        "imaginary_modes_above_50_cm1": 0,
+        "energy_hartree": -301.375786912,
+        "gaussian_elapsed_seconds": 2967.3,
+        "irc_minimum_detected": true,
+        "irc_direction_complete": true,
+        "irc_postprocessing_error": false,
+        "maximum_steps_reached": false,
+        "irc_path_complete": true,
+        "irc_points": 78,
+        "job": "irc_reverse_lqa",
+        "step_size": 5,
+        "max_points": 160,
+        "max_corrector_cycles": 80,
+        "algorithm": "LQA",
+        "previous_attempts": []
+      },
+      "minimum": {
+        "normal_termination": true,
+        "optimization_completed": true,
+        "frequencies_cm1": [
+          165.8066,
+          424.5017,
+          468.6069,
+          532.1535,
+          603.4638,
+          687.818,
+          881.0113,
+          909.5041,
+          944.2063,
+          1013.0001,
+          1042.7501,
+          1095.7281,
+          1210.1099,
+          1234.7955,
+          1330.9229,
+          1376.4733,
+          1439.3267,
+          1474.5911,
+          1749.1027,
+          1916.0532,
+          3122.6502,
+          3171.0223,
+          3260.607,
+          3719.8027
+        ],
+        "imaginary_modes": 0,
+        "imaginary_modes_above_50_cm1": 0,
+        "energy_hartree": -301.375787714,
+        "gaussian_elapsed_seconds": 455.5,
+        "irc_minimum_detected": false,
+        "irc_direction_complete": false,
+        "irc_postprocessing_error": false,
+        "maximum_steps_reached": false,
+        "irc_path_complete": false,
+        "irc_points": 0
+      },
+      "minimum_job": "minimum_reverse",
+      "matches_input_bonds": [
+        true,
+        false
+      ],
+      "endpoint_rmsd_A": [
+        0.0031298351307419,
+        0.7678188476661222
+      ],
+      "endpoint_fragment_rmsd_A": [
+        [
+          0.0031298351307419
+        ],
+        [
+          0.7678188476661222
+        ]
+      ],
+      "matches_input_geometry": [
+        true,
+        false
+      ]
+    }
+  ],
+  "expected_bond_connectivity": true,
+  "expected_connectivity": true,
+  "stable_minima": true,
+  "irc_minima_detected": true,
+  "recovered_irc_postprocessing_error": false,
+  "electronic_barrier_eV": 2.7589249045096027,
+  "elapsed_seconds": 6823.779199611046,
+  "gaussian_reported_elapsed_seconds": 6684.8,
+  "interrupted_irc_records": []
+}

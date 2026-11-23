@@ -67,6 +67,11 @@ and failure-aware recovery using the existing CI-NEB and DFT validation workflow
 
 # Active Work
 
+- New v0.6.0-pilot frozen in configs/v0.6.0-pilot/protocol.json at 11:19:00Z:
+  one post-hoc Gaussian diagnostic of the sole extra recovered rxn9456, plus
+  complete native Mac DFT TS/frequency/IRC calibration on known-positive rxn0666.
+  Read docs/design/v0.6.0-pilot.md first; outputs stay separate from v0.5.0.
+
 - Multi-device handoff starts at `docs/coordination/README.md`. OMEN remains the
   sole writer of this frozen CUDA experiment; Mac handles CPU reporting and ROG
   audits completed result snapshots. Each host uses its standard ai4chem checkout.
@@ -164,6 +169,9 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
   label alone did not guarantee comparable energies. Higher shells need explicit care.
 
 # Docs Index
+
+- `docs/design/v0.6.0-pilot.md` fixes the post-hoc candidate, Mac control, budgets
+  and acceptance before either new full-chain computation starts.
 
 - `README.md` contains the reproducible environment setup and inference command.
 - `docs/log/2026-11.md` records the initial CUDA validation and observed warnings.
