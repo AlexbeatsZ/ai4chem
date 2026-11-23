@@ -1,13 +1,13 @@
 # OMEN 节点
 
-Last Verified: 2026-11-23T09:29:56Z。权威科学结果节点，Windows + WSL Ubuntu-24.04。
+Last Verified: 2026-11-23T10:56:30Z。权威科学结果节点，Windows + WSL Ubuntu-24.04。
 
 - 项目：`C:\Users\Meta\Project\Workspaces\ai4chem`。
 - Mamba：`/home/meta/.local/opt/miniforge3/bin/mamba`，环境 `ai4chem`。
 - 冻结提交：`761e580`；当前全部 96 个搜索单元已完成，端点阈值诊断改动已整合。
-- Gaussian rxn0666/rxn2737 完成且验证通过；rxn8204 正向 IRC 第 61 点附近。
-- coordinator PID 41374，running / wait_ready_dft，等待 validator 42193。
-  本次看到原生 g16.exe 48760 及计算 link，日志持续更新；PID 需重新核实后使用。
+- 三个 Gaussian 反应全部完成并验证通过；九策略单元复用三个唯一候选。
+- coordinator ready_for_review / review_and_release；回归、报告、依赖检查、CUDA 烟测、
+  verification.json 全部通过。下方旧 PID 与启动过程仅作为历史证据，不是待重启进程。
 - 本轮继续运行冻结实验，核心实现不变；CPU分析与独立核验分给 Mac/ROG。
 - coordinator 与每阶段日志：`results/coordination/`；以实际 `omen-state.json` 为准。
 - 恢复命令和任务阶段见 `README.md`。
