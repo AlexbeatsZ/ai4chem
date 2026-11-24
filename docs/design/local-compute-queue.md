@@ -67,3 +67,32 @@ git忽略的`results/overnight-20261124/`。启动前检查已有输出和活动
 输入/状态/原始日志和force receipt，省略checkpoint；三个完整链另用既有
 `continue_gaussian_relay.py`各自回收checkpoint并调用独立assessor。断线重连
 只重试传输。终态ZIP只在清单/长度/JSON身份一致时复用，不覆盖差异证据。
+
+## November24 清理后台后的双槽位修订
+
+用户在关闭Chrome/Codex/微信/Steam等闲置应用、可用内存4.49→8.01GiB后，
+明确授权继续加入更多计算。17:18Z实测free7.99GiB、CPU47%，当前0255正向IRC。
+`configs/roommate-pool-20261124.json`先冻结两个worker上限；每worker仍四线程/
+2GB，新增任务启动前要求至少6GiB可用，不杀已有计算释放内存。低于3GiB记下
+内存压力，等待自然完成释放；内存恢复至6GiB才可继续接新任务，不允许第三个
+并发。此时原来的“每次一个原生Gaussian”由本修订取代，科学输入/接受判据
+保持原值。
+
+`scripts/run_gaussian_pool.ps1`仅停止确认精确命令和owner.lock的串行调度父进程，
+保留其正在运行的链与Gaussian子进程；新WMI pool owner取得原queue.lock，
+核对原worker命令/PID后接管，不能重启IRC。pool-start.json保存原状态、认领
+的科学child和新owner；pool-worker-start.json禁止隐式再次执行。所有链/force
+在claims下用CreateNew一次认领，已有证据或未匹配的活动Gaussian拒绝新分配。
+每链仍是独立原生子进程，可以继续用既有三个collector和assessor。
+
+池先把未开始的3342/4757接到空槽，之后才启动原4608 force储备。不是新增
+模型训练/新holdout，不复制同一几何任务。原输入queue.json保持不改；资源
+调度另记execution。此前24h累计串行预算改为从pool接管起24h墙钟接新任务，
+最多两项并行；到点只排空当前项，不中断科学计算，理论不超过48worker小时
+加当前项收尾。实际compute_seconds为各终态作业耗时之和，不能当作墙钟。
+此增加的计算预算来自用户本次授权，旧串行成本和并发差异均保留。
+
+观察器仍查询同一个queue-state.json；status额外给active/pending/deadline。
+串行owner退出到新state写入间用pool-start.new_owner_pid判断handoff，不能误报
+丢失owner。导出器除调度owner外还检查active科学child，防止调度器异常时
+导出仍增长的日志。无科学自动重试、无标签自动训练合并、无全局环境变更。

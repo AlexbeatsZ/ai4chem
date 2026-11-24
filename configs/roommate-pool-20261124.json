@@ -1,0 +1,16 @@
+{
+  "version": "roommate-parallel-admission-r2",
+  "reason": "November24 user authorized additional computation after closing idle applications. Measured about8GiB available with one chain active.",
+  "max_workers": 2,
+  "threads_per_worker": 4,
+  "gaussian_memory_GB": 2,
+  "minimum_available_GiB_before_launch": 6,
+  "minimum_available_GiB_to_keep_admission": 3,
+  "wall_hours_from_pool_start": 24,
+  "poll_seconds": 30,
+  "failure_limit": 3,
+  "policy": "Adopt the exact live chain without restarting it; one queue lock and exclusive per-item claims. Stop new admission after24h walltime, drain active work. Preserve failures, no scientific retries, no automatic label merge.",
+  "scientific_inputs_changed": false,
+  "prospective_holdout_labels_evaluated": false,
+  "frozen_at_utc": "2026-11-24T17:22:28.817068+00:00"
+}

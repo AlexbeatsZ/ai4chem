@@ -45,7 +45,9 @@ instructions still determine the group's assigned slot and submission details.
   Seven paired random/path repeats are reserved: seeds24–26 OMEN,27–30 Mac
   (full seeds20261124–30). Do not redistribute original member01–05 ZIPs.
   Roommate receives three AIMNet chains0255/3342/4757 then quarantined train-side
-  force labels,24h actual-execution admission budget;2GB/fourthreads,4GiB free.
+  force labels. November24 after idle-app cleanup user authorized two-slot pool:
+  `configs/roommate-pool-20261124.json`,2GB/fourthreads each,6GiB launch gate,
+  max2 workers,24h wall admission then drain; adopt current chain, no restart.
   Runtime is results/overnight-20261124; verify owners before starting/recovering.
   Mac r2 owner10062 has two actual E0 workers; r1 failed before any training
   and is retained as mac-infra-r1. OMEN native22604/WSL61077 waits on v0.9 lock.

@@ -4,6 +4,9 @@ $ErrorActionPreference='Stop'
 $QueueDirectory=(Resolve-Path -LiteralPath $QueueDirectory).Path
 $state=[IO.File]::ReadAllText((Join-Path $QueueDirectory 'queue-state.json')) | ConvertFrom-Json
 if($state.status -eq 'running' -or (Get-Process -Id $state.owner_pid -ErrorAction SilentlyContinue)){throw 'Queue still active.'}
+foreach($child in @($state.active)){
+    if($child.owner_pid -and (Get-CimInstance Win32_Process -Filter ('ProcessId='+$child.owner_pid))){throw 'Scientific child still active; retain partial evidence without exporting.'}
+}
 $archive=Join-Path $QueueDirectory 'return.zip'
 $files=@(Get-ChildItem -LiteralPath $QueueDirectory -Recurse -File | Where-Object {$_.Extension -in @('.gjf','.log','.err','.json','.txt')})
 Add-Type -AssemblyName System.IO.Compression
