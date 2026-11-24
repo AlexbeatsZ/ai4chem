@@ -94,7 +94,7 @@ AttributeError。首次失败保存在 `hcn-hnc-ts-irc/`，不能因已有 TS/�
 Gaussian 官方平台表确认该版本支持 M 系列和共享内存并行，但表格更新日期为
 2025-03-18，列出的 macOS 到 15.x，未列本机的 26.6.2。
 收到软件后先完成实际 Opt/Freq、线程并发、后台存活和版本差异检查再接正式任务。
-当前 Mac 没有安装 Gaussian；不需要用户重配既有 Python/Pixi 或提供 Windows g16w。
+初次验收时 Mac 没有安装 Gaussian；后续用户提供的 Intel 版本安装见下节。
 这不是 Mac 执行 TS、频率或 IRC 的前置条件，PySCF/geomeTRIC 路线已经实际跑通。
 
 官方参考：
@@ -105,6 +105,62 @@ Gaussian 官方平台表确认该版本支持 M 系列和共享内存并行，�
 - https://pyscf.org/user/geomopt.html
 - https://pyscf.org/user/hessian.html
 - https://geometric.readthedocs.io/en/latest/irc.html
+
+## 2026-11-23 Mac Gaussian 16 / GaussView 安装
+
+用户明确授权安装本地 `~/Downloads/GviewAndG16`。实测版本为
+`EM64M-G16RevA.03 25-Dec-2016` 和 GaussView 6.0.16，均是 Intel x86_64
+Mach-O，通过既有 Rosetta 运行；并非 Apple Silicon 原生 C.02。
+
+安装布局（全部属于 Mac）：
+
+- `~/.local/opt/gaussian16/g16/`：计算程序及基组。
+- `~/.local/opt/gaussian16/gv/`：完整厂商 GUI、data/help、框架与辅助程序。
+- `~/.local/opt/gaussian16/bin/`：进程内设置环境的 g16、formchk、unfchk、
+  cubegen、cubman、freqchk 包装入口；`gv/bin/` 对应链接供 GUI 查找。
+- `~/Applications/GaussView.app`：自建 arm64 原生启动器，exec 厂商 gview，
+  仅设置子进程的 Gaussian/PATH/缓存变量与 stack 上限。固定 identifier
+  `local.meta.gaussview-launcher`，固定证书 `Local Development Code Signing`；
+  `codesign -d -r-` 已确认 `certificate leaf`，严格签名验证通过。
+- `~/Library/Caches/Gaussian16/scratch/`：默认计算临时文件及 GUI vibtmp。
+- `~/Library/Preferences/com.gaussian.GaussView.plist`：厂商自动保存的 GUI 设置。
+- `~/.gaussian/`：厂商启动时自动创建的旧式用户目录，本次检查为空。
+- `results/node-readiness/mac-g16/`：本项目的 water.com/log/chk 和 compatibility.json。
+
+没有修改 `.zshrc`、`.profile`、全局 PATH、launchctl 环境或 Gatekeeper；
+没有创建 LaunchAgent、Default.Route 或 `~/.local/bin` 全局命令。保留每个
+计算输入指定资源，避免默认占满正在训练的 Mac。原始 Downloads 目录保留。
+`/tmp/.agents/gaussview-launcher-build/` 构建临时目录已删除。
+
+不能只给终端设置变量：Finder 启动的厂商 app 初次报找不到 Gaussian。
+旧 Qt framework 缺少现代签名所需结构；直接重签厂商 app 失败，因此恢复了
+原始厂商 bundle，改为签名独立启动器。源码在 `scripts/mac_gaussview_launcher.c`。
+只在程序安装副本中恢复了 `gv/exec/{gview,gv,scjobmangui}` 被存成纯文本的
+三个相对符号链接；不拆分 GUI 的 data/help，不修改厂商 profile。
+
+重建启动器（app 的 Info.plist/图标保留）：
+
+```bash
+arch -arm64 /usr/bin/clang -O2 scripts/mac_gaussview_launcher.c \
+  -o "$HOME/Applications/GaussView.app/Contents/MacOS/GaussViewLauncher"
+codesign --force --sign 'Local Development Code Signing' \
+  --identifier local.meta.gaussview-launcher "$HOME/Applications/GaussView.app"
+codesign --verify --strict "$HOME/Applications/GaussView.app"
+codesign -d -r- "$HOME/Applications/GaussView.app"
+```
+
+命令行按当前工作目录放输出，用绝对路径调用安装入口，例如：
+
+```bash
+"$HOME/.local/opt/gaussian16/bin/g16" < /absolute/job/input.com > /absolute/job/output.log
+```
+
+实测水分子 `wB97X/6-31G(d) Opt Freq Int=UltraFine SCF=XQC NoSymm`，
+2 线程/512 MB，25.26 秒，退出码 0，最后为 Normal termination。
+最终电子能量 −76.3882475812 Ha，三个正频率 1721.2635、3830.7741、
+3956.1131 cm⁻¹。Finder 启动器启动后没有缺失 Gaussian 提示，GUI 成功
+打开本次 water.log 并显示分子。GUI 内提交、TS/IRC、生产并发与重启后启动
+尚未单独验收；不计入任何研究成功率，也不满足原生 Linux 云部署验收。
 
 ## v0.6.0-pilot 的十原子 DFT 进展
 

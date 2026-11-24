@@ -76,6 +76,10 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- Mac now has Intel Gaussian 16 A.03 / GaussView 6.0.16 under
+  `~/.local/opt/gaussian16`; signed `~/Applications/GaussView.app` supplies its
+  process environment. Water wB97X/6-31G(d) Opt/Freq and GUI log display passed;
+  GUI submission, TS/IRC and production concurrency remain unverified. See mac-qc.md.
 - User requested OMEN validation of cloud deployment first, then a user-provided
   cloud server test, then five-member task distribution. Do not create/buy a server
   or dispatch yet. Read `docs/design/cloud-workers.md`; local acceptance is pending.
