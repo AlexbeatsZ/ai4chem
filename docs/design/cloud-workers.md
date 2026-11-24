@@ -78,8 +78,8 @@ float64/batch4/lr1e-4/energy10/force1/40实际epoch。patience100确保跑满；
 总预算10次训练、估计409600更新，按OMEN观测约7h/份，实际云耗时未保证。
 仅准备，原LinuxGaussian/用户云验收/分发门槛保持；不启动十次新计算。
 
-每份ZIP包含共享的两套训练帧、validation、foundation及成员任务清单。
-组员运行一次 `run_cloud_training_bundle.sh /absolute/member-01 /fresh/output`，
+每份ZIP包含部署脚本与固定依赖锁、两套训练帧、validation、foundation及成员任务清单。
+组员在解压目录运行一次 `bash member-01/start.sh`，无需编辑路径/配置，
 后台顺序执行安装、设备检查、水分子能量/力/短训练重载、两个固定任务，
 任务单项12h上限。无需在线选参/等负责人反馈；每项只尝试一次，独立下一项
 仍会继续，成功与失败都入档，最终自动生成output.tar.gz供回传。

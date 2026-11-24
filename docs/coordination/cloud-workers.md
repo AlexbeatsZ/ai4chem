@@ -110,8 +110,8 @@ WSL桥接成功也不代表云端Linux二进制验收。
 - OMEN准备入口：`scripts/prepare_group_training.py --output /fresh/absolute/path`。
 - 五份包每份包含一对固定取样重复，种子20261124–28，无数据/结果依赖，
   不重复当前v0.8/v0.9训练。只准备、未运行或分发。
-- 成员仅运行 `bash scripts/run_cloud_training_bundle.sh /absolute/member-01 /fresh/absolute/output`，
-  完成后回传 `output.tar.gz`，失败也回传，不自行重算/换参数。
+- 成员仅运行 `bash member-01/start.sh`，
+  完成后回传 `member-01/result.tar.gz`，失败也回传，不自行重算/换参数。
 - `cloud_worker.py batch` 对固定队列逐项记录；一项失败继续独立下一项，
   最后保留completed_with_failures和非零退出状态，自动归档部分成功和失败证据。
 - 原生LinuxGaussian和用户提供云节点的原有分发门槛未因准备训练包而解除。

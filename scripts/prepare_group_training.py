@@ -54,28 +54,35 @@ Two fixed, sequential 40-epoch tasks: random4096 and path4096. No parameter choi
 or intermediate handoff. Each task has a 12-hour maximum, no training retry.
 Use only the cloud node/environment accepted by the coordinator. No Gaussian.
 
-Extract the whole ZIP so shared/ is next to member-{index:02d}/. In the matching
-ai4chem deployment checkout, submit once:
+Extract the whole ZIP so shared/ is next to member-{index:02d}/. The deployment code and dependency lock are included. Submit once:
 
 ```bash
-bash scripts/run_cloud_training_bundle.sh /absolute/member-{index:02d} /fresh/absolute/member-{index:02d}-result
+bash member-{index:02d}/start.sh
 ```
 
 The command returns immediately with an owner PID. On completion return
-member-{index:02d}-result.tar.gz, including on failure. Keep the node available
+member-{index:02d}/result.tar.gz, including on failure. Keep the node available
 until the archive exists. Do not alter settings, rerun a failed model, interpret
 accuracy, or send just screenshots. The coordinator collects all outcomes and
 runs common chemistry evaluation. Contact the coordinator only if the node or
 launcher itself is unavailable. This package is prepared, not yet dispatched.
 ''')
+        (member/'start.sh').write_text('''#!/usr/bin/env bash
+set -euo pipefail
+member=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+bash "$member/../deployment/scripts/run_cloud_training_bundle.sh" "$member" "$member/result"
+''')
         archive = output/f'member-{index:02d}.zip'
         with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_STORED) as z:
+            for relative in ('scripts/cloud_worker.sh','scripts/cloud_worker.py','scripts/run_cloud_training_bundle.sh','configs/cloud-worker.json','requirements.lock.txt'):
+                z.write(ROOT/relative,'deployment/'+relative)
             for folder in (shared,member):
                 for path in sorted(folder.iterdir()): z.write(path,path.relative_to(output))
         members.append({'member':index,'seed':seed,'tasks':2,'epochs_each':40,
                         'estimated_updates_each':40960,'archive':archive.name,'bytes':archive.stat().st_size})
     manifest = {'prepared_at_utc':datetime.now(timezone.utc).isoformat(),
                 'status':'prepared_not_dispatched', 'members':members,
+                'deployment_code_included':True, 'member_command':'bash member-NN/start.sh',
                 'scientific_question':'Does the small random-vs-path validation difference persist across paired independent seeds?',
                 'reference':'Existing v0.7 seed20261116 was used for development; retain separately, not one of the five new pairs.',
                 'data':'Existing256 train reactions x16 frames per arm; same validation60 and MH1/omol. No new labels.',
