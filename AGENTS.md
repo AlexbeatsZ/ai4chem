@@ -83,18 +83,16 @@ instructions still determine the group's assigned slot and submission details.
 - User requested OMEN validation of cloud deployment first, then a user-provided
   cloud server test, then five-member task distribution. Do not create/buy a server
   or dispatch yet. Read `docs/design/cloud-workers.md`; local acceptance is pending.
-- Local Gaussian acceptance must install/run native Linux Gaussian in WSL; Windows
-  bridging does not satisfy it. User expects Linux g16 the next day. ML deployment
-  proceeds independently: installer retry omen-ml-bootstrap-r2 uses a dedicated prefix
-  and network resume/retries; inspect its terminal receipt before claiming readiness.
-  scripts/validate_cloud_omen.sh now supports install/ml only, with no Windows bridge.
-  Portable real4096-label/two-epoch CUDA timing bundle is prepared on Mac/OMEN at
-  results/cloud-training/development-timing-r1; no cloud server was created or tested.
-- User wants group tasks to run unattended. scripts/run_cloud_training_bundle.sh
-  submits a finite background install/smoke/fixed queue and archives success/failure.
-  Five paired random4096/path4096 seed20261124–28 packages are prepared via
-  scripts/prepare_group_training.py; no overlap with active seed16–18 queues,
-  no dispatch or ten-run launch. Read cloud-workers.md for budgets and gates.
+- Native Linux Gaussian remains pending the user's next-day files. ML readiness now
+  passed independently on OMEN: fresh locked environment, CUDA force difference,
+  two epochs/reload and native Windows-owned unattended return. Mac loaded the
+  returned model; see docs/reports/cloud-ml-readiness/README.md. Actual cloud
+  acceptance and original Gaussian/group-dispatch gates remain pending.
+- User wants unattended group work. Five self-contained paired random4096/path4096
+  seed20261124–28 packages are ready in results/group-training/paired-sampling-r1;
+  no overlap with active seed16–18 queues, no ten-run launch or group dispatch.
+  Linux entry is bash member-NN/start.sh. WSL must use the native Windows
+  scripts/launch_training_bundle.ps1 owner; generic WSL detach is rejected.
 - User has about two weeks and wants better models; they will write the report.
 - Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
 - v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
@@ -183,6 +181,10 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 `results/smoke_summary.json`. It checks the reloaded energy and forces.
 
 # Durable Lessons
+
+- WSL nohup lost its child after SSH exit in the deployment control. Use a native
+  Windows WMI owner holding foreground WSL. In Start-Process, keep WSL option
+  tokens unquoted; quote only paths that need it (all-quoted options reached zsh).
 
 - MACE 0.3.17 non-distributed patience logs "stopping" but its exit flag is None;
   check actual termination and logged epochs. v0.7 retains its 40-epoch ceiling.

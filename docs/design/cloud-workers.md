@@ -85,3 +85,14 @@ float64/batch4/lr1e-4/energy10/force1/40实际epoch。patience100确保跑满；
 仍会继续，成功与失败都入档，最终自动生成output.tar.gz供回传。
 负责人统一检查固定版本/epoch/返回模型和化学指标，不让组员凭最低loss挑模型。
 单独主机断电/销毁与进程被强杀不属于nohup可恢复范围，不能宣称断电续训。
+
+## 本地实际验收和 WSL 所有权
+
+本地隔离ML环境与完整后台返包已通过，证据见
+`docs/reports/cloud-ml-readiness/README.md`。WSL中nohup子进程随SSH退出丢失，
+不能用返回PID当通过。新增原生Windows WMI启动器持有前台WSL，实际退出0、
+自动归档并在Mac加载返回模型通过；通用WSL detach明确拒绝。
+`Start-Process wsl.exe`本次要求选项保持无引号，只给含空白路径加引号；
+把所有token加引号使-d落入默认zsh，两次基础设施失败证据保留。
+返回包保留模型/配置/状态/日志，排除优化器checkpoint，节点原文件保留。
+真实云原生Linux后台入口/吞吐和原生LinuxGaussian仍各自验收，未派发五人任务。

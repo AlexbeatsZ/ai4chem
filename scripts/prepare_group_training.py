@@ -74,7 +74,7 @@ bash "$member/../deployment/scripts/run_cloud_training_bundle.sh" "$member" "$me
 ''')
         archive = output/f'member-{index:02d}.zip'
         with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_STORED) as z:
-            for relative in ('scripts/cloud_worker.sh','scripts/cloud_worker.py','scripts/run_cloud_training_bundle.sh','configs/cloud-worker.json','requirements.lock.txt'):
+            for relative in ('scripts/cloud_worker.sh','scripts/cloud_worker.py','scripts/run_cloud_training_bundle.sh','scripts/launch_training_bundle.ps1','configs/cloud-worker.json','requirements.lock.txt'):
                 z.write(ROOT/relative,'deployment/'+relative)
             for folder in (shared,member):
                 for path in sorted(folder.iterdir()): z.write(path,path.relative_to(output))
@@ -83,6 +83,7 @@ bash "$member/../deployment/scripts/run_cloud_training_bundle.sh" "$member" "$me
     manifest = {'prepared_at_utc':datetime.now(timezone.utc).isoformat(),
                 'status':'prepared_not_dispatched', 'members':members,
                 'deployment_code_included':True, 'member_command':'bash member-NN/start.sh',
+                'wsl_native_windows_owner_required':True, 'return_optimizer_checkpoints':False,
                 'scientific_question':'Does the small random-vs-path validation difference persist across paired independent seeds?',
                 'reference':'Existing v0.7 seed20261116 was used for development; retain separately, not one of the five new pairs.',
                 'data':'Existing256 train reactions x16 frames per arm; same validation60 and MH1/omol. No new labels.',

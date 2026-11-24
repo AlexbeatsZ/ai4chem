@@ -1,5 +1,6 @@
 """Deployment boundaries: portable inputs, immutable budget and explicit device."""
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -47,6 +48,15 @@ class CloudWorkerTests(unittest.TestCase):
             self.assertEqual([row['status'] for row in state['outcomes']],['failed','completed'])
             self.assertEqual(state['automatic_training_retries'],0)
             with self.assertRaises(FileExistsError): cloud.batch(source,root/'output')
+
+
+    def test_direct_wsl_detach_cannot_report_an_unowned_submission(self):
+        with patch.object(cloud.platform,'release',return_value='6.18-microsoft-standard-WSL2'), \
+             patch('sys.argv',['cloud_worker.py','train','--task','/missing/task.json','--output','/missing/output','--detach']), \
+             patch('sys.stderr',new_callable=io.StringIO) as stderr:
+            with self.assertRaises(SystemExit) as error: cloud.main()
+            self.assertEqual(error.exception.code,2)
+            self.assertIn('native Windows owner',stderr.getvalue())
 
 
     def test_missing_cuda_never_silently_falls_back_to_cpu(self):

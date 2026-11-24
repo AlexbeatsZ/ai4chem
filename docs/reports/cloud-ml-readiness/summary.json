@@ -1,0 +1,111 @@
+{
+  "status": "PASS_OMEN_LOCAL_ML_AND_UNATTENDED_RETURN",
+  "local_date": "2026-11-23",
+  "smoke_finished_at_utc": "2026-11-24T06:33:58.965262+00:00",
+  "runtime": {
+    "host": "Meta-OMEN",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.16 (main, Oct 26 2026, 11:37:43) [GCC 15.3.0]",
+    "executable": "/home/meta/.local/opt/miniforge3/envs/ai4chem-cloud-worker/bin/python",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_total_MiB": 8187.5,
+    "torch_cuda_runtime": "13.4"
+  },
+  "versions": {
+    "torch": "2.15.0+cu134",
+    "mace-torch": "0.3.17",
+    "ase": "3.29.0"
+  },
+  "force_finite_difference_absolute_error_eV_per_A": 1.5884835025126165e-07,
+  "smoke_actual_epochs": 2,
+  "trained_model_reloaded": true,
+  "unattended_return": {
+    "status": "PASS_OMEN_UNATTENDED_ML_RETURN",
+    "host": "OMEN",
+    "queue": {
+      "status": "completed",
+      "started_at_utc": "2026-11-24T06:39:50.523638+00:00",
+      "outcomes": [
+        {
+          "name": "cloud_readiness_water",
+          "status": "completed"
+        }
+      ],
+      "automatic_training_retries": 0,
+      "holdout_labels_evaluated": false,
+      "finished_at_utc": "2026-11-24T06:40:11.166558+00:00"
+    },
+    "smoke_status": "PASS_MACE_INFERENCE_AND_TWO_EPOCH_TRAINING",
+    "actual_epochs": 2,
+    "model_finite": true,
+    "archive_bytes": 95488341,
+    "original_archive_bytes": 567837409,
+    "archive_members": 37,
+    "optimizer_checkpoints_returned": false,
+    "after_ssh_submission_returned": true,
+    "native_windows_owner": 49228,
+    "real_cloud_compute_verified": false,
+    "native_linux_gaussian_verified": false,
+    "group_dispatched": false,
+    "return_archive_retrieved_on_mac": true,
+    "returned_model_loaded_on_mac_cpu": true,
+    "returned_model_parameters_finite": true
+  },
+  "prepared_group_packages": [
+    {
+      "member": 1,
+      "seed": 20261124,
+      "tasks": 2,
+      "epochs_each": 40,
+      "estimated_updates_each": 40960,
+      "archive": "member-01.zip",
+      "bytes": 72566277
+    },
+    {
+      "member": 2,
+      "seed": 20261125,
+      "tasks": 2,
+      "epochs_each": 40,
+      "estimated_updates_each": 40960,
+      "archive": "member-02.zip",
+      "bytes": 72566277
+    },
+    {
+      "member": 3,
+      "seed": 20261126,
+      "tasks": 2,
+      "epochs_each": 40,
+      "estimated_updates_each": 40960,
+      "archive": "member-03.zip",
+      "bytes": 72566277
+    },
+    {
+      "member": 4,
+      "seed": 20261127,
+      "tasks": 2,
+      "epochs_each": 40,
+      "estimated_updates_each": 40960,
+      "archive": "member-04.zip",
+      "bytes": 72566277
+    },
+    {
+      "member": 5,
+      "seed": 20261128,
+      "tasks": 2,
+      "epochs_each": 40,
+      "estimated_updates_each": 40960,
+      "archive": "member-05.zip",
+      "bytes": 72566277
+    }
+  ],
+  "group_scientific_runs_started": 0,
+  "native_linux_gaussian_verified": false,
+  "real_cloud_compute_verified": false,
+  "group_dispatched": false,
+  "infrastructure_labels": "MLIP-generated water labels, not independent DFT or a research accuracy result",
+  "retained_launch_failures": [
+    "omen-unattended-water-r1: WSL nohup child disappeared after SSH exit",
+    "omen-unattended-water-r2: quoted WSL options reached default zsh; no training started"
+  ],
+  "current_wsl_launcher": "native Windows WMI owner, foreground WSL, unquoted option arguments"
+}

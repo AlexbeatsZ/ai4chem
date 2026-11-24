@@ -115,3 +115,15 @@ WSL桥接成功也不代表云端Linux二进制验收。
 - `cloud_worker.py batch` 对固定队列逐项记录；一项失败继续独立下一项，
   最后保留completed_with_failures和非零退出状态，自动归档部分成功和失败证据。
 - 原生LinuxGaussian和用户提供云节点的原有分发门槛未因准备训练包而解除。
+
+## 本地 ML 验收终态（UTC 2026-11-24 06:40）
+
+- omen-ml-bootstrap-r2 安装/pip check/固定版本检查通过，06:33Z CUDA水分子
+  力差分、2epoch和模型重载通过。完整链 r3 的原生Windows owner49228/WSL51592
+  在SSH返回后完成，队列completed，退出0；此前两次后台启动失败保留。
+- 回传归档排除优化器checkpoint后95,488,341字节，Mac已收回并从归档加载
+  最终模型，参数全部有限。见 docs/reports/cloud-ml-readiness/README.md。
+- Windows/WSL使用 scripts/launch_training_bundle.ps1；通用nohup不作WSL后台
+  保证。Linux云节点仍需用户提供后实际验收。
+- 最终成员包每份72,566,277字节，包含最新Windows启动修复和精简返包逻辑。
+  正式十次训练未启动，五份包未分发。

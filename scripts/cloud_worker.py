@@ -228,6 +228,9 @@ def main():
     parser.add_argument('--detach',action='store_true')
     parser.add_argument('--worker',action='store_true',help=argparse.SUPPRESS)
     args=parser.parse_args()
+    kernel=platform.release().lower()
+    if args.action=='train' and args.detach and 'microsoft' in kernel and 'wsl' in kernel:
+        parser.error('WSL requires scripts/launch_training_bundle.ps1 with a native Windows owner')
     if args.action=='installation':
         result={**installed(),'status':'PASS_INSTALLED','model_inference_verified':False,
                 'official_training_verified':False}

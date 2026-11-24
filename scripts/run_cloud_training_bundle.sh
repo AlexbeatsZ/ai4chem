@@ -11,6 +11,10 @@ if [[ "$prefix" != /* ]]; then echo "Dedicated prefix must be absolute." >&2; ex
 if [[ "$bundle" != /* || "$output" != /* || ! -f "$bundle/task.json" ]]; then
     echo 'Use absolute paths and an existing task.json bundle.' >&2; exit 2
 fi
+if [[ "$worker" == false && "$(uname -r)" == *microsoft*WSL* ]]; then
+    echo "WSL requires scripts/launch_training_bundle.ps1 with a native Windows owner." >&2
+    exit 2
+fi
 if [[ "$worker" == false ]]; then
     mkdir -p -- "$(dirname -- "$output")"
     mkdir -- "$output"
@@ -34,7 +38,7 @@ finish() {
         printf 'FAILED (exit %s): return this archive; do not restart training or change parameters.\n' "$code" > "$output/RETURN.txt"
     fi
     # Preserve partial scientific artifacts and diagnostics on either outcome.
-    tar -czf "$output.tar.gz.partial" -C "$(dirname -- "$output")" "$(basename -- "$output")"
+    tar --exclude='*/checkpoints' -czf "$output.tar.gz.partial" -C "$(dirname -- "$output")" "$(basename -- "$output")"
     mv -- "$output.tar.gz.partial" "$output.tar.gz"
     exit "$code"
 }
