@@ -1,0 +1,23 @@
+{
+  "version": "v0.8.0-development-analysis-1",
+  "frozen_at_utc": "2026-11-24T00:57:05.746850+00:00",
+  "partition_frozen_at_utc": "2026-11-24T00:19:54.281880+00:00",
+  "methods": [
+    "ridge",
+    "extratrees"
+  ],
+  "seed": 20261123,
+  "folds": 5,
+  "group": "formula",
+  "ridge_alpha": 10.0,
+  "extratrees": {
+    "n_estimators": 256,
+    "min_samples_leaf": 4,
+    "max_features": 0.8,
+    "n_jobs": 4
+  },
+  "objective": "Predict absolute barrier error with endpoint-only features; energy, force and TS-force remain reported outcomes, not guaranteed improvements.",
+  "fallback": "Every policy uses the same legacy model outside the frozen geometry radius. A specialist system cannot borrow the newly trained global model.",
+  "comparison": "Fixed endpoint gate, fold-selected fixed expert, two grouped OOF risk estimators and unattainable barrier oracle; compare all systems against single_general fixed gate and retain all member/region metrics.",
+  "scope": "Exploratory meta-development; no new prospective labels; frozen before any specialization benchmark completes."
+}

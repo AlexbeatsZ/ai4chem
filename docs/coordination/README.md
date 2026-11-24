@@ -1,6 +1,6 @@
 # 多设备计算与交接
 
-最后核实：2026-11-24T00:34Z（洛杉矶 November 23）。先读根 AGENTS.md。
+最后核实：2026-11-24T00:56Z（洛杉矶 November 23）。先读根 AGENTS.md。
 用户要求持续推进长计算，包括夜间；等待期间检查完成并接续已授权研究。
 用户稍后自行写报告，当前主线是改进模型和验证条件专长。
 
@@ -10,9 +10,9 @@
 | --- | --- | --- |
 | OMEN | v0.7 四臂 CUDA 对照，前三臂完成、path4096 运行 | results/v0.7.0/state.json；native owner 39092，启动命令在 results/coordination/model-v07 |
 | Mac | 八反应三专家端点搜索，AIMNet2-rxn 八项完成，其余仍运行 | results/v0.7.0/diversity_search/<expert>/state.json；results/coordination/diversity-search |
-| Mac | v0.8 七项等更新专门化训练，数据准备/传输/读回完成，尚等待 CPU 调度 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
+| Mac | v0.8 七项等更新专门化训练，数据读回完成，global512 已开始 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
 | 室友 Gaussian | AIMNet2-rxn/rxn8694，四线程/4 GB TS→频率→双向 IRC→稳定末端 | worker results/rxn8694-aimnet2-rxn-gaussian16w-r1；native owner 5232，00:33Z 启动 |
-| ROG | 本轮无已验收计算 | 需要时重新检查，不把历史不可达当作当前事实 |
+| ROG | 00:51Z 已恢复 SSH，可用内存 5.277 GiB；现有分析环境，无新科学计算 | 计算工具尚需按任务验收，不能把连接成功当成训练/DFT 可用 |
 
 OMEN 已完成 random4096：60 条 validation 能垒 MAE 0.125969 eV、力 RMSE
 0.090548 eV/Å；这比旧微调同集 0.137937/0.095218 好，但仍是开发结果。

@@ -94,7 +94,10 @@ instructions still determine the group's assigned slot and submission details.
   equal label/epoch ceilings. Record actual time and updates.
 - Next: optimizer/replay comparisons, three seeds for promising settings, freeze
   models/router, then prospective static/path-search/DFT validation.
-- v0.8 specialization uses shared labels/equal updates; read `docs/design/specialization.md`.
+- v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent59171
+  runs CPU training alongside searches under `configs/v0.8.0_execution.json`.
+  Read `docs/design/specialization.md`; finite development analyzer waits for all
+  seven benchmarks using `configs/v0.8.0_analysis.json`, without opening holdouts.
 - User proposed an expert library with a local decision router. First quantify
   oracle headroom on meta-development, then compare endpoint-only TabPFN/TabICL,
   Jev-style local decisions and simple baselines with grouped out-of-fold estimates.
