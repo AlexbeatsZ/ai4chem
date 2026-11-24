@@ -1,0 +1,138 @@
+{
+  "status": "first_stage_screening_complete",
+  "finished_at_utc": "2026-11-24T03:44:35.894789+00:00",
+  "selected_for_next_stage": "mh1_random4096",
+  "validation_ranking": [
+    "mh1_random4096",
+    "mh1_path4096",
+    "mh1_path2048",
+    "legacy_mh1_256",
+    "mh1_anchor256_long",
+    "mh1-omol"
+  ],
+  "validation_metrics": {
+    "mh1_anchor256_long": {
+      "relative_energy_mae_eV": 0.06690928321057071,
+      "relative_energy_rmse_eV": 0.11032556680243973,
+      "barrier_mae_eV": 0.14787173938339038,
+      "force_component_mae_eV_per_A": 0.04976422436890152,
+      "force_component_rmse_eV_per_A": 0.09383343625654623,
+      "ts_region_force_component_rmse_eV_per_A": 0.13833578285306494
+    },
+    "mh1_path2048": {
+      "relative_energy_mae_eV": 0.05616275086359262,
+      "relative_energy_rmse_eV": 0.10196046635173502,
+      "barrier_mae_eV": 0.13698543556811274,
+      "force_component_mae_eV_per_A": 0.04761144584613204,
+      "force_component_rmse_eV_per_A": 0.09074094089524233,
+      "ts_region_force_component_rmse_eV_per_A": 0.13506181478211798
+    },
+    "mh1_random4096": {
+      "relative_energy_mae_eV": 0.04971882199087152,
+      "relative_energy_rmse_eV": 0.08724726186450676,
+      "barrier_mae_eV": 0.12596865655912856,
+      "force_component_mae_eV_per_A": 0.0469895145411533,
+      "force_component_rmse_eV_per_A": 0.09054755406331153,
+      "ts_region_force_component_rmse_eV_per_A": 0.13472383368038435
+    },
+    "mh1_path4096": {
+      "relative_energy_mae_eV": 0.04933740088709631,
+      "relative_energy_rmse_eV": 0.08665804228072733,
+      "barrier_mae_eV": 0.13201372039939088,
+      "force_component_mae_eV_per_A": 0.04958454992419825,
+      "force_component_rmse_eV_per_A": 0.09506576164306245,
+      "ts_region_force_component_rmse_eV_per_A": 0.14056649208903155
+    },
+    "mh1-omol": {
+      "relative_energy_mae_eV": 0.10766131293717232,
+      "relative_energy_rmse_eV": 0.17451491219190646,
+      "barrier_mae_eV": 0.22984603718565874,
+      "force_component_mae_eV_per_A": 0.12749879642831966,
+      "force_component_rmse_eV_per_A": 0.1950777178839924,
+      "ts_region_force_component_rmse_eV_per_A": 0.2169705081419474
+    },
+    "legacy_mh1_256": {
+      "relative_energy_mae_eV": 0.058372416512321855,
+      "relative_energy_rmse_eV": 0.09971500555369367,
+      "barrier_mae_eV": 0.13793653840989464,
+      "force_component_mae_eV_per_A": 0.0491620799756051,
+      "force_component_rmse_eV_per_A": 0.09521750307399426,
+      "ts_region_force_component_rmse_eV_per_A": 0.14215948745913062
+    }
+  },
+  "runs": [
+    {
+      "name": "mh1_anchor256_long",
+      "dataset": "anchor256",
+      "train_size": 256,
+      "seed": 20261116,
+      "model": "models/v0.7.0/mh1_anchor256_long.model",
+      "config": "results/v0.7.0/training/mh1_anchor256_long/config.yaml",
+      "best_epoch": 1,
+      "trained_epochs": 40,
+      "gradient_steps_estimated_from_logged_epochs": 2560,
+      "started_at_utc": "2026-11-23T18:27:07.344880+00:00",
+      "finished_at_utc": "2026-11-23T18:51:17.552158+00:00",
+      "elapsed_seconds": 1450.253080733004,
+      "heads": [
+        "Default"
+      ],
+      "optional_compiled_export_warning": false
+    },
+    {
+      "name": "mh1_path2048",
+      "dataset": "path2048",
+      "train_size": 2048,
+      "seed": 20261116,
+      "model": "models/v0.7.0/mh1_path2048.model",
+      "config": "results/v0.7.0/training/mh1_path2048/config.yaml",
+      "best_epoch": 2,
+      "trained_epochs": 40,
+      "gradient_steps_estimated_from_logged_epochs": 20480,
+      "started_at_utc": "2026-11-23T18:52:02.784959+00:00",
+      "finished_at_utc": "2026-11-23T20:42:44.205193+00:00",
+      "elapsed_seconds": 6641.816241391003,
+      "heads": [
+        "Default"
+      ],
+      "optional_compiled_export_warning": false
+    },
+    {
+      "name": "mh1_random4096",
+      "dataset": "random4096",
+      "train_size": 4096,
+      "seed": 20261116,
+      "model": "models/v0.7.0/mh1_random4096.model",
+      "config": "results/v0.7.0/training/mh1_random4096/config.yaml",
+      "best_epoch": 7,
+      "trained_epochs": 40,
+      "gradient_steps_estimated_from_logged_epochs": 40960,
+      "started_at_utc": "2026-11-23T20:43:31.063144+00:00",
+      "finished_at_utc": "2026-11-24T00:12:51.989177+00:00",
+      "elapsed_seconds": 12561.526270542992,
+      "heads": [
+        "Default"
+      ],
+      "optional_compiled_export_warning": false
+    },
+    {
+      "name": "mh1_path4096",
+      "dataset": "path4096",
+      "train_size": 4096,
+      "seed": 20261116,
+      "model": "models/v0.7.0/mh1_path4096.model",
+      "config": "results/v0.7.0/training/mh1_path4096/config.yaml",
+      "best_epoch": 5,
+      "trained_epochs": 40,
+      "gradient_steps_estimated_from_logged_epochs": 40960,
+      "started_at_utc": "2026-11-24T00:13:37.092645+00:00",
+      "finished_at_utc": "2026-11-24T03:43:57.002194+00:00",
+      "elapsed_seconds": 12621.36281385104,
+      "heads": [
+        "Default"
+      ],
+      "optional_compiled_export_warning": false
+    }
+  ],
+  "holdout_labels_evaluated": false
+}

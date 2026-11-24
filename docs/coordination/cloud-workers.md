@@ -32,7 +32,10 @@ bash scripts/cloud_worker.sh doctor -- --device cpu
 ```
 
 没有在公开包里携带或安装 Gaussian；云节点的原生二进制仍须实际验证。
-OMEN 验证使用其现有 Windows Gaussian 的显式桥接，不能冒充 Linux 原生成功。
+用户明确要求 OMEN WSL 先安装并运行原生 Linux Gaussian。此前的 Windows
+桥接验收方向错误，不满足该要求；`validate_cloud_omen.sh` 中的旧桥接步骤待
+提供 Linux 安装包后替换，当前禁止将其结果当作本地部署通过。用户会稍后
+提供 g16，本轮先检查已有本地研究的进度。尚未编写/验证 Gaussian 安装器。
 
 ## OMEN 本地验收
 
@@ -42,7 +45,11 @@ OMEN 验证使用其现有 Windows Gaussian 的显式桥接，不能冒充 Linux
 - 项目范围 micromamba2.6.0 引导器；从零创建 Python3.12.16 并按现有 lock 安装。
 - 日志 `results/coordination/cloud-validation/omen-bootstrap-r1/{launch.json,stdout.log,stderr.log}`。
 - 实际验收 `results/node-readiness/cloud-worker/omen-bootstrap-r1/validation_summary.json`。
-- 当前：独立 Python 已创建，开始下载并安装固定 pip 依赖，尚未记录通过。原 GPU 研究 owner39092/43344 保持。
+- 首次安装已失败：2026-11-24T03:00Z 退出码2，固定依赖下载中的
+  nvidia-cudnn-cu13 出现 SSL record layer failure；只创建了独立 Python，
+  没有通过 MACE 推理/短训练/pip check 或 Gaussian。原 GPU 研究保持。
+- 已检查 Mac 下载/相关资料、OMEN 下载/文档/桌面/资料盘和 WSL 常用软件
+  目录；仅发现 Windows G16W ZIP/现有安装，未找到 Linux 安装包。
 
 ## 2026-11-23 配置比较（页面实时观察）
 

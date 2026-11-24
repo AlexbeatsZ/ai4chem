@@ -79,6 +79,9 @@ instructions still determine the group's assigned slot and submission details.
 - User requested OMEN validation of cloud deployment first, then a user-provided
   cloud server test, then five-member task distribution. Do not create/buy a server
   or dispatch yet. Read `docs/design/cloud-workers.md`; local acceptance is pending.
+- Local acceptance must install/run native Linux Gaussian in WSL; Windows bridging
+  does not satisfy it. User will provide Linux g16 later. Fresh ML environment
+  bootstrap failed during a cuDNN SSL download; no deployment acceptance passed.
 - User has about two weeks and wants better models; they will write the report.
 - Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
 - v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
@@ -93,8 +96,11 @@ instructions still determine the group's assigned slot and submission details.
   foundation, up to 40 epochs/patience 12, original loss/lr. All retain old anchors.
   Data sampling contrasts have equal reaction counts; only the two 4096 arms have
   equal label/epoch ceilings. Record actual time and updates.
-- v0.9 CUDA optimizer/force-weight controls and two additional selected-setting seeds
-  queue behind the v0.7 runner lock; read `docs/design/optimizer-study.md`.
+- v0.7 four arms completed 40 actual epochs each and validation60 at 03:44Z
+  November24 (Nov23 local). random4096 selected, barrier MAE0.125968657 eV and
+  force RMSE0.090547554 eV/A; see `docs/reports/v0.7.0-screening/README.md`.
+- v0.9 obtained the released v0.7 runner lock and started the first CUDA force-loss
+  control at 03:45:56Z; read `docs/design/optimizer-study.md`.
   Final models/router still require freezing before prospective static/search/DFT.
 - v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent2061
   runs six CPU training workers alongside two searches; the previous global trainer
@@ -116,10 +122,11 @@ instructions still determine the group's assigned slot and submission details.
 - Eight experts/four families now evaluated: AIMNet2/rxn, ANI and Orb were added.
   Read `docs/design/expert-diversity.md`; the new grouped pilot shows no deployed
   multi-metric routing gain. Eight-reaction/three-expert endpoint searches are frozen.
-- Roommate Gaussian is reachable through OMEN's existing SSH identity. A new
-  AIMNet2-rxn/rxn8694 chain started at 00:33Z November 24 (Nov 23 local), owner
-  5232; fresh connection observed native Gaussian and growing TS log. New DFT
-  cohort/config is `configs/v0.7.0_diversity_dft.json`; inspect owner before reuse.
+- Roommate AIMNet2-rxn/rxn8694 Gaussian finished at 02:35Z November 24 (Nov 23
+  local); Mac recovered all raw evidence and independently verified the full chain
+  at 03:43Z. Electronic barrier 2.625419123 eV versus MLIP 2.044812811 eV; one
+  post-hoc development candidate, not a population success-rate/accuracy claim.
+  See `docs/reports/v0.7.2-diversity-dft/README.md`. Owner5232 is terminal; no rerun.
 - v0.5 is complete/published and must not be restarted. v0.6 r2 is terminal:
   Gaussian rxn9456 full chain passed (barrier 4.677548685 eV); Mac same-candidate
   chain failed with a real negative-curvature endpoint and exhausted backward IRC.

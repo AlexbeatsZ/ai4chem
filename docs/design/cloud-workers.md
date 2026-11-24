@@ -23,6 +23,9 @@ Gaussian 不因本模块重新启动或被替换。CPU/GPU 型号与报价以当
 - 安装成功、CUDA 能量/力推理、短训练、完整研究任务和云端验收分别记账。
 - Gaussian 不在公开分发包中；现有原生 Windows Gaussian 与未来 Linux
   Gaussian 二进制分别验收，不能把 WSL/Python 成功当作 Linux Gaussian 成功。
+- 用户随后明确：部署目标是原生 Linux Gaussian，OMEN WSL 必须使用 Linux
+  二进制完成安装和 TS/Freq/双向 IRC 验收。Windows 桥接只保留为历史编排
+  诊断，不能满足本地部署门槛。用户会稍后提供 Linux g16，当前先跟进已有计算。
 
 ## 近期可分发的科学工作
 

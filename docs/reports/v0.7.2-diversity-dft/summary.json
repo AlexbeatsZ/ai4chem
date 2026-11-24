@@ -1,0 +1,189 @@
+{
+  "scope": "one post-hoc development candidate; not independent success-rate evaluation",
+  "reaction": "rxn8694",
+  "expert": "aimnet2-rxn",
+  "dft_method": "wB97X/6-31G(d), Gaussian16W-A.03, UltraFine/XQC/NoSymm",
+  "assessment": {
+    "job_id": "rxn8694-aimnet2-rxn-gaussian16w-r1",
+    "reaction": "rxn8694",
+    "engine": "gaussian",
+    "assessed_at_utc": "2026-11-24T03:43:32.703619+00:00",
+    "study_type": "post_hoc_development_diagnostic",
+    "changes_v05_results": false,
+    "ts_valid": true,
+    "ts": {
+      "normal_termination": true,
+      "optimization_completed": true,
+      "frequencies_cm1": [
+        -567.5748,
+        85.2838,
+        143.0895,
+        232.1877,
+        283.8403,
+        333.3521,
+        398.1188,
+        459.7832,
+        474.0715,
+        551.1868,
+        572.0685,
+        656.8603,
+        887.5494,
+        920.697,
+        970.7994,
+        1048.2684,
+        1059.6487,
+        1089.9312,
+        1302.8403,
+        1358.612,
+        1426.328,
+        1467.0857,
+        1620.6895,
+        1707.8838,
+        2122.0451,
+        3117.0214,
+        3168.1462,
+        3326.0178,
+        3626.3436,
+        3743.9539
+      ],
+      "energy_hartree": -360.383056349,
+      "irc_path_complete": false,
+      "postprocessing_error": false,
+      "source_log": "ts.log"
+    },
+    "branches": [
+      {
+        "direction": "forward",
+        "irc_complete": true,
+        "stable_minimum": true,
+        "frequencies_cm1": [
+          166.6195,
+          271.0214,
+          289.0844,
+          348.5991,
+          483.5453,
+          526.9046,
+          665.3883,
+          751.5668,
+          784.5709,
+          813.9102,
+          914.6062,
+          938.4815,
+          963.4524,
+          971.0627,
+          1058.5605,
+          1084.0855,
+          1111.8936,
+          1117.4823,
+          1278.6888,
+          1292.7595,
+          1333.5948,
+          1464.7935,
+          1548.203,
+          1714.8846,
+          1988.4979,
+          3190.5568,
+          3285.6856,
+          3301.4528,
+          3572.1973,
+          3659.7883
+        ],
+        "energy_hartree": -360.479538723,
+        "matches_input_bonds": [
+          true,
+          false
+        ],
+        "endpoint_fragment_rmsd_A": [
+          [
+            0.011071794554250123
+          ],
+          [
+            0.8405689275340558,
+            0.02889046689469692
+          ]
+        ],
+        "endpoint_rmsd_A": [
+          0.011071794554250123,
+          1.3255033801563734
+        ],
+        "matches_input_geometry": [
+          true,
+          false
+        ]
+      },
+      {
+        "direction": "reverse",
+        "irc_complete": true,
+        "stable_minimum": true,
+        "frequencies_cm1": [
+          15.5552,
+          35.294,
+          82.7772,
+          97.4035,
+          118.3389,
+          163.4457,
+          299.6922,
+          336.5191,
+          430.0425,
+          472.1383,
+          614.8939,
+          697.9408,
+          799.865,
+          907.6423,
+          922.804,
+          1004.8788,
+          1032.8902,
+          1164.2773,
+          1373.6095,
+          1454.5271,
+          1466.7673,
+          1701.464,
+          1768.8048,
+          1877.5039,
+          2270.0753,
+          2974.9349,
+          3215.6443,
+          3315.3222,
+          3592.8759,
+          3694.1746
+        ],
+        "energy_hartree": -360.481724229,
+        "matches_input_bonds": [
+          false,
+          true
+        ],
+        "endpoint_fragment_rmsd_A": [
+          [
+            0.9973673087490037
+          ],
+          [
+            0.06846080783699302,
+            0.00013961907191482404
+          ]
+        ],
+        "endpoint_rmsd_A": [
+          0.9973673087490037,
+          0.5511274592591449
+        ],
+        "matches_input_geometry": [
+          false,
+          true
+        ]
+      }
+    ],
+    "expected_connectivity": true,
+    "dft_verified": true,
+    "source_started_at_utc": "2026-11-24T00:33:18.8543230Z",
+    "source_finished_at_utc": "2026-11-24T02:35:20.1307996Z",
+    "source_elapsed_seconds": 7321.278520299999,
+    "electronic_barrier_eV": 2.6254191234614894,
+    "mlip_to_dft_ts_rmsd_A": 0.18576264697959718
+  },
+  "mlip_barrier_eV": 2.0448128107960475,
+  "mlip_minus_dft_barrier_eV": -0.5806063126654419,
+  "mlip_strict_success": true,
+  "mlip_elapsed_seconds": 64.76014566600497,
+  "holdout_labels_evaluated": false,
+  "native_linux_gaussian_deployment_verified": false,
+  "assembled_at_utc": "2026-11-24T03:46:01.929824+00:00"
+}

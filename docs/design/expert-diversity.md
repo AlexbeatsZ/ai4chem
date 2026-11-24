@@ -83,6 +83,10 @@ v0.4 迭代预算和精度阈值。端点先统一检查收敛及映射键保留
 导出终态证据；`continue_gaussian_relay.py` 是至多十二小时的一次性接力，
 回传后调用既有独立 assessor。断线等待重连，不自动重算或放宽判据。
 
+导出中途断线可能留下完整 `return.zip`，但调用端尚无 receipt。再次导出时
+只复用与终态源文件数量/名称/长度及 JSON 身份完全一致的归档；不覆盖或
+重新运行计算。收到后仍做 ZIP CRC 和独立几何/频率评估。
+
 ## 原始来源
 
 - https://github.com/isayevlab/aimnetcentral
