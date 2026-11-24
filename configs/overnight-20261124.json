@@ -1,0 +1,52 @@
+{
+  "version": "paired-sampling-r1-local-dispatch",
+  "frozen_at_utc": "2026-11-24T16:04:51.437598+00:00",
+  "output": "results/overnight-20261124",
+  "training": {
+    "epochs": 40,
+    "patience": 100,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "energy_weight": 10.0,
+    "forces_weight": 1.0,
+    "dtype": "float64",
+    "E0s": "estimated"
+  },
+  "nodes": {
+    "omen": {
+      "device": "cuda",
+      "workers": 1,
+      "seeds": [
+        20261124,
+        20261125,
+        20261126
+      ]
+    },
+    "mac": {
+      "device": "cpu",
+      "workers": 2,
+      "seeds": [
+        20261127,
+        20261128,
+        20261129,
+        20261130
+      ]
+    }
+  },
+  "user_authorization": "November24: deploy >=18h useful work to roommate, OMEN and Mac. No cloud purchase or other human dispatch.",
+  "original_five_seeds": [
+    20261124,
+    20261125,
+    20261126,
+    20261127,
+    20261128
+  ],
+  "extension": "Two additional paired repeats20261129/30 fixed before their training; seven pairs reported, no best-seed-only selection.",
+  "original_packages_reserved": "member01-03 assigned OMEN, member04-05 assigned Mac; do not redistribute original packages.",
+  "analysis": "Report all pairs, paired random-path differences, every seed, failures and actual compute. Original development seed16 separate.",
+  "admission": "OMEN waits for actual v0.9/v0.7 locks; Mac two extra four-thread workers preserve existing specialization workers.",
+  "estimated_omen_hours": 21,
+  "estimated_mac_hours": "~36-44 at two workers using recent ~14-16min/epoch; actual contention varies",
+  "holdout_labels_evaluated": false,
+  "automatic_training_retries": 0
+}

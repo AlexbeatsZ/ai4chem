@@ -20,7 +20,10 @@ if (-not $Worker) {
     } elseif ($Resume) { throw 'No previous state to resume.' }
     if (-not (Test-Path -LiteralPath (Join-Path $GaussianDirectory 'g16.exe'))) { throw 'Gaussian executable missing.' }
     $os = Get-CimInstance Win32_OperatingSystem
-    if ($os.FreePhysicalMemory -lt 6MB) { throw 'Require at least 6 GiB available physical memory for this 4 GB job.' }
+    $memory = [regex]::Match($task.configuration.dft_mem,'^(\d+)GB$')
+    if (-not $memory.Success) { throw 'Admission requires an explicit integer GB Gaussian memory budget.' }
+    $requiredKiB = ([int]$memory.Groups[1].Value+2)*1MB
+    if ($os.FreePhysicalMemory -lt $requiredKiB) { throw 'Require Gaussian memory plus 2 GiB available physical memory.' }
     $active = @(Get-CimInstance Win32_Process | Where-Object {$_.Name -match '^(g16|l[0-9]+)\.exe$'})
     if ($active.Count) { throw 'Another native Gaussian job is present; inspect before sharing this worker.' }
     $powershell = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'

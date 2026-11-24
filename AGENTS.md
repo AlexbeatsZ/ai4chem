@@ -76,13 +76,22 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November24 user authorized >=18h queues on roommate/OMEN/Mac. Read
+  `docs/design/local-compute-queue.md` and `configs/overnight-20261124.json`.
+  Seven paired random/path repeats are reserved: seeds24–26 OMEN,27–30 Mac
+  (full seeds20261124–30). Do not redistribute original member01–05 ZIPs.
+  Roommate receives three AIMNet chains0255/3342/4757 then quarantined train-side
+  force labels,24h actual-execution admission budget;2GB/fourthreads,4GiB free.
+  Runtime is results/overnight-20261124; verify owners before starting/recovering.
+
 - Mac now has Intel Gaussian 16 A.03 / GaussView 6.0.16 under
   `~/.local/opt/gaussian16`; signed `~/Applications/GaussView.app` supplies its
   process environment. Water wB97X/6-31G(d) Opt/Freq and GUI log display passed;
   GUI submission, TS/IRC and production concurrency remain unverified. See mac-qc.md.
 - User requested OMEN validation of cloud deployment first, then a user-provided
   cloud server test, then five-member task distribution. Do not create/buy a server
-  or dispatch yet. Read `docs/design/cloud-workers.md`; local acceptance is pending.
+  or dispatch to other humans/cloud yet. Three existing local nodes are separately
+  authorized on November24. Read `docs/design/cloud-workers.md`.
 - Native Linux Gaussian remains pending the user's next-day files. ML readiness now
   passed independently on OMEN: fresh locked environment, CUDA force difference,
   two epochs/reload and native Windows-owned unattended return. Mac loaded the
@@ -90,7 +99,8 @@ instructions still determine the group's assigned slot and submission details.
   acceptance and original Gaussian/group-dispatch gates remain pending.
 - User wants unattended group work. Five self-contained paired random4096/path4096
   seed20261124–28 packages are ready in results/group-training/paired-sampling-r1;
-  no overlap with active seed16–18 queues, no ten-run launch or group dispatch.
+  no overlap with seed16–18. November24 assigns original five pairs to local
+  queues and adds two fixed pairs; no other-human/cloud dispatch.
   Linux entry is bash member-NN/start.sh. WSL must use the native Windows
   scripts/launch_training_bundle.ps1 owner; generic WSL detach is rejected.
 - User has about two weeks and wants better models; they will write the report.
@@ -114,7 +124,8 @@ instructions still determine the group's assigned slot and submission details.
   control at 03:45:56Z; read `docs/design/optimizer-study.md`.
   Final models/router still require freezing before prospective static/search/DFT.
 - v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent2061
-  runs six CPU training workers alongside two searches; the previous global trainer
+  has five completed CPU models and two remaining trainers; searches are terminal.
+  The previous global trainer
   was adopted without restart. `configs/v0.8.0_execution.json` records measured
   nominal oversubscription and can change admission capacity without restarting workers.
   Read `docs/design/specialization.md`; finite development analyzer waits for all
@@ -211,6 +222,7 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 
 # Docs Index
 
+- `docs/design/local-compute-queue.md` fixes the November24 three-host queues.
 - `docs/design/cloud-workers.md` defines cloud bootstrap, local/cloud acceptance and group-dispatch gates.
 - `docs/project-background.md` is the research and course entrypoint. Read before
   planning new work; it integrates motivation, related literature and priorities.
