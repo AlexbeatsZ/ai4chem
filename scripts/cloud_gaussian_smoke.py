@@ -10,6 +10,8 @@ import shutil
 import socket
 import subprocess
 
+from run_gaussian_portable import windows_powershell
+
 ROOT=Path(__file__).resolve().parents[1]
 
 
@@ -31,7 +33,7 @@ def main():
     if args.windows_bridge:
         def winpath(path):
             return subprocess.check_output(['wslpath','-w',str(path)],text=True).strip()
-        command=['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',
+        command=[windows_powershell(),'-NoProfile','-ExecutionPolicy','Bypass','-File',
                  winpath(ROOT/'run_gaussian_job.ps1'),'-InputFile',winpath(input_path)]
         result=subprocess.run(command,capture_output=True,text=True,timeout=300)
         native=False

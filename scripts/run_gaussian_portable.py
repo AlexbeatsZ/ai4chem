@@ -11,6 +11,7 @@ import math
 import os
 from pathlib import Path
 import re
+import shutil
 import socket
 import subprocess
 import sys
@@ -26,6 +27,14 @@ def now():
 def save(path,value):
     temporary=path.with_suffix('.tmp')
     temporary.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n'); temporary.replace(path)
+
+
+def windows_powershell():
+    found=shutil.which('powershell.exe')
+    if found: return found
+    explicit=Path('/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe')
+    if not explicit.is_file(): raise FileNotFoundError('Existing Windows PowerShell not found for explicit WSL bridge')
+    return str(explicit)
 
 
 def parse_stage(text):
@@ -51,7 +60,7 @@ def execute(directory,name,g16_dir,bridge,timeout):
     if not input_path.is_file(): raise FileNotFoundError(input_path)
     if bridge:
         convert=lambda p:subprocess.check_output(['wslpath','-w',str(p)],text=True).strip()
-        command=['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',
+        command=[windows_powershell(),'-NoProfile','-ExecutionPolicy','Bypass','-File',
                  convert(ROOT/'run_gaussian_job.ps1'),'-InputFile',convert(input_path)]
         with (directory/(name+'-bridge.log')).open('xb') as bridge_log:
             process=subprocess.run(command,stdout=bridge_log,stderr=subprocess.STDOUT,timeout=timeout)
@@ -86,8 +95,10 @@ def force_batch(args,directory,task):
                     row=re.match(r'^\s*(\d+)\s+(\d+)\s+([-\d.DE+]+)\s+([-\d.DE+]+)\s+([-\d.DE+]+)\s*$',line)
                     if row: force.append([int(row[2]),*[float(row[i].replace('D','E')) for i in (3,4,5)]])
                     elif force: break
+            expected_numbers=[{'H':1,'C':6,'N':7,'O':8}[s] for s in item['symbols']]
             if (code or not record['normal_termination'] or record['energy_hartree'] is None
-                    or len(force)!=item['atoms'] or not all(math.isfinite(v) for row in force for v in row)):
+                    or len(force)!=item['atoms'] or [row[0] for row in force]!=expected_numbers
+                    or not all(math.isfinite(v) for row in force for v in row)):
                 raise RuntimeError(f'Incomplete Gaussian force label: {item["name"]}')
             state['items'].append({'name':item['name'],'energy_hartree':record['energy_hartree'],
                 'forces_hartree_bohr_output_orientation':force,
