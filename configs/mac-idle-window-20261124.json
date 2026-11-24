@@ -1,0 +1,13 @@
+{
+  "version": "mac-idle-window-r1",
+  "authorized_at_utc": "2026-11-24T18:37:34+00:00",
+  "boost_until_utc": "2026-11-25T07:00:00+00:00",
+  "boost_workers": 4,
+  "baseline_workers": 2,
+  "after_window_nice": 10,
+  "reason": "User has no computer-use needs until November25 15:00 UTC+8 and authorized heavier load. Mac measured about50% idle CPU and50GiB unused RAM. Start all four already frozen pairs without duplicating work.",
+  "after_window": "Return admission to two; retain in-flight science and lower every active paired-worker tree to nice10 within30seconds. Additional tasks drain naturally and yield CPU priority to interactive apps.",
+  "scientific_protocol_changed": false,
+  "additional_seeds": [],
+  "holdout_labels_evaluated": false
+}

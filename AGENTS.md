@@ -49,8 +49,13 @@ instructions still determine the group's assigned slot and submission details.
   `configs/roommate-pool-20261124.json`,2GB/fourthreads each,6GiB launch gate,
   max2 workers,24h wall admission then drain; adopt current chain, no restart.
   Runtime is results/overnight-20261124; verify owners before starting/recovering.
-  Mac r2 owner10062 has two actual E0 workers; r1 failed before any training
-  and is retained as mac-infra-r1. OMEN native22604/WSL61077 waits on v0.9 lock.
+  Mac boost owner37519 adopted workers10064/10065 without restarting trainers
+  10110/10111; added seeds29/30 workers37529/37530, trainers37577/37576.
+  Four pairs run until November25 07:00Z (=15:00 UTC+8); then admission2/nice10
+  for active worker trees, natural drain (may still have >2 live workers).
+  Read configs/mac-idle-window-20261124.json and handoff-from-10062.json;
+  old scheduler10062 is retired. r1 remains mac-infra-r1, no scientific retry.
+  OMEN native22604/WSL61077 waits on v0.9 lock; v0.9 is on selected seed2.
   Roommate serial13616 retired at17:24Z; pool29700 adopted0255 child33396
   without restart, launched3342 child26464; fresh SSH saw two g16 instances.
   Pool admission endsNovember25 17:24:51Z, then drains. Labels stay quarantined.
@@ -95,9 +100,8 @@ instructions still determine the group's assigned slot and submission details.
   control at 03:45:56Z; read `docs/design/optimizer-study.md`.
   Final models/router still require freezing before prospective static/search/DFT.
 - v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent2061
-  has five completed CPU models and two remaining trainers; searches are terminal.
-  The previous global trainer
-  was adopted without restart. `configs/v0.8.0_execution.json` records measured
+  has six completed tasks and the adopted global worker59207 finishing; searches
+  are terminal. `configs/v0.8.0_execution.json` records measured
   nominal oversubscription and can change admission capacity without restarting workers.
   Read `docs/design/specialization.md`; finite development analyzer waits for all
   seven benchmarks using `configs/v0.8.0_analysis.json`, without opening holdouts.
@@ -140,7 +144,7 @@ mamba run -n ai4chem python smoke_test.py
 mamba run -n ai4chem python -m pip check
 mamba run -n ai4chem python -m unittest discover -s tests -v
 python scripts/experiment_status.py
-# New local queue: inspect results/overnight-20261124/*/state.json FIRST.
+# Local queue: inspect results/overnight-20261124/*/state.json FIRST; no restart.
 # Mac: environments/mac-mace/.pixi/envs/default/bin/python -u scripts/run_paired_queue.py --protocol configs/overnight-20261124.json --node mac
 # OMEN native: powershell -File scripts/launch_paired_queue.ps1 -Protocol configs/overnight-20261124.json
 ```
@@ -181,7 +185,7 @@ completed or active study merely to inspect its status.
 # Docs Index
 
 - `docs/design/local-compute-queue.md` fixes the November24 three-host queues.
-- `docs/design/cloud-workers.md` defines cloud bootstrap, local/cloud acceptance and group-dispatch gates.
+- `docs/design/cloud-workers.md`: bootstrap, acceptance and group-dispatch gates.
 - `docs/project-background.md` is the research and course entrypoint. Read before
   planning new work; it integrates motivation, related literature and priorities.
 - `docs/design/model-improvement.md` fixes v0.7 data roles; `optimizer-study.md` fixes v0.9.
