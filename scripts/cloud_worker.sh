@@ -83,7 +83,7 @@ import sys
 if sys.version_info[:3]!=(3,12,16):
     raise SystemExit(f'Dedicated prefix has unexpected Python: {sys.version}')
 PY
-    "$prefix/bin/python" -m pip install --disable-pip-version-check --timeout 45 --retries 2 \
+    "$prefix/bin/python" -m pip install --disable-pip-version-check --timeout 90 --retries 5 --resume-retries 5 \
         --extra-index-url 'https://download.pytorch.org/whl/cu134' \
         --requirement "$repo/requirements.lock.txt"
     "$prefix/bin/python" -m pip check

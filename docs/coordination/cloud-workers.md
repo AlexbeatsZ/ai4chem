@@ -33,9 +33,9 @@ bash scripts/cloud_worker.sh doctor -- --device cpu
 
 没有在公开包里携带或安装 Gaussian；云节点的原生二进制仍须实际验证。
 用户明确要求 OMEN WSL 先安装并运行原生 Linux Gaussian。此前的 Windows
-桥接验收方向错误，不满足该要求；`validate_cloud_omen.sh` 中的旧桥接步骤待
-提供 Linux 安装包后替换，当前禁止将其结果当作本地部署通过。用户会稍后
-提供 g16，本轮先检查已有本地研究的进度。尚未编写/验证 Gaussian 安装器。
+桥接不满足该要求；`validate_cloud_omen.sh` 已移除桥接，仅验 ML。用户会稍后
+提供 g16；ML 通过不能视为原生 Linux Gaussian 或完整部署通过。尚未编写/
+验证 Gaussian 安装器。
 
 ## OMEN 本地验收
 
@@ -92,3 +92,15 @@ rxn4757）；rxn8694 已在室友节点，禁止重复派发。后两份各选�
 Linux完整链/单点队列使用 `scripts/run_gaussian_portable.py`，沿用原Windows
 科学判据和独立assessor。新增NH3/HF/3-21G小控制用于本地编排验证，不计科学结果；
 WSL桥接成功也不代表云端Linux二进制验收。
+
+## 独立 ML 准备（November 23 晚）
+
+- 第二次隔离安装 `omen-ml-bootstrap-r2`，06:03:25Z启动，owner14556；
+  `-Mode install` 只安装依赖，不占GPU训练，保留首轮失败证据。
+- 真实开发计时包已生成：OMEN `results/cloud-training/development-timing-r1`；
+  Mac同路径和 `development-timing-r1.zip`（66,072,153字节）。实际读取检查：
+  train4096帧、validation600帧，含明确foundation和相对路径task.json。
+- 从完成的 `mh1_random4096` 原配置导出，2epoch/30分钟，预期约4096/4×2次
+  更新；只验证部署/计时，不替代v0.9、不派发新研究、不用于挑模型。
+- 创建服务器仍需用户提供/明确授权；实际云GPU吞吐尚未测量。Linux g16暂缺
+  不阻止这部分准备，原生Gaussian验收仍需用户文件。
