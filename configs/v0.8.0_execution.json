@@ -1,13 +1,13 @@
 {
-  "version": "v0.8.0-execution-amendment-3",
-  "amended_at_utc": "2026-11-24T01:28:00.876577+00:00",
+  "version": "v0.8.0-execution-amendment-4",
+  "amended_at_utc": "2026-11-24T01:36:21.024861+00:00",
   "partition_frozen_at_utc": "2026-11-24T00:19:54.281880+00:00",
-  "reason": "After preserving the original trainer and launching two regional experts, four top samples still showed 29.5-34.9% idle CPU and 57-GiB unused memory during initialization. Admit a fourth necessary training control on the 16-core/128-GiB Mac, then observe steady training; nominal thread limits are not sustained CPU demand. No scientific settings changed.",
-  "cpu_thread_budget": 22,
+  "reason": "Native Mach ten-second sample with four training owners and two searches measured 68.93% total host CPU busy; all cores sampled 49-80% busy, so unused capacity is not only idle efficiency cores. Earlier top measured about 46-GiB unused. Admit the next general control and replay expert, six total training owners, within available RAM. Some initialization remains; continue observing actual training load. Scientific protocol and each worker thread limit unchanged.",
+  "cpu_thread_budget": 30,
   "search_threads": 3,
   "training_threads": 4,
-  "max_training_workers": 4,
-  "dispatch_rule": "floor((22 - 3 * active_searches) / 4), clamped to [0,4]. Nominal caps can oversubscribe 16 physical cores based on measured CPU headroom. Reload resource amendments between dispatch cycles; shrinking capacity never kills active workers. Preserve existing exact-command locked workers; no training restart or implicit retry.",
+  "max_training_workers": 6,
+  "dispatch_rule": "floor((30 - 3 * active_searches) / 4), clamped to [0,6]. Thirty is the sum of nominal per-task thread caps, not physical CPU cores; actual observed demand justifies concurrency. Reload admission amendments and log them; shrinking never kills existing workers. No duplicate scientific job or implicit retry.",
   "scientific_protocol_changed": false,
   "wall_time_comparison": "Record concurrency and actual wall time; equal-update systems do not imply equal wall time or FLOPs."
 }

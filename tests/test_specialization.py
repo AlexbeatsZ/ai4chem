@@ -64,6 +64,8 @@ class SpecializationTests(unittest.TestCase):
         self.assertEqual(training_capacity({"a":"searching","b":"completed","c":"searching"},execution),3)
         execution.update(cpu_thread_budget=22,max_training_workers=4)
         self.assertEqual(training_capacity({"a":"searching","b":"completed","c":"searching"},execution),4)
+        execution.update(cpu_thread_budget=30,max_training_workers=6)
+        self.assertEqual(training_capacity({"a":"searching","b":"completed","c":"searching"},execution),6)
 
     def test_adoption_observes_locked_live_worker_without_restarting_it(self):
         with tempfile.TemporaryDirectory(dir="/tmp/.agents") as temporary:
