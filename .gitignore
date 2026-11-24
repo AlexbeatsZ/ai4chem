@@ -4,6 +4,7 @@ environments/decision-models/.pixi/
 environments/mac-mace/.pixi/
 environments/aimnet/.pixi/
 environments/orb/.pixi/
+environments/cloud-worker/.runtime/
 __pycache__/
 *.pyc
 results/

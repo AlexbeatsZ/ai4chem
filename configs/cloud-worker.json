@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "platform": "linux-64",
+  "python": "3.12.16",
+  "micromamba_version": "2.6.0",
+  "micromamba_url": "https://micro.mamba.pm/api/micromamba/linux-64/2.6.0",
+  "requirements": "requirements.lock.txt",
+  "extra_index_url": "https://download.pytorch.org/whl/cu134",
+  "threads": 2,
+  "minimum_smoke_free_vram_MiB": 2048,
+  "minimum_install_free_disk_GiB": 25,
+  "cloud_compute_verified": false,
+  "dispatch_to_group": "Only after the user-provided cloud server passes real computation. No server creation authorized."
+}

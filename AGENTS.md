@@ -76,6 +76,9 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- User requested OMEN validation of cloud deployment first, then a user-provided
+  cloud server test, then five-member task distribution. Do not create/buy a server
+  or dispatch yet. Read `docs/design/cloud-workers.md`; local acceptance is pending.
 - User has about two weeks and wants better models; they will write the report.
 - Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
 - v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
@@ -186,6 +189,7 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 
 # Docs Index
 
+- `docs/design/cloud-workers.md` defines cloud bootstrap, local/cloud acceptance and group-dispatch gates.
 - `docs/project-background.md` is the research and course entrypoint. Read before
   planning new work; it integrates motivation, related literature and priorities.
 - `docs/design/model-improvement.md` fixes v0.7 data roles; `optimizer-study.md` fixes v0.9.
