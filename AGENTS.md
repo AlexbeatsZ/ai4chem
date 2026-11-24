@@ -128,36 +128,23 @@ instructions still determine the group's assigned slot and submission details.
 
 # Build / Run / Test
 
-Run from this project directory inside WSL.
+OMEN WSL uses existing Mamba ai4chem; Mac uses the appropriate existing Pixi
+interpreter (decision-models includes sklearn for the complete regression suite).
+Read the corresponding design before restarting a historical entrypoint.
 
 ```bash
 mamba run -n ai4chem python smoke_test.py
 mamba run -n ai4chem python -m pip check
-mamba run -n ai4chem python inspect_models.py
-mamba run -n ai4chem python prepare_transition1x.py --count 10 --seed 42
-mamba run -n ai4chem python benchmark_transition1x.py
 mamba run -n ai4chem python -m unittest discover -s tests -v
-mamba run -n ai4chem python prepare_research_data.py
-mamba run -n ai4chem python run_finetuning.py
-mamba run -n ai4chem python run_research_evaluation.py
-OMP_NUM_THREADS=4 JAX_PLATFORMS=cpu mamba run -n ai4chem python ts_search.py
-mamba run -n ai4chem python validate_ts_dft.py
-mamba run -n ai4chem python summarize_ts_search.py
-mamba run -n ai4chem python prepare_v05_reactions.py
-mamba run -n ai4chem python diagnose_ts_search.py
-mamba run -n ai4chem python adaptive_ts_search.py --role development
-mamba run -n ai4chem python adaptive_ts_search.py --freeze
-mamba run -n ai4chem python adaptive_ts_search.py --role holdout
-mamba run -n ai4chem python validate_ts_dft_v05.py
-mamba run -n ai4chem python summarize_ts_search_v05.py
 python scripts/experiment_status.py
-# Only on OMEN WSL, after checking existing coordinator state:
-# Foreground WSL: bash scripts/run_v05_omen.sh
-# Durable background: PowerShell scripts/launch_v05_omen.ps1 -Mode coordinator
+# New local queue: inspect results/overnight-20261124/*/state.json FIRST.
+# Mac: environments/mac-mace/.pixi/envs/default/bin/python -u scripts/run_paired_queue.py --protocol configs/overnight-20261124.json --node mac
+# OMEN native: powershell -File scripts/launch_paired_queue.ps1 -Protocol configs/overnight-20261124.json
 ```
 
-The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
-`results/smoke_summary.json`. It checks the reloaded energy and forces.
+Full historical prepare/search/DFT commands remain in README.md and their designs.
+Smoke requires CUDA and checks reloaded water energy/forces. Do not relaunch a
+completed or active study merely to inspect its status.
 
 # Durable Lessons
 
