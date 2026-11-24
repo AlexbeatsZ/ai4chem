@@ -1,6 +1,6 @@
 # 室友 Gaussian 节点
 
-最后核实：2026-11-23T10:00:06Z（洛杉矶 2026-11-23 02:00）。
+最后核实：2026-11-24T00:34Z（洛杉矶 November 23）。
 用户明确授权通过 SSH 使用室友电脑的现有 Gaussian 一起计算。
 连接账户与地址保存在同步任务日志，不写入公开仓库。
 
@@ -36,20 +36,24 @@ runner 的 Gaussian 环境变量只作用于进程，不更改用户或系统配
 
 ## 当前分配与下一步
 
-2026-11-23 11:21Z 已分配 v0.6.0-pilot 的 rxn9456（C3H4O3，十原子），
-初始可用内存 7.88 GiB、无其他 Gaussian。固定 4 线程/4 GB、ωB97X/6-31G(d)。
-TS 正常结束且优化收敛，完整 24 模，唯一虚频 -721.2605 cm⁻¹；Mac ASE 与
-PowerShell 独立解析一致，MLIP→DFT TS 对齐 RMSD 为 0.01599 Å。
-自动读取曾因 .NET MatchCollection 负索引出错，Count-1 修复后显式 Resume，
-保存旧状态和全部日志，复用原 TS checkpoint，未重算。11:29Z owner 为 35464，
-在 `results\rxn9456-v06-r1` 继续双向 LQA IRC 和末端 Opt/Freq。
+v0.6 rxn9456 r2 已完成且经 Mac 独立验收通过；r1 checkpoint 续算失败保留。
+旧 owner 35464/39032 是历史，不能作为活动任务恢复。
 
-- `scripts/run_gaussian_chain.ps1`：原生 Windows 独立 WMI owner + 单作业文件锁。
-  已用新 SSH 连接观察 Gaussian/owner 存活及增长日志，证实后台会话存活。
-- `scripts/status_gaussian_chain.ps1`：状态、PID 和最多 8192 字节日志快照。
-  活动 Gaussian 文件上 Get-Content -Tail 曾忙循环，已结束两条只读 helper。
-- `scripts/export_gaussian_chain.ps1`：只导出终态科学输入、日志、checkpoint 和状态，
-  不收集 scratch。实际 TS 日志导出回传通过；失败证据同样返回。
-- Mac 独立接力器每 60 秒观察，完成后统一判定映射端点，才可标记 DFT verified。
-  目前仅 TS 通过，完整验证仍未完成。接续见协调 README 和 v0.6 pilot 协议。
-- 首先每次一个作业；无全局环境、软件安装、代理或计划任务变更。
+2026-11-24T00:31Z 经 OMEN 现有 SSH 身份再次连通：无原生 Gaussian、
+可用内存 8.418 GiB。00:33:18Z 新分配 AIMNet2-rxn/rxn8694，12 原子，
+四线程/4 GB，ωB97X/6-31G(d)，中性单重态，UltraFine/XQC/NoSymm。
+Native owner 5232；新 SSH 会话观察 g16/l502 和增长 TS 日志，后台存活。
+工作目录 results\rxn8694-aimnet2-rxn-gaussian16w-r1。
+
+协议 configs/v0.7.0_diversity_dft.json；本候选单独协议为
+configs/v0.7.0-diversity-dft/aimnet2-rxn-rxn8694.json。复用 TS 80 步、LQA
+每向初始 320 点/步长 5，无额外续算。完整 30 模、唯一低于 -50 的负模、
+双向 IRC、全非负末端和映射端点仍须独立验收，尚不能标记 DFT verified。
+
+run_gaussian_chain.ps1 创建 WMI owner；status_gaussian_chain.ps1 读取有界日志；
+export_gaussian_chain.ps1 只导出终态证据。OMEN 中转 relay_gaussian_chain.ps1，
+Mac 有限接力 continue_gaussian_relay.py。这是事后开发候选，不改变 v0.5
+结果，也不充当 prospective holdout。
+
+每次一个四线程/4 GB 全链，先检查资源和进程。不改变全局环境、程序安装、
+代理或计划任务，不复制私钥，节点不加入 dot-agents 自动同步。

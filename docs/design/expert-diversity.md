@@ -63,6 +63,26 @@ v0.4 迭代预算和精度阈值。端点先统一检查收敛及映射键保留
 异常单元保留证据并继续其他反应；存在中断目录而无完成记录时先停止检查，
 不自动覆盖。有意义的鞍点还需要独立 DFT，MLIP 通过不等于 DFT 通过。
 
+## 小规模 DFT 开发诊断
+
+`configs/v0.7.0_diversity_dft.json` 在任何本轮 DFT 前冻结八反应中原子数最少
+的两个反应 rxn4749/rxn8694，并保留三个专家的六个单元。冻结时已经观察到
+部分 MLIP 结果，因此属于事后开发诊断，不能声称独立成功率。
+只有严格 MLIP 全链和稳定最小值检查都通过的候选才提交，失败/尚未完成的
+单元保留在记账分母。首个实际候选为 AIMNet2-rxn/rxn8694。
+
+复用已验证的 Gaussian 16W A.03 链：四线程/4 GB、ωB97X/6-31G(d)、
+中性单重态、UltraFine/XQC/NoSymm，TS 80 步，LQA 每向初始 320 点、
+步长 5，不再延伸。完整 TS 模式、唯一负频率低于 -50、双向 IRC、全非负
+频率最小值及映射键/片段 RMSD≤0.5 Å 均需通过。原始输入端点来自冻结
+端点记录，不能替换为某专家优化后的结构。
+
+`scripts/prepare_diversity_dft.py` 生成不可覆盖的一候选一协议和原生任务包，
+避免旧 preparer/assessor 按 reaction 选中其他专家。OMEN 使用现有 SSH
+身份中转到室友节点，无需拷贝私钥。`relay_gaussian_chain.ps1` 只查询和
+导出终态证据；`continue_gaussian_relay.py` 是至多十二小时的一次性接力，
+回传后调用既有独立 assessor。断线等待重连，不自动重算或放宽判据。
+
 ## 原始来源
 
 - https://github.com/isayevlab/aimnetcentral

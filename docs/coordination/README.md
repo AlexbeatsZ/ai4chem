@@ -1,81 +1,56 @@
 # 多设备计算与交接
 
-最后核实：2026-11-23 03:40 America/Los_Angeles（11:40Z）。
-先读根 `AGENTS.md` 和 `docs/design/v0.6.0-pilot.md`。v0.5.0 已完成发布，
-本轮继续单独的 v0.6.0-pilot。原始 OMEN 对话「测试 MACE 水分子 GPU 推理」
-ID 为 `01a1e76a-d5bf-7881-8023-349081a2e012`；Mac 接续对话为
-`01a206de-3464-7071-ad42-580c51d4e3e5`。
+最后核实：2026-11-24T00:34Z（洛杉矶 November 23）。先读根 AGENTS.md。
+用户要求持续推进长计算，包括夜间；等待期间检查完成并接续已授权研究。
+用户稍后自行写报告，当前主线是改进模型和验证条件专长。
 
-## 当前两个任务
+## 当前分工
 
-| 任务 | 节点 | 当前证据 | 尚待完成 |
-| --- | --- | --- | --- |
-| rxn9456 唯一额外恢复的 DFT 诊断 | 室友 Windows / Gaussian 16W A.03 | TS 优化和 24 模频率通过，唯一虚频 -721.2605 cm⁻¹ | 双向 LQA IRC、稳定末端和映射端点验收 |
-| rxn0666 十原子 DFT 引擎校准 | Mac / PySCF 2.15.1 + geomeTRIC 1.1.1 | 相同原始 MLIP 初值；TS 五次评价收敛，24 模且唯一虚频 -1568.0823 cm⁻¹ | 双向 IRC、稳定末端和 Gaussian 最终数值对照 |
+| 节点 | 当前任务 | 权威状态与恢复入口 |
+| --- | --- | --- |
+| OMEN | v0.7 四臂 CUDA 对照，前三臂完成、path4096 运行 | results/v0.7.0/state.json；native owner 39092，启动命令在 results/coordination/model-v07 |
+| Mac | 八反应三专家端点搜索，AIMNet2-rxn 八项完成，其余仍运行 | results/v0.7.0/diversity_search/<expert>/state.json；results/coordination/diversity-search |
+| Mac | v0.8 七项等更新专门化训练，数据准备/传输/读回完成，尚等待 CPU 调度 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
+| 室友 Gaussian | AIMNet2-rxn/rxn8694，四线程/4 GB TS→频率→双向 IRC→稳定末端 | worker results/rxn8694-aimnet2-rxn-gaussian16w-r1；native owner 5232，00:33Z 启动 |
+| ROG | 本轮无已验收计算 | 需要时重新检查，不把历史不可达当作当前事实 |
 
-协议和输入在 11:19:00Z 固定并提交，先于任何新计算。它们属于看过旧结果后的
-定向诊断和已知正对照，不构成新 holdout。正式输出使用 `results/v0.6.0-pilot/`，
-不覆盖 v0.5.0。各计算完成后仍需 `scripts/assess_dft_chain.py` 统一核验。
+OMEN 已完成 random4096：60 条 validation 能垒 MAE 0.125969 eV、力 RMSE
+0.090548 eV/Å；这比旧微调同集 0.137937/0.095218 好，但仍是开发结果。
+path4096 尚未完成。所有 prospective holdout 参考标签继续封存。
 
-## 设备和权威目录
+## 目录和访问
 
-- Mac：`/Users/meta/Developer/ai4chem`，协调、分析、原生 CPU 量化。
-  原生环境 `environments/mac-qc/` 的 Pixi lock；分析环境 `.venv`。M3 Max / 128 GiB。
-  当前全链在 `results/v0.6.0-pilot/mac/rxn0666-r1/`，主进程 5437。
-- 室友：`%USERPROFILE%\Project\Workspaces\ai4chem-worker`，最小原生 PowerShell
-  worker；i9-14900HX / 16 GB，既有 `C:\G16W`。当前任务 `results\rxn9456-v06-r1`。
-  独立 native owner 35464，11:29Z 显式恢复，只复用了已正常结束的 TS。
-- OMEN：`C:\Users\Meta\Project\Workspaces\ai4chem`，v0.5 CUDA/Gaussian 原始结果。
-  本轮没有启动新的 OMEN 计算，不重跑已完成的冻结实验。
-- ROG：同标准 Windows 项目目录，最近不可达。本轮不依赖其计算结果。
+Mac 项目 /Users/meta/Developer/ai4chem；OMEN 项目
+%USERPROFILE%\source\repos\ai4chem，WSL /mnt/c/Users/Meta/source/repos/ai4chem。
+室友为原授权最小 worker %USERPROFILE%\Project\Workspaces\ai4chem-worker，
+不安装完整科研环境；现有 Gaussian C:\G16W。OMEN 的已有 SSH 身份可中转，
+不用复制私钥。地址、用户和具体命令在同步任务日志
+~/.agents/ai4chem--adaptive-ts-search/AGENTS.md，不进入公开仓库。
 
-节点连接信息只存在同步任务日志 `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`。
-代码/设计通过 AlexbeatsZ/ai4chem main 同步；运行时证据不进 Git。室友不自动同步
-任务日志，worker AGENTS 和 task.json 必须随分配更新。
+代码/协议经 AlexbeatsZ/ai4chem main 同步；数据、权重、大运行证据不进 Git。
+室友不自动同步 dot-agents，任务包更新其 worker AGENTS.md 和 task.json。
+启动前检查实际 owner、原生 Gaussian 和资源，不能只看旧日志中的 PID。
+Windows 活动 Gaussian log 使用 bounded shared byte snapshot，不用 Get-Content -Tail。
 
-## 查看与恢复
+## 科学协议和接力
 
-一次性 Mac 接力器 PID 15336 已在独立会话中运行（新连接实测 PPID=1），
-`results/coordination/v06/state.json` 是两节点的实时任务板；每 60 秒观察，最多 8 小时。
-完成后自动回收原始 Gaussian 日志/checkpoint、独立几何验收，输出同目录 `report.md`，
-并更新用户 outputs 中 `ai4chem-next-investigation.md/.json`。结束于 ready_for_review；
-异常保留，不重算、不改协议、不自动发布。终态导出/传输已用真实 TS 日志往返验证。
-不要重复启动接力器或 Gaussian；程序和科学任务的 PID 分别记录。
+- docs/design/model-improvement.md：v0.7 数据/优化比较及封存。
+- docs/design/expert-diversity.md：不同架构、24 个搜索单元、六单元 DFT 开发诊断。
+- docs/design/specialization.md：512 反应、4096 共享标签、四系统各 40960 更新。
+- scripts/continue_gaussian_relay.py：有限一候选接力，经 OMEN 查询室友，终态
+  回传后调用独立 assessor；不自动重算、更改判据或创建计划任务。
+- scripts/status_gaussian_chain.ps1：原生 owner、Gaussian 进程和有界日志。
+  raw_chain_completed 仍须独立映射端点/频率检查，才可标记 DFT verified。
 
-Mac 查看 `summary.json` 及各分支 `result.json`；现有进程运行时禁止重启。
-原生 DFT 每支四线程，双向并行，避免外层再开三反应造成 24 线程嵌套。
-完整分析命令：
+## 已完成和历史
 
-```bash
-.venv/bin/python scripts/assess_dft_chain.py --protocol configs/v0.6.0-pilot/protocol.json \
-  --reaction rxn0666 --engine mac --folder results/v0.6.0-pilot/mac/rxn0666-r1 \
-  --output results/v0.6.0-pilot/mac/rxn0666-r1/assessment.json
-```
+v0.5 已发布，v0.6 r1/r2 全部终态。Gaussian rxn9456 r2 完整通过；Mac 同候选
+因真实负曲率末端和 IRC 预算失败，保留负结果。Mac rxn0666 正对照四项容差通过。
+这些任务不得因旧节点文档仍显示“进行中”而重启；见
+ docs/reports/v0.6.0-pilot.md、docs/log/2026-11.md 和同步任务日志历史。
+旧四专家路由先导已发布 v0.7.0-routing-pilot；新八专家记录在
+ docs/reports/v0.7.0-diversity，尚未证明可部署的综合改进。
 
-室友 worker 在 SSH 断开后的存活已通过新连接观察 native owner、Gaussian 和增长日志：
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\status_gaussian_chain.ps1 -JobDirectory C:\path\job
-# 只有状态 failed、确认旧 owner 和 native Gaussian 均已退出、诊断原因后：
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run_gaussian_chain.ps1 -JobDirectory C:\path\job -Resume
-```
-
-显式 Resume 会归档旧状态，复用已正常结束的阶段，拒绝覆盖不完整日志。
-首次 TS 后的读取错误来自 PowerShell 对 .NET MatchCollection 的负索引，已改用
-Count-1；真实 TS 结果由 PowerShell 与 Mac ASE 解析相互核对，未重新计算。
-活动 Gaussian log 上 `Get-Content -Tail` 曾忙循环，已停止两条只读 helper；
-新 status 工具以 8192 字节单次快照读取活动日志，不追逐变化的 EOF。
-无用户/系统环境、代理、软件安装或计划任务变更。
-
-## 已完成 v0.5.0 与后续边界
-
-96/96 策略单元、83 次唯一尝试；原始 S0/S1/S2 saddle+IRC 为 3/3/3，微调为
-5/6/6，分母均 12。严格全阶段为 3/3/3 和 5/5/5。预选的 rxn2737/rxn8204/rxn0666
-三个 Gaussian 候选全部通过，九策略单元复用它们，每策略 3/3；条件能垒 MAE
-0.206068 eV。49 回归、Mac 14,084 项独立搜索产物核对及最终 verification 通过。
-v0.5.0 2026-11-23T11:10:37Z 发布，8 资产已验收；旧 coordinator ready_for_review
-只是发布前保留快照，不代表尚有计算。不要再次启动旧 coordinator。
-
-若扩大到多反应/多随机种子，先写新独立协议和任务包。组员可分担完整独立反应链，
-约一天回传适合大批量，见 `group-compute.md`。当前没有必要组织额外大批量。
-节点历史见 `omen.md`、`mac-reporting.md`、`roommate-gaussian.md`、`rog-audit.md`。
+原 OMEN chat：01a1e76a-d5bf-7881-8023-349081a2e012（测试 MACE 水分子 GPU 推理）。
+Mac 接续 chat：01a206de-3464-7071-ad42-580c51d4e3e5。
+组员可分担独立 Gaussian 全链，见 group-compute.md；目前没有发送人际消息。

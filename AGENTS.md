@@ -109,6 +109,10 @@ instructions still determine the group's assigned slot and submission details.
 - Eight experts/four families now evaluated: AIMNet2/rxn, ANI and Orb were added.
   Read `docs/design/expert-diversity.md`; the new grouped pilot shows no deployed
   multi-metric routing gain. Eight-reaction/three-expert endpoint searches are frozen.
+- Roommate Gaussian is reachable through OMEN's existing SSH identity. A new
+  AIMNet2-rxn/rxn8694 chain started at 00:33Z November 24 (Nov 23 local), owner
+  5232; fresh connection observed native Gaussian and growing TS log. New DFT
+  cohort/config is `configs/v0.7.0_diversity_dft.json`; inspect owner before reuse.
 - v0.5 is complete/published and must not be restarted. v0.6 r2 is terminal:
   Gaussian rxn9456 full chain passed (barrier 4.677548685 eV); Mac same-candidate
   chain failed with a real negative-curvature endpoint and exhausted backward IRC.
