@@ -17,6 +17,7 @@ if(-not $Worker) {
     return
 }
 $lock=[IO.File]::Open((Join-Path $QueueDirectory 'queue.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+if(Test-Path -LiteralPath $stateFile){$lock.Dispose();throw 'Existing queue evidence; no implicit restart.'}
 $state=[ordered]@{host=$env:COMPUTERNAME;owner_pid=$PID;started_at_utc=[DateTime]::UtcNow.ToString('o');status='running';stage='admission';outcomes=@();compute_seconds=0.0;holdout_labels_evaluated=$false;training_merge_authorized=$false;automatic_retries=0}
 function Save-State {
     $state.updated_at_utc=[DateTime]::UtcNow.ToString('o')

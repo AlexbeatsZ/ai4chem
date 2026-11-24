@@ -1,7 +1,7 @@
 param([Parameter(Mandatory=$true)][string]$TemporaryRoot)
 $ErrorActionPreference='Stop'
 $project=Split-Path -Parent $PSScriptRoot
-$fixture=Join-Path $TemporaryRoot 'gaussian-queue-fixture'
+$fixture=Join-Path $TemporaryRoot ('gaussian-queue-fixture-'+[Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path (Join-Path $fixture 'scripts') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $project 'scripts\run_gaussian_queue.ps1') -Destination (Join-Path $fixture 'scripts\run_gaussian_queue.ps1')
 $fake=@'
@@ -30,5 +30,9 @@ foreach($mode in @('success','failure')) {
     $rejected=$false
     try{& $runner -QueueDirectory $directory | Out-Null}catch{$rejected=$_.Exception.Message -like '*Existing queue evidence*'}
     if(-not $rejected){throw 'Repeated launcher accepted existing queue evidence.'}
+    $before=[IO.File]::ReadAllText((Join-Path $directory 'queue-state.json'))
+    $rejected=$false
+    try{& $runner -QueueDirectory $directory -Worker | Out-Null}catch{$rejected=$_.Exception.Message -like '*Existing queue evidence*'}
+    if(-not $rejected -or [IO.File]::ReadAllText((Join-Path $directory 'queue-state.json')) -ne $before){throw 'Direct worker retry changed retained evidence.'}
 }
-[ordered]@{status='PASS';budget_stops_admission=$true;three_failures_stop=$true;existing_output_rejected=$true;synthetic_only=$true}|ConvertTo-Json
+[ordered]@{status='PASS';budget_stops_admission=$true;three_failures_stop=$true;existing_output_rejected=$true;direct_worker_retry_rejected=$true;synthetic_only=$true}|ConvertTo-Json
