@@ -9,16 +9,21 @@ $ErrorActionPreference = 'Stop'
 foreach($value in @($WorkerRoot,$JobDirectory,$WorkerSsh)) {
     if($value -notmatch '^[A-Za-z0-9_./:\\@-]+$') { throw 'Use simple space-free worker paths and SSH identity.' }
 }
-function Remote([string]$Script,[switch]$RemoveArchive) {
-    $arguments = @('-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,
+function Remote([string]$Script,[switch]$RemoveArchive,[switch]$StreamOutput) {
+    $arguments = @('-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,
         'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',
         ($WorkerRoot+'/scripts/'+$Script),'-JobDirectory',$JobDirectory)
     if($RemoveArchive) { $arguments += '-RemoveArchive' }
+    if($StreamOutput) {
+        & ssh @arguments
+        if($LASTEXITCODE -ne 0) { throw "Worker command failed: $Script" }
+        return
+    }
     $result = & ssh @arguments
     if($LASTEXITCODE -ne 0) { throw "Worker command failed: $Script" }
     return ($result -join "`n")
 }
-if($Action -eq 'Status') { Remote 'status_gaussian_chain.ps1'; return }
+if($Action -eq 'Status') { Remote 'status_gaussian_chain.ps1' -StreamOutput; return }
 if($Action -eq 'Cleanup') { Remote 'export_gaussian_chain.ps1' -RemoveArchive; return }
 $project = Split-Path -Parent $PSScriptRoot
 $jobName = Split-Path -Leaf $JobDirectory

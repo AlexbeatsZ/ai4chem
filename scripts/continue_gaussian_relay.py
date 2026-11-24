@@ -55,7 +55,7 @@ def main():
     deadline = time.monotonic()+args.max_hours*3600
 
     def remote(action):
-        command = ['ssh','-o','BatchMode=yes','-o','ConnectTimeout=10',args.relay_ssh,
+        command = ['ssh','-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',args.relay_ssh,
             'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',
             args.relay_root+'/scripts/relay_gaussian_chain.ps1','-Action',action,
             '-WorkerRoot',args.worker_root,'-JobDirectory',args.worker_job,'-WorkerSsh',args.worker_ssh]
@@ -64,6 +64,7 @@ def main():
             raise RuntimeError(result.stderr or result.stdout)
         return result.stdout.lstrip('\ufeff')
 
+    save(output/'state.json',state)
     while time.monotonic() < deadline:
         try:
             observed = json.loads(remote('Status'))
