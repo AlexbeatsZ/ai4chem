@@ -43,7 +43,7 @@ def worker(protocol, node, seed):
             model_file=f'models/paired-sampling-r1/{name}.model')
         settings = {**protocol['training'], 'device':protocol['nodes'][node]['device']}
         try:
-            train(experiment, {'training':settings}, manifest, output_root=output,
+            train(experiment, {'training':settings, 'training_seed':seed}, manifest, output_root=output,
                   manifest_path=directory/f'{arm}-manifest.json', state_writer=update)
             if manifest[0]['trained_epochs'] != 40:
                 raise RuntimeError('Expected forty actual logged epochs')

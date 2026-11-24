@@ -18,6 +18,7 @@ class PairedQueueTests(unittest.TestCase):
             protocol={'output':'output','training':{},'nodes':{'mac':{'device':'cpu'}}}
             calls=[]
             def train(experiment, protocol, manifest, **kwargs):
+                self.assertEqual(protocol['training_seed'],experiment['seed'])
                 calls.append(experiment['dataset'])
                 if experiment['dataset']=='random4096': raise RuntimeError('preserved test failure')
                 manifest.append({'trained_epochs':40})
