@@ -1,0 +1,40 @@
+{
+  "version": "v0.8.0",
+  "source_revision": "fac02fc7019ae95a6957b0723b467f6e56745fd2",
+  "seed": 20261124,
+  "training_seed": 20261116,
+  "training_reactions": 512,
+  "frames_per_reaction": 8,
+  "new_reactions": 256,
+  "region_count": 2,
+  "replay_reactions_per_region": 64,
+  "minimum_validation_reactions_per_region": 8,
+  "training": {
+    "epochs": 40,
+    "patience": 100,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "energy_weight": 10.0,
+    "forces_weight": 1.0,
+    "dtype": "float64",
+    "E0s": "estimated",
+    "device": "cpu"
+  },
+  "hardware": "Mac native CPU, same MACE 0.3.17/PyTorch 2.15.0, four threads per training worker, at most three concurrent workers after the separate search pilot is terminal",
+  "shared_training_labels": "4096 unique target-DFT frames: the old 256 reactions plus 256 additional official-train reactions; excludes every meta/holdout and other historic project reaction",
+  "regional_validation": "endpoint-only gate assigned within the same frozen 60 validation reactions. General-pair, specialists and replay pair use the same respective regional checkpoints; global uses all 60",
+  "budget": "Each system processes 163840 training frames, estimated 40960 gradient updates at batch 4. Pair members each have 20480 updates. Report actual steps/time; this is equal updates and shared unique labels, not equal wall time or exact FLOPs",
+  "fallback": "existing frozen legacy_mh1_256 is shared across all systems; its historic training is not charged only to specialists. No new general model is free fallback for the specialist pair",
+  "replay": "target-DFT rehearsal from 64 whole reactions in the opposite region, 512 already-shared frames; not official foundation multihead replay",
+  "holdouts": "retain the v0.7 meta-development and prospective holdout roles unchanged; no prospective holdout labels opened",
+  "experiments": [
+    {"name":"mh1_global512_e40","system":"single_general","train_file":"data/v0.8.0/general4096.extxyz","train_size":4096,"valid_file":"data/v0.7.0/validation.extxyz","model_file":"models/v0.8.0/mh1_global512_e40.model","seed":20261116},
+    {"name":"mh1_specialist0_e40","system":"specialist_pair","region":0,"train_file":"data/v0.8.0/region0_2048.extxyz","train_size":2048,"valid_file":"data/v0.8.0/validation_region0.extxyz","model_file":"models/v0.8.0/mh1_specialist0_e40.model","seed":20261116},
+    {"name":"mh1_specialist1_e40","system":"specialist_pair","region":1,"train_file":"data/v0.8.0/region1_2048.extxyz","train_size":2048,"valid_file":"data/v0.8.0/validation_region1.extxyz","model_file":"models/v0.8.0/mh1_specialist1_e40.model","seed":20261117},
+    {"name":"mh1_general0_e20","system":"general_pair","region":0,"train_file":"data/v0.8.0/general4096.extxyz","train_size":4096,"valid_file":"data/v0.8.0/validation_region0.extxyz","model_file":"models/v0.8.0/mh1_general0_e20.model","seed":20261116,"training_overrides":{"epochs":20}},
+    {"name":"mh1_general1_e20","system":"general_pair","region":1,"train_file":"data/v0.8.0/general4096.extxyz","train_size":4096,"valid_file":"data/v0.8.0/validation_region1.extxyz","model_file":"models/v0.8.0/mh1_general1_e20.model","seed":20261117,"training_overrides":{"epochs":20}},
+    {"name":"mh1_replay0_e32","system":"target_replay_pair","region":0,"train_file":"data/v0.8.0/replay0_2560.extxyz","train_size":2560,"valid_file":"data/v0.8.0/validation_region0.extxyz","model_file":"models/v0.8.0/mh1_replay0_e32.model","seed":20261116,"training_overrides":{"epochs":32}},
+    {"name":"mh1_replay1_e32","system":"target_replay_pair","region":1,"train_file":"data/v0.8.0/replay1_2560.extxyz","train_size":2560,"valid_file":"data/v0.8.0/validation_region1.extxyz","model_file":"models/v0.8.0/mh1_replay1_e32.model","seed":20261117,"training_overrides":{"epochs":32}}
+  ],
+  "selection": "Report all seven runs. Compare fixed endpoint gate and formula-grouped router development on the 128 meta reactions; freeze final policies before prospective evaluation. No best-seed-only claim."
+}

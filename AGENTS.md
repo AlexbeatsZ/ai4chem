@@ -94,7 +94,7 @@ instructions still determine the group's assigned slot and submission details.
   equal label/epoch ceilings. Record actual time and updates.
 - Next: optimizer/replay comparisons, three seeds for promising settings, freeze
   models/router, then prospective static/path-search/DFT validation.
-- Next specialization study uses shared labels/equal total updates, general and seed controls.
+- v0.8 specialization uses shared labels/equal updates; read `docs/design/specialization.md`.
 - User proposed an expert library with a local decision router. First quantify
   oracle headroom on meta-development, then compare endpoint-only TabPFN/TabICL,
   Jev-style local decisions and simple baselines with grouped out-of-fold estimates.

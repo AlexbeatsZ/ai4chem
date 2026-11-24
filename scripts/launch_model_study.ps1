@@ -1,10 +1,11 @@
 param(
-    [ValidateSet('download','prepare','study')][string]$Stage = 'study',
+    [ValidateSet('download','prepare','study','specialization-prepare')][string]$Stage = 'study',
     [switch]$Worker
 )
 $ErrorActionPreference = 'Stop'
 $project = Split-Path -Parent $PSScriptRoot
-$runtime = Join-Path $project 'results\coordination\model-v07'
+$runtimeName = if($Stage -eq 'specialization-prepare') {'specialization-v08'} else {'model-v07'}
+$runtime = Join-Path $project ('results\coordination\'+$runtimeName)
 New-Item -ItemType Directory -Path $runtime -Force | Out-Null
 if(-not $Worker) {
     $active = Get-CimInstance Win32_Process | Where-Object {

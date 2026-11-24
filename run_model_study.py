@@ -30,8 +30,8 @@ def state(stage, **extra):
                       "holdout_labels_evaluated": False, **extra})
 
 
-def benchmark(name, models, checkpoints, role="validation", count=60):
-    directory = OUTPUT / name
+def benchmark(name, models, checkpoints, role="validation", count=60, *, output_root=None, device="cuda"):
+    directory = (output_root or OUTPUT) / name
     summary_path = directory / "benchmark_summary.json"
     if summary_path.exists():
         summary = json.loads(summary_path.read_text())
@@ -42,7 +42,7 @@ def benchmark(name, models, checkpoints, role="validation", count=60):
     split = "val" if role == "validation" else "train"
     command = [sys.executable, "-u", "benchmark_transition1x.py", "--input",
         str(DATA / f"{role}.h5"), "--output", str(directory), "--split", split,
-        "--count", str(count), "--models", *models, "--plot-limit", "2"]
+        "--count", str(count), "--models", *models, "--plot-limit", "2", "--device", device]
     for key, value in checkpoints.items():
         command += ["--checkpoint", f"{key}={value}"]
     with (directory / "console.log").open("w") as log:
@@ -50,18 +50,23 @@ def benchmark(name, models, checkpoints, role="validation", count=60):
     return json.loads(summary_path.read_text())
 
 
-def train(experiment, protocol, manifest):
-    settings = protocol["training"]
+def train(experiment, protocol, manifest, *, output_root=None, manifest_path=None, state_writer=state):
+    output_root = output_root or OUTPUT
+    settings = {**protocol["training"], **experiment.get("training_overrides", {})}
     name = experiment["name"]
-    directory = OUTPUT / "training" / name
-    dataset = ROOT / "data/v0.3.0/train_256.extxyz" if experiment["dataset"] == "anchor256" else DATA / f"{experiment['dataset']}.extxyz"
-    model_path = ROOT / "models/v0.7.0" / f"{name}.model"
+    directory = output_root / "training" / name
+    if "train_file" in experiment:
+        dataset = ROOT / experiment["train_file"]
+    else:
+        dataset = ROOT / "data/v0.3.0/train_256.extxyz" if experiment["dataset"] == "anchor256" else DATA / f"{experiment['dataset']}.extxyz"
+    model_path = ROOT / experiment.get("model_file", f"models/v0.7.0/{name}.model")
+    seed = experiment.get("seed", protocol["training_seed"])
     config = {
-        "name": name, "seed": protocol["training_seed"], "device": "cuda",
+        "name": name, "seed": seed, "device": settings.get("device", "cuda"),
         "default_dtype": settings["dtype"],
         "foundation_model": str(ROOT / "models/mh1-omol.model"),
         "foundation_model_readout": True, "multiheads_finetuning": False,
-        "train_file": str(dataset), "valid_file": str(DATA / "validation.extxyz"),
+        "train_file": str(dataset), "valid_file": str(ROOT / experiment.get("valid_file", "data/v0.7.0/validation.extxyz")),
         "energy_key": "REF_energy", "forces_key": "REF_forces", "E0s": settings["E0s"],
         "model": "ScaleShiftMACE", "loss": "weighted", "scaling": "no_scaling",
         "energy_weight": settings["energy_weight"], "forces_weight": settings["forces_weight"],
@@ -84,7 +89,7 @@ def train(experiment, protocol, manifest):
     model_path.parent.mkdir(parents=True, exist_ok=True)
     config_path.write_text(yaml.safe_dump(config, sort_keys=False))
     started_at, start = now(), time.perf_counter()
-    state("training", experiment=name, started_at_utc=started_at, config=str(config_path.relative_to(ROOT)))
+    state_writer("training", experiment=name, started_at_utc=started_at, config=str(config_path.relative_to(ROOT)))
     print(f"Starting {name}, {experiment['train_size']} frames, up to {settings['epochs']} epochs", flush=True)
     with (directory / "console.log").open("w") as log:
         result = subprocess.run([str(Path(sys.executable).with_name("mace_run_train")), "--config", str(config_path)],
@@ -100,14 +105,14 @@ def train(experiment, protocol, manifest):
     best = re.search(r"Loaded Stage one model from epoch (\d+)", console)
     epochs = re.findall(r"INFO: Epoch (\d+):", console)
     trained_epochs = max(map(int, epochs)) + 1 if epochs else None
-    manifest.append({**experiment, "seed": protocol["training_seed"],
+    manifest.append({**experiment, "seed": seed,
         "model": str(model_path.relative_to(ROOT)), "config": str(config_path.relative_to(ROOT)),
         "best_epoch": int(best.group(1)) if best else None, "trained_epochs": trained_epochs,
         "gradient_steps_estimated_from_logged_epochs": trained_epochs * math.ceil(experiment["train_size"] / settings["batch_size"]) if trained_epochs else None,
         "started_at_utc": started_at, "finished_at_utc": now(),
         "elapsed_seconds": time.perf_counter() - start, "heads": list(model.heads),
         "optional_compiled_export_warning": "Failed to compile" in console or "Failed to save compiled" in console})
-    save_json(OUTPUT / "training/manifest.json", manifest)
+    save_json(manifest_path or output_root / "training/manifest.json", manifest)
     print(f"Completed {name}; validation-loss-selected epoch {manifest[-1]['best_epoch']}", flush=True)
 
 
