@@ -12,7 +12,7 @@
 | OMEN | v0.9 三个新学习率/force 设置和两个种子重复，待原锁释放再跑 | results/v0.9.0/state.json；results/coordination/model-v09 |
 | Mac | v0.8五模型完成/两项继续；新增四组成对训练（八模型、两worker） | results/overnight-20261124/mac；owner10062，27/28种子已进入官方初始验证；29/30排队 |
 | Mac | v0.8 七项等更新专门化训练，数据读回完成，global512 已开始 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
-| 室友 Gaussian | November24 长队列：0255→3342→4757 完整链，再隔离 force 标签至24h累计计算 | results/overnight-20261124/roommate；native13616，0255 child33396，16:13Z启动，fresh SSH已验证 |
+| 室友 Gaussian | November24 长队列：0255→3342→4757 完整链，再隔离 force 标签；双槽位至November25 17:24Z墙钟接新期限 | results/overnight-20261124/roommate；pool29700，原0255 child33396保持，新3342 child26464并行；17:25Z fresh SSH见两个g16，free7.57GiB |
 | ROG | 00:51Z 已恢复 SSH，可用内存 5.277 GiB；现有分析环境，无新科学计算 | 计算工具尚需按任务验收，不能把连接成功当成训练/DFT 可用 |
 
 OMEN 已完成 random4096：60 条 validation 能垒 MAE 0.125969 eV、力 RMSE

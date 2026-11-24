@@ -51,8 +51,9 @@ instructions still determine the group's assigned slot and submission details.
   Runtime is results/overnight-20261124; verify owners before starting/recovering.
   Mac r2 owner10062 has two actual E0 workers; r1 failed before any training
   and is retained as mac-infra-r1. OMEN native22604/WSL61077 waits on v0.9 lock.
-  Roommate native13616 started0255 at16:13Z; fresh SSH saw g16/l1110 and
-  chain child33396 after submission returned. New force labels remain quarantined.
+  Roommate serial13616 retired at17:24Z; pool29700 adopted0255 child33396
+  without restart, launched3342 child26464; fresh SSH saw two g16 instances.
+  Pool admission endsNovember25 17:24:51Z, then drains. Labels stay quarantined.
 
 - Mac now has Intel Gaussian 16 A.03 / GaussView 6.0.16 under
   `~/.local/opt/gaussian16`; signed `~/Applications/GaussView.app` supplies its
