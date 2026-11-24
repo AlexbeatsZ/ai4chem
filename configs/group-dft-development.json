@@ -1,0 +1,66 @@
+{
+  "version": "group-dft-development-r1",
+  "frozen_at_utc": "2026-11-24T02:53:37.697042+00:00",
+  "selection": "Post-hoc development: all three currently strict-passing AIMNet candidates not assigned to roommate; two training-region batches each smallest formation/cleavage/two rearrangements. No selection on Gaussian outcomes.",
+  "user_provided_cloud_acceptance_required": true,
+  "server_created": false,
+  "dispatched": false,
+  "roommate_rxn8694_excluded": true,
+  "jobs": [
+    {
+      "member": 1,
+      "kind": "full_DFT_chain",
+      "reaction": "rxn0255",
+      "expert": "aimnet2-rxn",
+      "path": "member-01",
+      "prepared_not_dispatched": true
+    },
+    {
+      "member": 2,
+      "kind": "full_DFT_chain",
+      "reaction": "rxn3342",
+      "expert": "aimnet2-rxn",
+      "path": "member-02",
+      "prepared_not_dispatched": true
+    },
+    {
+      "member": 3,
+      "kind": "full_DFT_chain",
+      "reaction": "rxn4757",
+      "expert": "aimnet2-rxn",
+      "path": "member-03",
+      "prepared_not_dispatched": true
+    },
+    {
+      "member": 4,
+      "kind": "DFT_energy_and_force",
+      "region": 0,
+      "reactions": [
+        "rxn2761",
+        "rxn0448",
+        "rxn2224",
+        "rxn3135"
+      ],
+      "reference_jobs": 4,
+      "new_geometry_jobs": 4,
+      "path": "member-04",
+      "prepared_not_dispatched": true
+    },
+    {
+      "member": 5,
+      "kind": "DFT_energy_and_force",
+      "region": 1,
+      "reactions": [
+        "rxn3705",
+        "rxn2323",
+        "rxn3923",
+        "rxn9249"
+      ],
+      "reference_jobs": 4,
+      "new_geometry_jobs": 4,
+      "path": "member-05",
+      "prepared_not_dispatched": true
+    }
+  ],
+  "holdout_labels_evaluated": false
+}

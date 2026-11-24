@@ -1,0 +1,124 @@
+{
+  "version": "cloud-Gaussian-infrastructure-control-r1",
+  "frozen_at_utc": "2026-11-24T02:57:03.409512+00:00",
+  "study_type": "infrastructure_control_not_project_DFT_evaluation",
+  "changes_v05_results": false,
+  "dft_method": "HF/3-21G",
+  "dft_nproc": 2,
+  "dft_mem": "1GB",
+  "charge": 0,
+  "multiplicity": 1,
+  "dft_policy": {
+    "irc_algorithm": "LQA",
+    "irc_initial_max_points": 80,
+    "irc_restart_max_points": 80,
+    "decision_basis": "Bounded small infrastructure control; no production accuracy claim."
+  },
+  "irc_endpoint_rmsd_A": 0.5,
+  "endpoint_tolerance_A": 0.5,
+  "jobs": [
+    {
+      "job_id": "cloud-ammonia-inversion-control-r1",
+      "reaction": "ammonia_inversion_control",
+      "engine": "Gaussian16W-A.03",
+      "purpose": "synthetic_planar_NH3_infrastructure_control",
+      "symbols": [
+        "N",
+        "H",
+        "H",
+        "H"
+      ],
+      "numbers": [
+        7,
+        1,
+        1,
+        1
+      ],
+      "positions_A": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          -0.5,
+          0.866025403784,
+          0
+        ],
+        [
+          -0.5,
+          -0.866025403784,
+          0
+        ]
+      ],
+      "expected_vibrational_modes": 6,
+      "endpoints": {
+        "reactant": {
+          "symbols": [
+            "N",
+            "H",
+            "H",
+            "H"
+          ],
+          "positions_A": [
+            [
+              0,
+              0,
+              0.3
+            ],
+            [
+              1,
+              0,
+              -0.1
+            ],
+            [
+              -0.5,
+              0.866025403784,
+              -0.1
+            ],
+            [
+              -0.5,
+              -0.866025403784,
+              -0.1
+            ]
+          ]
+        },
+        "product": {
+          "symbols": [
+            "N",
+            "H",
+            "H",
+            "H"
+          ],
+          "positions_A": [
+            [
+              0,
+              0,
+              -0.3
+            ],
+            [
+              1,
+              0,
+              0.1
+            ],
+            [
+              -0.5,
+              0.866025403784,
+              0.1
+            ],
+            [
+              -0.5,
+              -0.866025403784,
+              0.1
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}
