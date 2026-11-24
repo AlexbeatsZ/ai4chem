@@ -35,4 +35,18 @@ foreach($mode in @('success','failure')) {
     try{& $runner -QueueDirectory $directory -Worker | Out-Null}catch{$rejected=$_.Exception.Message -like '*Existing queue evidence*'}
     if(-not $rejected -or [IO.File]::ReadAllText((Join-Path $directory 'queue-state.json')) -ne $before){throw 'Direct worker retry changed retained evidence.'}
 }
-[ordered]@{status='PASS';budget_stops_admission=$true;three_failures_stop=$true;existing_output_rejected=$true;direct_worker_retry_rejected=$true;synthetic_only=$true}|ConvertTo-Json
+$terminal=Join-Path $fixture 'terminal'
+New-Item -ItemType Directory -Path (Join-Path $terminal 'forces\label') -Force | Out-Null
+[IO.File]::WriteAllText((Join-Path $terminal 'queue-state.json'),'{"status":"compute_budget_reached","owner_pid":2147483647}')
+[IO.File]::WriteAllText((Join-Path $terminal 'forces\label\receipt.json'),'{"id":"one"}')
+[IO.File]::WriteAllText((Join-Path $terminal 'forces\label\force.log'),'synthetic-terminal')
+$exporter=Join-Path $project 'scripts\export_gaussian_queue.ps1'
+$first=(& $exporter -QueueDirectory $terminal | ConvertFrom-Json)
+$stamp=(Get-Item -LiteralPath $first.archive).LastWriteTimeUtc
+$second=(& $exporter -QueueDirectory $terminal | ConvertFrom-Json)
+if($first.files -ne 3 -or $first.bytes -ne $second.bytes -or (Get-Item -LiteralPath $first.archive).LastWriteTimeUtc -ne $stamp){throw 'Nested terminal export was not reused.'}
+[IO.File]::WriteAllText((Join-Path $terminal 'forces\label\receipt.json'),'{"id":"two"}')
+$rejected=$false
+try{& $exporter -QueueDirectory $terminal | Out-Null}catch{$rejected=$_.Exception.Message -like '*identity differs*'}
+if(-not $rejected -or (Get-Item -LiteralPath $first.archive).LastWriteTimeUtc -ne $stamp){throw 'Changed terminal identity was accepted or archive was replaced.'}
+[ordered]@{status='PASS';budget_stops_admission=$true;three_failures_stop=$true;existing_output_rejected=$true;direct_worker_retry_rejected=$true;nested_export_reused=$true;changed_identity_rejected=$true;synthetic_only=$true}|ConvertTo-Json

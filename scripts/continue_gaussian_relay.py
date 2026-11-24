@@ -39,8 +39,8 @@ def main():
     for value in (args.relay_ssh,args.relay_root,args.worker_root,args.worker_job,args.worker_ssh):
         if not re.fullmatch(r'[A-Za-z0-9_./:\\@-]+',value):
             parser.error('Use simple space-free SSH identities and worker paths')
-    if not 0 < args.max_hours <= 24:
-        parser.error('Use a positive deadline of at most 24 hours')
+    if not 0 < args.max_hours <= 72:
+        parser.error('Use a positive deadline of at most 72 hours')
     output = Path(args.output)
     output.mkdir(parents=True,exist_ok=False)
     lock = (output/'owner.lock').open('a')
@@ -73,7 +73,7 @@ def main():
             source = observed['state']
             if source['job_id'] != job['job_id']:
                 raise ValueError('Observed worker job differs from frozen candidate')
-            if source['status'] != 'running' and not observed['owner_alive']:
+            if source['status'] not in ('running', 'queued') and not observed['owner_alive']:
                 exported = json.loads(remote('Export'))
                 archive = output/'return.zip'
                 if not archive.exists():

@@ -23,56 +23,20 @@ instructions still determine the group's assigned slot and submission details.
   `/Users/meta/Developer/ai4chem`. Both were externally migrated on November 23.
 - OMEN RTX4060 has 8188 MiB VRAM; isolated `ai4chem` uses Python 3.12 and
   Mamba 2.6.0 at `/home/meta/.local/opt/miniforge3/bin/mamba`.
-- v0.1.0 validated with Python 3.12.16, torch 2.15.0+cu134, mace-torch
-  0.3.17 and ASE 3.29.0. Initial download and cached rerun both passed.
-- Remote is `https://github.com/AlexbeatsZ/ai4chem`; GitHub reported public on 2026-11-22.
-- v0.2.0 reads ten test reactions selected with seed 42 from the pinned JMP
-  Hugging Face export. `data/transition1x_test_10.h5` retains 13,348 source
-  configurations and the benchmark evaluates 100 final-band images on CUDA float64.
-- Three baselines passed. OFF23 / MH-1 omol / MH-0 rgd1 barrier MAEs are
-  0.614896 / 0.311887 / 0.606168 eV. Detailed outputs are in `results/v0.2.0/`.
-- Per-host environments retain their own dependency locks; do not reuse CUDA pins on Mac.
-- v0.3.0 fixed 77 development / 20 validation / 210 final reactions. Four 8-epoch
-  runs completed on nested 64/256 train frames, one frame per unique train reaction.
-- Validation selected mh1_full_256. On 210 final reactions barrier MAE changed
-  from 0.245429 to 0.131641 eV, force component RMSE from 0.251791 to 0.111649 eV/A.
-- Source train data is shard 0 of 13. `configs/v0.3.0_partitions.json` fixes all IDs.
-- `results/v0.3.0/` has reports and bootstrap intervals. `models/v0.3.0/` has models.
-- v0.4.0 completed all twenty endpoint-only searches. Original MH-1 passes 7/10,
-  fine-tuned MH-1 passes 6/10 under NEB, stationary-point, frequency and IRC checks.
-- Existing Windows Gaussian is `C:\Users\Meta\AppData\Local\Programs\g16w\g16.exe`.
-  Its CLI takes input/output file arguments. WSL calls the checked-in PowerShell
-  wrapper, with a per-result scratch directory and process-local environment.
-- Installed Sella 2.6.0 and CPU JAX 0.12.0.1 only in the ai4chem Mamba environment.
-- Five selected fine-tuned candidates passed Gaussian TS/frequency, two-way IRC,
-  stable-minimum and mapped-endpoint checks. On these selected five, electronic
-  barrier MAE is 0.197624 eV for original MH-1 and 0.103424 eV for fine-tuned MH-1.
-- rxn1152 IRC reached the 160-point budget, then checkpoint continuation detected
-  a minimum at point 161. Gaussian's subsequent PESDtA Invalid IPoint error was
-  recovered using a separate normally terminated endpoint optimization/frequency
-  and geometry validation. normal_termination=false and recovery flags are retained.
-- `results/v0.4.0/` contains all 20 searches, five DFT records, plots, report and
-  verification.json. 31 regression tests, pip check and CUDA smoke test passed.
-- MH-1 optional TorchScript compiled export failed upstream in v0.3.0. Standard
-  .model serialization and loaded inference passed for every experiment.
-- v0.5.0 fixes four development and twelve project holdout reactions, excluding
-  all prior project reaction IDs. Train export shards 0 and 1 provide 223 complete
-  unused endpoint pairs, including four formation-class cases.
-- All 24 development strategy units completed with 25 unique attempts. Verified
-  saddles for original S0/S1/S2 are 0/4, 1/4, 0/4 and fine-tuned are 0/4, 1/4, 1/4.
-- configs/v0.5.0_frozen.json was written after pilot verification and before any
-  holdout search. The original draft's recovery rules remain fixed for evaluation.
-- Two rxn1961 baseline regressions passed. The shared-endpoint S0
-  entrypoint matched the old barrier within 1.1e-10 eV and frequencies within
-  1.1e-6 cm^-1. Pilot verification also checked actual perturbations and continuation.
-- All 96 v0.5.0 strategy units now finished with 83 unique attempts. On the 12
-  holdout reactions, original S0/S1/S2 saddle+IRC counts are 3/3/3; fine-tuned are
-  5/6/6. Strict pipeline counts are 3/3/3 and 5/5/5 respectively. All 49 tests passed.
-- At 2026-11-23T10:56:30Z, all three Gaussian reactions completed and passed full
-  TS/frequency/IRC/minimum validation. Nine strategy units reuse these three jobs.
-  Final verification.json passed. v0.5.0 was published at 2026-11-23T11:10:37Z;
-  all eight assets and ZIP sizes were verified. Coordinator ready_for_review is a
-  retained runtime snapshot; release completion is recorded here.
+- v0.1 CUDA/readiness and v0.2 ten-reaction benchmarks passed; per-host locks
+  remain separate. v0.3 selected mh1_full_256: final210 barrier MAE0.131641eV,
+  force RMSE0.111649eV/A. Old287 test reactions are already used.
+- v0.4 endpoint searches and five selected Gaussian chains completed; conditional
+  selected-five barrier MAE0.103424eV. See results/v0.4.0 and ts-search.md.
+- v0.5.0 is complete/published November23,2026 with eight verified assets.
+  All96 strategy units/83 unique searches and three Gaussian reactions passed
+  final verification. Holdout12 original S0/S1/S2 saddle+IRC3/3/3, fine-tuned5/6/6;
+  strict pipeline3/3/3 and5/5/5. Nine DFT units reuse three unique jobs.
+  Do not restart completed coordinators from historical runtime snapshots.
+- OMEN Windows Gaussian is C:\Users\Meta\AppData\Local\Programs\g16w\g16.exe;
+  CLI uses input/output arguments. Project wrapper uses process-local environment.
+- Standard .model serialization and reloaded inference passed; optional upstream
+  MH1 TorchScript export fails and is not the accepted artifact.
 
 # Active Work
 
@@ -83,6 +47,10 @@ instructions still determine the group's assigned slot and submission details.
   Roommate receives three AIMNet chains0255/3342/4757 then quarantined train-side
   force labels,24h actual-execution admission budget;2GB/fourthreads,4GiB free.
   Runtime is results/overnight-20261124; verify owners before starting/recovering.
+  Mac r2 owner10062 has two actual E0 workers; r1 failed before any training
+  and is retained as mac-infra-r1. OMEN native22604/WSL61077 waits on v0.9 lock.
+  Roommate native13616 started0255 at16:13Z; fresh SSH saw g16/l1110 and
+  chain child33396 after submission returned. New force labels remain quarantined.
 
 - Mac now has Intel Gaussian 16 A.03 / GaussView 6.0.16 under
   `~/.local/opt/gaussian16`; signed `~/Applications/GaussView.app` supplies its

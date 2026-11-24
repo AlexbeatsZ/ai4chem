@@ -61,3 +61,9 @@ Mac新增两个四线程worker，各自顺序完成分配的配对；八模型�
 git忽略的`results/overnight-20261124/`。启动前检查已有输出和活动owner；所有
 任务仅一次尝试，训练单臂失败后继续其配对及其他固定任务，禁止自动重试或
 覆盖中断证据。恢复时先读三台真实状态，不把提交PID当作计算已启动。
+
+`scripts/collect_local_queue.py`在Mac有限观察72小时，经OMEN中转终态队列ZIP，
+核对字节数/ZIP CRC/清单数量；不启动化学计算、不重试作业。队列ZIP保留全部
+输入/状态/原始日志和force receipt，省略checkpoint；三个完整链另用既有
+`continue_gaussian_relay.py`各自回收checkpoint并调用独立assessor。断线重连
+只重试传输。终态ZIP只在清单/长度/JSON身份一致时复用，不覆盖差异证据。
