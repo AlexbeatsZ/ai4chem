@@ -7,7 +7,7 @@ import unittest
 import warnings
 import numpy as np
 from specialization_gate import fit_gate, predict_gate
-from run_specialization import validate_budgets
+from run_specialization import validate_budgets, training_capacity
 
 
 class SpecializationTests(unittest.TestCase):
@@ -44,6 +44,15 @@ class SpecializationTests(unittest.TestCase):
         protocol["experiments"][0]["training_overrides"] = {"epochs":41}
         with self.assertRaisesRegex(ValueError,"equal-update"):
             validate_budgets(protocol)
+
+    def test_search_reservations_bound_training_and_failures_block_dispatch(self):
+        execution = {"cpu_thread_budget":12,"search_threads":3,
+                     "training_threads":4,"max_training_workers":3}
+        for completed, expected in ((0,0),(1,1),(2,2),(3,3)):
+            stages = {str(i):"completed" if i < completed else "searching" for i in range(3)}
+            self.assertEqual(training_capacity(stages,execution),expected)
+        self.assertEqual(training_capacity({"a":"missing","b":"completed","c":"completed"},execution),2)
+        self.assertEqual(training_capacity({"a":"failed","b":"completed","c":"completed"},execution),0)
 
 
 if __name__ == "__main__":

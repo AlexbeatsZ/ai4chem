@@ -36,6 +36,15 @@ def validate_budgets(protocol):
     return dict(updates)
 
 
+def training_capacity(statuses, execution):
+    """Reserve threads for every search not known to be terminal."""
+    if any(stage == "failed" for stage in statuses.values()):
+        return 0
+    busy = sum(stage != "completed" for stage in statuses.values())
+    free = execution["cpu_thread_budget"]-busy*execution["search_threads"]
+    return max(0, min(execution["max_training_workers"], free//execution["training_threads"]))
+
+
 def worker(experiment, protocol):
     name = experiment["name"]
     directory = OUTPUT / "training" / name
@@ -85,25 +94,25 @@ def coordinator(protocol):
         partition = json.loads((ROOT / "configs/v0.8.0_partitions.json").read_text())
         if partition["protocol"] != protocol:
             raise ValueError("Prepared specialization protocol differs")
+        execution = json.loads((ROOT / "configs/v0.8.0_execution.json").read_text())
+        if execution["partition_frozen_at_utc"] != partition["frozen_at_utc"]:
+            raise ValueError("Execution amendment does not identify the prepared partition")
+        if execution["training_threads"] != 4 or execution["search_threads"] != 3:
+            raise ValueError("Execution thread reservations differ from the actual workers")
+        state["execution_amendment"] = execution
         deadline = time.monotonic()+12*3600
-        while True:
+        pending = list(protocol["experiments"])
+        active, completed, failed = {}, [], []
+        while pending or active:
             search = ROOT / "results/v0.7.0/diversity_search"
             statuses = {}
             for name in ("legacy_mh1_256", "aimnet2-rxn", "orbmol-conservative"):
                 path = search / name / "state.json"
                 statuses[name] = json.loads(path.read_text())["stage"] if path.exists() else "missing"
-            if all(stage == "completed" for stage in statuses.values()):
-                break
-            if any(stage == "failed" for stage in statuses.values()):
-                raise RuntimeError(f"Inspect failed search coordinator before spending more CPU: {statuses}")
-            if time.monotonic() > deadline:
-                raise TimeoutError("Search pilot did not finish within twelve hours")
-            update("waiting_for_search_pilot", search_status=statuses)
-            time.sleep(60)
-        pending = list(protocol["experiments"])
-        active, completed, failed = {}, [], []
-        while pending or active:
-            while pending and len(active) < 3 and not failed:
+            blocked = any(stage == "failed" for stage in statuses.values()) or (
+                time.monotonic() > deadline and any(stage != "completed" for stage in statuses.values()))
+            capacity = 0 if blocked else training_capacity(statuses, execution)
+            while pending and len(active) < capacity and not failed:
                 experiment = pending.pop(0)
                 directory = OUTPUT / "training" / experiment["name"]
                 directory.mkdir(parents=True, exist_ok=True)
@@ -118,13 +127,17 @@ def coordinator(protocol):
                         experiment["name"]], cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
                         stdout=log, stderr=subprocess.STDOUT)
                 active[experiment["name"]] = process
-            update("running", active={name:process.pid for name,process in active.items()},
-                   completed=completed, failed=failed, pending=[x["name"] for x in pending])
+            update("running" if active else "waiting_for_cpu_capacity",
+                   active={name:process.pid for name,process in active.items()},
+                   completed=completed, failed=failed, pending=[x["name"] for x in pending],
+                   search_status=statuses, training_capacity=capacity, dispatch_blocked=blocked)
             if active:
                 try:
                     next(iter(active.values())).wait(timeout=30)
                 except subprocess.TimeoutExpired:
                     pass
+            elif pending and not failed and not blocked:
+                time.sleep(30)
             for name,process in list(active.items()):
                 code = process.poll()
                 if code is not None:
@@ -132,6 +145,8 @@ def coordinator(protocol):
                     del active[name]
             if failed and not active:
                 raise RuntimeError(f"Failed workers retained: {failed}; pending work was not overwritten")
+            if blocked and not active:
+                raise RuntimeError(f"Search failed or exhausted the waiting deadline; inspect before new dispatch: {statuses}")
         summary = {"status":"specialization_training_and_development_benchmarks_complete",
             "protocol":protocol, "runs":[json.loads((OUTPUT/"training"/x["name"]/"manifest.json").read_text())[0]
                 for x in protocol["experiments"]], "finished_at_utc":now(), "holdout_labels_evaluated":False,

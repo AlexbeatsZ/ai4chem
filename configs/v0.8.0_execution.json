@@ -1,0 +1,13 @@
+{
+  "version": "v0.8.0-execution-amendment-1",
+  "amended_at_utc": "2026-11-24T00:43:48.720548+00:00",
+  "partition_frozen_at_utc": "2026-11-24T00:19:54.281880+00:00",
+  "reason": "AIMNet search finished while two slower search owners remain. Release idle CPU capacity before starting any specialization training; preserve frozen labels, seeds, optimizer, update budgets and checkpoint selection.",
+  "cpu_thread_budget": 12,
+  "search_threads": 3,
+  "training_threads": 4,
+  "max_training_workers": 3,
+  "dispatch_rule": "floor((12 - 3 * active_searches) / 4), clamped to [0,3]. Missing search state reserves threads; failed search or twelve-hour waiting deadline blocks new dispatch. Existing training drains without being killed.",
+  "scientific_protocol_changed": false,
+  "wall_time_comparison": "Record concurrency and actual wall time; equal-update systems do not imply equal wall time or FLOPs."
+}
