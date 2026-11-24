@@ -10,9 +10,9 @@
 | --- | --- | --- |
 | OMEN | v0.7 四臂 CUDA 对照，前三臂完成、path4096 运行 | results/v0.7.0/state.json；native owner 39092，启动命令在 results/coordination/model-v07 |
 | OMEN | v0.9 三个新学习率/force 设置和两个种子重复，待原锁释放再跑 | results/v0.9.0/state.json；results/coordination/model-v09 |
-| Mac | 八反应三专家端点搜索，AIMNet2-rxn 八项完成，其余仍运行 | results/v0.7.0/diversity_search/<expert>/state.json；results/coordination/diversity-search |
+| Mac | v0.8五模型完成/两项继续；新增四组成对训练（八模型、两worker） | results/overnight-20261124/mac；owner10062，27/28种子已进入官方初始验证；29/30排队 |
 | Mac | v0.8 七项等更新专门化训练，数据读回完成，global512 已开始 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
-| 室友 Gaussian | AIMNet2-rxn/rxn8694，四线程/4 GB TS→频率→双向 IRC→稳定末端 | worker results/rxn8694-aimnet2-rxn-gaussian16w-r1；native owner 5232，00:33Z 启动 |
+| 室友 Gaussian | November24 长队列：0255→3342→4757 完整链，再隔离 force 标签至24h累计计算 | results/overnight-20261124/roommate；native13616，0255 child33396，16:13Z启动，fresh SSH已验证 |
 | ROG | 00:51Z 已恢复 SSH，可用内存 5.277 GiB；现有分析环境，无新科学计算 | 计算工具尚需按任务验收，不能把连接成功当成训练/DFT 可用 |
 
 OMEN 已完成 random4096：60 条 validation 能垒 MAE 0.125969 eV、力 RMSE
@@ -32,6 +32,15 @@ Mac 项目 /Users/meta/Developer/ai4chem；OMEN 项目
 室友不自动同步 dot-agents，任务包更新其 worker AGENTS.md 和 task.json。
 启动前检查实际 owner、原生 Gaussian 和资源，不能只看旧日志中的 PID。
 Windows 活动 Gaussian log 使用 bounded shared byte snapshot，不用 Get-Content -Tail。
+
+## November24 本地长队列
+
+用户已授权三台现有节点至少18h任务。OMEN新native22604/WSL61077在等待
+v0.9 runner.lock，之后三组成对训练约21h。原准备的五组训练和三DFT全链
+已认领，不能再向其他人派发；新force标签暂不合并训练。
+Mac回收器状态位于results/coordination/local-queue-20261124；每链独立assessor，
+总队列终态ZIP有限72h回收。readiness/提交/科学结果分别记账。
+详见docs/design/local-compute-queue.md。
 
 ## 科学协议和接力
 

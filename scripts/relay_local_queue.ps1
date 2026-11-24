@@ -5,9 +5,16 @@ $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
 foreach($value in @($WorkerRoot,$QueueDirectory,$WorkerSsh)){if($value -notmatch '^[A-Za-z0-9_./:\@-]+$'){throw 'Unsupported worker path or identity.'}}
 $script=if($Action -eq 'Status'){'status_gaussian_queue.ps1'}else{'export_gaussian_queue.ps1'}
-$raw=& ssh -n -T -o BatchMode=yes -o ConnectTimeout=10 $WorkerSsh powershell -NoProfile -ExecutionPolicy Bypass -File ($WorkerRoot+'/scripts/'+$script) -QueueDirectory $QueueDirectory
+$arguments=@('-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',($WorkerRoot+'/scripts/'+$script),'-QueueDirectory',$QueueDirectory)
+if($Action -eq 'Status'){
+    # Match the existing chain relay: stream bounded status rather than capture
+    # a native SSH pipe in an intermediate Windows PowerShell process.
+    & ssh @arguments
+    if($LASTEXITCODE -ne 0){throw 'Queue observation failed.'}
+    return
+}
+$raw=& ssh @arguments
 if($LASTEXITCODE -ne 0){throw 'Queue observation/export failed.'}
-if($Action -eq 'Status'){$raw;return}
 $receipt=($raw -join "`n") | ConvertFrom-Json
 $project=Split-Path -Parent $PSScriptRoot
 $output=Join-Path $project 'results\overnight-20261124\roommate-return'

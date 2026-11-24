@@ -1,6 +1,6 @@
 # 室友 Gaussian 节点
 
-最后核实：2026-11-24T00:34Z（洛杉矶 November 23）。
+最后核实：2026-11-24T16:20Z（洛杉矶 November 24）。
 用户明确授权通过 SSH 使用室友电脑的现有 Gaussian 一起计算。
 连接账户与地址保存在同步任务日志，不写入公开仓库。
 
@@ -34,26 +34,26 @@ readiness 每次创建新 UTC 目录，保留完整输出并检查能量、优�
 summary.json 记录主机、实际 Gaussian banner、输入方法、资源、用时和成功/失败。
 runner 的 Gaussian 环境变量只作用于进程，不更改用户或系统配置。
 
-## 当前分配与下一步
+## 当前分配
 
-v0.6 rxn9456 r2 已完成且经 Mac 独立验收通过；r1 checkpoint 续算失败保留。
-旧 owner 35464/39032 是历史，不能作为活动任务恢复。
+用户在November24明确要求本节点、OMEN、本机都有至少18小时工作储备。
+16:13Z native owner13616启动新的有限queue；fresh SSH见链child33396与
+实际g16/l1110，随后l502继续，提交会话已返回。当前rxn0255 TS在运行，后续
+rxn3342/rxn4757。三项均来自已有AIMNet2-rxn事后开发准备包，禁止重复分配。
 
-2026-11-24T00:31Z 经 OMEN 现有 SSH 身份再次连通：无原生 Gaussian、
-可用内存 8.418 GiB。00:33:18Z 新分配 AIMNet2-rxn/rxn8694，12 原子，
-四线程/4 GB，ωB97X/6-31G(d)，中性单重态，UltraFine/XQC/NoSymm。
-Native owner 5232；新 SSH 会话观察 g16/l502 和增长 TS 日志，后台存活。
-工作目录 results\rxn8694-aimnet2-rxn-gaussian16w-r1。
+启动前实测free4.886GiB、无Gaussian、磁盘余量430GiB。资源修订四线程/2GB，
+启动需4GiB空闲（2GiB余量）；方法/输入/频率/IRC预算和判据保持。运行后free
+约2.99GiB是已分配内存后的状态，不用据此增加并发或更改系统配置。
 
-协议 configs/v0.7.0_diversity_dft.json；本候选单独协议为
-configs/v0.7.0-diversity-dft/aimnet2-rxn-rxn8694.json。复用 TS 80 步、LQA
-每向初始 320 点/步长 5，无额外续算。完整 30 模、唯一低于 -50 的负模、
-双向 IRC、全非负末端和映射端点仍须独立验收，尚不能标记 DFT verified。
+三链后接训练池512反应的4608项force储备（512参考、4096扰动），累计实际
+执行24h后停止接新项。所有新force隔离，待完整力/坐标/DFT参考对齐后才能训练。
+运行状态为worker `results/overnight-20261124/roommate/queue-state.json`；
+协议、任务输入、每项receipt保留于同目录。Mac每链回收器独立调用assessor，
+总队列回收器经OMEN传输终态ZIP，有限72h，不创建计划任务或重算任务。
 
-run_gaussian_chain.ps1 创建 WMI owner；status_gaussian_chain.ps1 读取有界日志；
-export_gaussian_chain.ps1 只导出终态证据。OMEN 中转 relay_gaussian_chain.ps1，
-Mac 有限接力 continue_gaussian_relay.py。这是事后开发候选，不改变 v0.5
-结果，也不充当 prospective holdout。
+先前rxn9456 r2、rxn8694均已完成独立验收。8694于02:35Z完成，Mac于03:43Z
+完整验收，电子能垒2.625419123eV；owner5232为历史。不得因旧文档重启。
+详细科学定义见`docs/design/local-compute-queue.md`和`expert-diversity.md`。
 
-每次一个四线程/4 GB 全链，先检查资源和进程。不改变全局环境、程序安装、
-代理或计划任务，不复制私钥，节点不加入 dot-agents 自动同步。
+节点继续使用现有Gaussian，不加入dot-agents自动同步，不改安装/全局环境/
+代理/计划任务；账号与地址仅保留在同步私有任务日志。
