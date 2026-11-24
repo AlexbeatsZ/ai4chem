@@ -47,13 +47,11 @@ It is not a new scientific training arm or a trained-model accuracy result.
 Clone the ai4chem deployment release on Linux x86_64, then from that checkout run:
 
 ```bash
-bash scripts/cloud_worker.sh install
-bash scripts/cloud_worker.sh doctor -- --device cuda
-bash scripts/cloud_worker.sh smoke -- --foundation /absolute/bundle/foundation.model --output "$PWD/results/node-readiness/water-r1"
-bash scripts/cloud_worker.sh train -- --task /absolute/bundle/task.json --output "$PWD/results/node-readiness/timing-r1" --detach
+bash scripts/run_cloud_training_bundle.sh /absolute/bundle "$PWD/results/node-readiness/timing-r1"
 ```
 
-Inspect timing-r1/state.json, console.log, logs and the saved model. Retain actual
+The command returns immediately; return timing-r1.tar.gz on success or failure.
+Inspect timing-r1/training/state.json, per-task console.log, logs and saved model. Retain actual
 GPU/driver/runtime, epoch count and elapsed time. Compare logged epoch times after
 initialization; two epochs give a rough estimate, not a promised full-run speedup.
 The timeout is 30 minutes. Output paths must be fresh. No Gaussian is required.

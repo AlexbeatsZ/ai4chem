@@ -90,6 +90,11 @@ instructions still determine the group's assigned slot and submission details.
   scripts/validate_cloud_omen.sh now supports install/ml only, with no Windows bridge.
   Portable real4096-label/two-epoch CUDA timing bundle is prepared on Mac/OMEN at
   results/cloud-training/development-timing-r1; no cloud server was created or tested.
+- User wants group tasks to run unattended. scripts/run_cloud_training_bundle.sh
+  submits a finite background install/smoke/fixed queue and archives success/failure.
+  Five paired random4096/path4096 seed20261124–28 packages are prepared via
+  scripts/prepare_group_training.py; no overlap with active seed16–18 queues,
+  no dispatch or ten-run launch. Read cloud-workers.md for budgets and gates.
 - User has about two weeks and wants better models; they will write the report.
 - Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
 - v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,

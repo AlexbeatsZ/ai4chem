@@ -122,6 +122,40 @@ def train_task(task, source, output):
         raise
 
 
+def batch(source, output):
+    """Finish all independent frozen tasks once; preserve failures and keep going."""
+    manifest = json.loads(source.read_text())
+    sources = [source.parent / name for name in manifest.get('tasks', [source.name])]
+    if not sources:
+        raise ValueError('Empty training queue')
+    tasks = [json.loads(path.read_text()) for path in sources]
+    names = [task['name'] for task in tasks]
+    if len(names) != len(set(names)):
+        raise ValueError('Duplicate task names in queue')
+    for task, path in zip(tasks, sources):
+        resolve_inputs(task, path)
+    output.mkdir(parents=True, exist_ok=False)
+    state = {'status':'running', 'started_at_utc':now(), 'outcomes':[],
+             'automatic_training_retries':0, 'holdout_labels_evaluated':False}
+    save(output/'state.json', state)
+    for task, path in zip(tasks, sources):
+        directory = output/task['name']
+        directory.mkdir()
+        try:
+            result = train_task(task, path, directory)
+            state['outcomes'].append({'name':task['name'], 'status':result['status']})
+        except Exception as error:
+            state['outcomes'].append({'name':task['name'], 'status':'failed',
+                                      'error':f'{type(error).__name__}: {error}'})
+        save(output/'state.json', state)
+    failed = any(row['status'] != 'completed' for row in state['outcomes'])
+    state.update(status='completed_with_failures' if failed else 'completed', finished_at_utc=now())
+    save(output/'state.json', state)
+    if failed:
+        raise RuntimeError('One or more fixed tasks failed; return all evidence without retry')
+    return state
+
+
 def smoke(foundation, output):
     import gc
     import numpy as np
@@ -186,7 +220,7 @@ def smoke(foundation, output):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['installation','doctor','smoke','train'])
+    parser.add_argument('action',choices=['installation','doctor','smoke','train','batch'])
     parser.add_argument('--output',type=Path)
     parser.add_argument('--device',choices=['cuda','cpu'],default='cuda')
     parser.add_argument('--foundation',type=Path)
@@ -204,6 +238,9 @@ def main():
     elif args.action=='smoke':
         if not args.foundation or not args.output: parser.error('smoke requires --foundation and fresh --output')
         result=smoke(args.foundation,args.output)
+    elif args.action=='batch':
+        if not args.task or not args.output: parser.error('batch requires --task and fresh --output')
+        result=batch(args.task.resolve(),args.output.resolve())
     else:
         if not args.task or not args.output: parser.error('train requires --task and fresh --output')
         source=args.task.resolve(); output=args.output.resolve(); task=json.loads(source.read_text())

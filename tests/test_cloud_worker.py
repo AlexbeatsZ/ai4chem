@@ -27,6 +27,28 @@ class CloudWorkerTests(unittest.TestCase):
         task={'name':'fixed_task','expected_epochs':2,'settings':{'max_num_epochs':40}}
         with self.assertRaisesRegex(ValueError,'budget'): cloud.resolve_inputs(task,Path('/tmp/.agents/task.json'))
 
+    def test_batch_preserves_failure_and_runs_next_independent_task_once(self):
+        with tempfile.TemporaryDirectory(dir='/tmp/.agents') as temporary:
+            root=Path(temporary)
+            for name in ['train.xyz','valid.xyz','foundation.model']: (root/name).touch()
+            for name in ['first','second']:
+                task={'name':name,'train_file':'train.xyz','valid_file':'valid.xyz',
+                      'foundation_model':'foundation.model','expected_epochs':2,
+                      'settings':{'max_num_epochs':2}}
+                (root/f'{name}.json').write_text(json.dumps(task))
+            source=root/'task.json'
+            source.write_text(json.dumps({'tasks':['first.json','second.json']}))
+            with patch.object(cloud,'train_task',side_effect=[RuntimeError('fixed failure'),{'status':'completed'}]) as trainer:
+                with self.assertRaisesRegex(RuntimeError,'return all evidence'):
+                    cloud.batch(source,root/'output')
+            self.assertEqual(trainer.call_count,2)
+            state=json.loads((root/'output/state.json').read_text())
+            self.assertEqual(state['status'],'completed_with_failures')
+            self.assertEqual([row['status'] for row in state['outcomes']],['failed','completed'])
+            self.assertEqual(state['automatic_training_retries'],0)
+            with self.assertRaises(FileExistsError): cloud.batch(source,root/'output')
+
+
     def test_missing_cuda_never_silently_falls_back_to_cpu(self):
         fake=SimpleNamespace(version=SimpleNamespace(cuda='13.4'),cuda=SimpleNamespace(is_available=lambda:False))
         with patch.dict('sys.modules',{'torch':fake}),patch.object(cloud,'installed',return_value={}):

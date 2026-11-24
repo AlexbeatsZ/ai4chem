@@ -25,6 +25,7 @@ Linux x86_64 commands (all writes stay in the project/dedicated environment):
   bash scripts/cloud_worker.sh doctor [--prefix /absolute/env] -- --device cuda
   bash scripts/cloud_worker.sh smoke [--prefix /absolute/env] -- --foundation /absolute/model --output /fresh/output
   bash scripts/cloud_worker.sh train [--prefix /absolute/env] -- --task /bundle/task.json --output /fresh/output
+  bash scripts/run_cloud_training_bundle.sh /absolute/bundle /fresh/output
 Do not install or run tasks in base. Gaussian binaries are not installed here.
 HELP
     exit 0
@@ -98,6 +99,6 @@ fi
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 export PYTHONPATH="$repo${PYTHONPATH:+:$PYTHONPATH}"
 case "$action" in
-    doctor|smoke|train) exec "$prefix/bin/python" "$repo/scripts/cloud_worker.py" "$action" "$@" ;;
+    doctor|smoke|train|batch) exec "$prefix/bin/python" "$repo/scripts/cloud_worker.py" "$action" "$@" ;;
     *) echo "Unknown action: $action" >&2; exit 2 ;;
 esac
