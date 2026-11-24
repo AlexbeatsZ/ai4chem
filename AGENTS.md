@@ -21,13 +21,11 @@ instructions still determine the group's assigned slot and submission details.
 - OMEN checkout is `C:\Users\Meta\source\repos\ai4chem`, mounted at
   `/mnt/c/Users/Meta/source/repos/ai4chem` in WSL. Mac checkout is
   `/Users/meta/Developer/ai4chem`. Both were externally migrated on November 23.
-- OMEN GPU was detected with 8188 MiB VRAM on 2026-11-16.
-- Existing Mamba is `/home/meta/.local/opt/miniforge3/bin/mamba`, version 2.6.0.
-- Use the isolated `ai4chem` Mamba environment with Python 3.12.
+- OMEN RTX4060 has 8188 MiB VRAM; isolated `ai4chem` uses Python 3.12 and
+  Mamba 2.6.0 at `/home/meta/.local/opt/miniforge3/bin/mamba`.
 - v0.1.0 validated with Python 3.12.16, torch 2.15.0+cu134, mace-torch
   0.3.17 and ASE 3.29.0. Initial download and cached rerun both passed.
-- Water energy is -2081.1162109375 eV with finite 3x3 forces. Saved ASE
-  results passed readback checks. Full outputs are under `results/`.
+- v0.1 water finite energy/forces and saved ASE readback passed; outputs in `results/`.
 - Remote is `https://github.com/AlexbeatsZ/ai4chem`; GitHub reported public on 2026-11-22.
 - v0.2.0 reads ten test reactions selected with seed 42 from the pinned JMP
   Hugging Face export. `data/transition1x_test_10.h5` retains 13,348 source
@@ -96,6 +94,7 @@ instructions still determine the group's assigned slot and submission details.
   equal label/epoch ceilings. Record actual time and updates.
 - Next: optimizer/replay comparisons, three seeds for promising settings, freeze
   models/router, then prospective static/path-search/DFT validation.
+- Next specialization study uses shared labels/equal total updates, general and seed controls.
 - User proposed an expert library with a local decision router. First quantify
   oracle headroom on meta-development, then compare endpoint-only TabPFN/TabICL,
   Jev-style local decisions and simple baselines with grouped out-of-fold estimates.
@@ -107,6 +106,9 @@ instructions still determine the group's assigned slot and submission details.
 - Local TabPFN/TabICL MPS and jevmlx MLX inference passed. The 128-reaction static
   meta pilot shows no force-safe oracle gain with the old expert pool; see
   `docs/reports/v0.7.0-routing/README.md`. Endpoint-search benefit is still untested.
+- Eight experts/four families now evaluated: AIMNet2/rxn, ANI and Orb were added.
+  Read `docs/design/expert-diversity.md`; the new grouped pilot shows no deployed
+  multi-metric routing gain. Eight-reaction/three-expert endpoint searches are frozen.
 - v0.5 is complete/published and must not be restarted. v0.6 r2 is terminal:
   Gaussian rxn9456 full chain passed (barrier 4.677548685 eV); Mac same-candidate
   chain failed with a real negative-curvature endpoint and exhausted backward IRC.
@@ -179,7 +181,7 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 - `docs/project-background.md` is the research and course entrypoint. Read before
   planning new work; it integrates motivation, related literature and priorities.
 - `docs/design/model-improvement.md` fixes v0.7 training, data roles and evaluation.
-- `docs/design/decision-routing.md` fixes local expert selection and leakage/physics boundaries.
+- `docs/design/decision-routing.md` and `expert-diversity.md` fix routing and expanded-family studies.
 - `docs/design/v0.6.0-pilot.md` fixes the post-hoc candidate, Mac control, budgets
   and acceptance before either new full-chain computation starts.
 

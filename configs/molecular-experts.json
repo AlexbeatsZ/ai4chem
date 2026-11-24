@@ -1,0 +1,64 @@
+{
+  "version": "v0.7.0-diversity-pilot",
+  "frozen_at_utc": "2026-11-23T23:36:33.852615+00:00",
+  "scope": "Exploratory expansion after observing the original four-MACE pilot; not a new independent test",
+  "data": "same frozen 128 meta-development reactions and 60 selection-validation reactions; prospective holdout labels remain unopened",
+  "comparison": "same fixed geometries and each model's reactant-relative energies; target DFT differences retained, no raw-energy mixing",
+  "models": {
+    "aimnet2-wb97m": {
+      "package": "aimnet==0.2.6",
+      "registry_name": "aimnet2-wb97m-d3_0",
+      "file": "aimnet2_wb97m_d3_0.pt",
+      "url": "https://storage.googleapis.com/aimnetcentral/aimnet2v2/AIMNet2/aimnet2_wb97m_d3_0.pt",
+      "sha256": "f0f7c054539ad3261bd36f9b11c56d12f87cb723e25bea7521755bbd3ec24e28",
+      "reference_method": "wB97M-D3/def2-TZVPP (official calculator with external D3)",
+      "precision": "native mixed precision, no forced conversion",
+      "ensemble_members": 1,
+      "license": "MIT code; pretrained model provenance retained from official registry",
+      "training_overlap": "unverified; do not claim foundation-unseen generalization"
+    },
+    "aimnet2-rxn": {
+      "package": "aimnet==0.2.6",
+      "registry_name": "aimnet2-rxn_0",
+      "file": "aimnet2_rxn_0.pt",
+      "url": "https://storage.googleapis.com/aimnetcentral/aimnet2v2/AIMNet2rxn/aimnet2_rxn_0.pt",
+      "sha256": "ce8bc2a4cc6fcb5ebaa1bc8897fcd75104e5a00fe86e9d5fc6a020d572174894",
+      "reference_method": "official aimnet 0.2.6 rxn calculator, includes its prescribed D3 correction; canonical HF card and documentation differ in method wording",
+      "training_data": "AIMNet2 base set plus RGD-1, about 4.7 million geometries, per canonical model card",
+      "precision": "native mixed precision, no forced conversion",
+      "ensemble_members": 1,
+      "license": "MIT code; pretrained model provenance retained from official registry",
+      "training_overlap": "reaction-level overlap with Transition1x not established; cannot label this foundation-unseen"
+    },
+    "ani2x": {
+      "package": "torchani==2.12.0",
+      "repo": "roitberg-group/ani2x",
+      "revision": "019ca2cfc20b749cba91dfdbffac2ce2aafa4a43",
+      "file": "ani2x_state_dict.pt",
+      "reference_method": "wB97X/6-31G(d), same named level as Transition1x",
+      "ensemble_members": 8,
+      "precision": "float64",
+      "license": "MIT",
+      "training_overlap": "unverified; intended as a distinct descriptor-network baseline, not guaranteed reactive accuracy"
+    },
+    "orbmol-conservative": {
+      "package": "orb-models==0.7.0",
+      "url": "https://orbitalmaterials-public-models.s3.us-west-1.amazonaws.com/forcefields/orb-v3-conservative-omol-20250820.ckpt",
+      "local": "models/orb/orb-v3-conservative-omol-20250820.ckpt",
+      "bytes": 103417970,
+      "source_last_modified": "Wed, 20 Aug 2025 18:17:26 GMT",
+      "reference_method": "wB97M-V/def2-TZVPD, OMol25",
+      "precision": "float64",
+      "ensemble_members": 1,
+      "license": "Apache-2.0",
+      "training_overlap": "unverified; molecular pretraining is not evidence of unseen reaction identities",
+      "forces": "conservative gradient model; direct-force variant excluded"
+    }
+  },
+  "sources": {
+    "aimnetcentral": "https://github.com/isayevlab/aimnetcentral/tree/048d4008d802c57123491f9f24440e6e9d90a27f",
+    "aimnet_rxn_model_card": "https://huggingface.co/isayevlab/aimnet2-rxn/tree/13e9de20a1e878a18a371e94dfb2176629281cb6",
+    "orb_model_card": "https://huggingface.co/Orbital-Materials/OrbMol",
+    "torchani": "https://github.com/aiqm/torchani"
+  }
+}

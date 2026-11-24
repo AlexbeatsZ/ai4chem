@@ -2,6 +2,8 @@
 environments/mac-qc/.pixi/
 environments/decision-models/.pixi/
 environments/mac-mace/.pixi/
+environments/aimnet/.pixi/
+environments/orb/.pixi/
 __pycache__/
 *.pyc
 results/

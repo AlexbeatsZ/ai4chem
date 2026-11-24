@@ -272,9 +272,13 @@ def perturb_band(images, seed, rms):
 
 def search_one(item, calc, folder, config, *, prepared_endpoints=None, initialization=None):
     from sella import Sella
+    backend = config.get("neb_backend", "batched_mace")
+    if backend not in ("batched_mace", "sequential_ase"):
+        raise ValueError(f"Unknown NEB calculator backend: {backend}")
     folder.mkdir(parents=True, exist_ok=True)
     result = {"reaction": item["reaction"], "formula": item["formula"], "status": "running",
-              "mlip_verified": False, "stage": "endpoints", "neb_backend": "batched MACE"}
+              "mlip_verified": False, "stage": "endpoints",
+              "neb_backend": "batched MACE" if backend == "batched_mace" else "sequential ASE"}
     start = time.monotonic()
     timings = {}
     stage_start = start
@@ -317,8 +321,12 @@ def search_one(item, calc, folder, config, *, prepared_endpoints=None, initializ
         if initialization["type"] == "perturbed_idpp":
             perturb_band(images, initialization["seed"], initialization["rms_A"])
         write(folder / "initial_band.extxyz", images, write_results=False)
-        result["batch_parity"] = check_batch_parity(images, calc)
-        MACEBand(images, calc).attach()
+        if backend == "batched_mace":
+            result["batch_parity"] = check_batch_parity(images, calc)
+            MACEBand(images, calc).attach()
+        else:
+            result["batch_parity"] = {"applicable": False,
+                "reason": "all experts use the ordinary sequential ASE calculator API"}
         timings["initialization"] = time.monotonic() - stage_start
         stage_start = time.monotonic()
         result["stage"] = "neb"

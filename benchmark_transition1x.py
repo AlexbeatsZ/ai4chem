@@ -1,4 +1,4 @@
-"""Compare pretrained MACE models on fixed final Transition1x NEB bands."""
+"""Compare local molecular potentials on fixed final Transition1x NEB bands."""
 
 import argparse
 import csv
@@ -6,7 +6,7 @@ import gc
 import json
 import platform
 import time
-from importlib.metadata import version
+from importlib.metadata import version, PackageNotFoundError
 from pathlib import Path
 
 import h5py
@@ -17,9 +17,9 @@ import numpy as np
 import torch
 from ase.calculators.singlepoint import SinglePointCalculator
 from ase.io import read, write
-from mace.calculators import MACECalculator, mace_off
 
 from transition1x_data import load_paths
+from external_experts import EXTERNAL_MODELS, external_calculator, external_metadata
 
 
 MODELS = {
@@ -27,9 +27,14 @@ MODELS = {
     "mh1-omol": {"label": "MH-1 / omol", "file": "mace-mh-1.model", "head": "omol"},
     "mh0-rgd1": {"label": "MH-0 / RGD1", "file": "mace-mh-0.model", "head": "rgd1_b3lyp"},
 }
+DEFAULT_MODELS = list(MODELS)
+MODELS.update(EXTERNAL_MODELS)
 
 
 def calculator_for(name, device, dtype):
+    if name in EXTERNAL_MODELS:
+        return external_calculator(name, device, dtype)
+    from mace.calculators import MACECalculator, mace_off
     spec = MODELS[name]
     if name == "off23-small":
         return mace_off(model="small", device=device, default_dtype=dtype)
@@ -58,7 +63,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--dtype", choices=["float32", "float64"], default="float64")
-    parser.add_argument("--models", nargs="+", default=list(MODELS))
+    parser.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
     parser.add_argument("--checkpoint", action="append", default=[], metavar="NAME=PATH")
     parser.add_argument("--plot-limit", type=int, default=10)
     args = parser.parse_args()
@@ -84,11 +89,18 @@ def main():
         np.testing.assert_allclose(original.get_forces(), saved.get_forces(), atol=1e-8, rtol=0)
     with h5py.File(args.input, "r") as source:
         provenance = json.loads(source.attrs.get("provenance", "{}"))
+    packages = {}
+    for package in ("mace-torch", "aimnet", "torchani", "orb-models", "ase"):
+        try:
+            packages[package] = version(package)
+        except PackageNotFoundError:
+            packages[package] = None
     summary = {
         "input": str(args.input), "split": args.split, "seed": args.seed,
         "reactions": len(paths), "path_images": len(reference_structures), "dtype": args.dtype,
         "device": args.device, "python": platform.python_version(), "torch": torch.__version__,
-        "mace_torch": version("mace-torch"), "ase": version("ase"),
+        "mace_torch": packages["mace-torch"], "ase": packages["ase"],
+        "packages": packages, "host": platform.node(),
         "cuda_runtime": torch.version.cuda,
         "gpu": torch.cuda.get_device_name(0) if args.device.startswith("cuda") else None,
         "reference_method": "omegaB97X/6-31G(d)", "source_provenance": provenance,
@@ -104,20 +116,26 @@ def main():
     for name in args.models:
         print(f"Evaluating {name} on {len(paths)} reactions", flush=True)
         calc = calculator_for(name, args.device, args.dtype)
-        model = calc.models[0]
-        actual_head = MODELS[name]["head"]
-        if actual_head is not None and actual_head not in model.heads:
-            raise ValueError(f"Requested {actual_head} is absent from checkpoint heads")
-        if next(model.parameters()).device.type != torch.device(args.device).type:
-            raise RuntimeError("Model is on an unexpected device")
-        model_info = {"head": actual_head, "available_heads": list(getattr(model, "heads", [])),
-                      "curves": [], "reaction_metrics": []}
+        if name in EXTERNAL_MODELS:
+            model_info = external_metadata(name, calc, args.device)
+            model = None
+        else:
+            model = calc.models[0]
+            actual_head = MODELS[name]["head"]
+            if actual_head is not None and actual_head not in model.heads:
+                raise ValueError(f"Requested {actual_head} is absent from checkpoint heads")
+            if next(model.parameters()).device.type != torch.device(args.device).type:
+                raise RuntimeError("Model is on an unexpected device")
+            model_info = {"head": actual_head, "available_heads": list(getattr(model, "heads", [])),
+                          "family": "MACE", "curves": [], "reaction_metrics": []}
         relative_errors, force_errors, ts_force_errors = [], [], []
         started = time.perf_counter()
         for path in paths:
             energies, forces, predicted_structures = [], [], []
             for atoms in path.atoms():
                 reference_energy, reference_forces = atoms.get_potential_energy(), atoms.get_forces()
+                if name in EXTERNAL_MODELS:
+                    atoms.info.update(charge=0, spin=1)
                 atoms.calc = calc
                 energy, force = float(atoms.get_potential_energy()), atoms.get_forces()
                 if not np.isfinite(energy) or force.shape != (len(atoms), 3) or not np.isfinite(force).all():

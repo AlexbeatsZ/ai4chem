@@ -28,6 +28,9 @@ from model_study_data import save_json
 
 
 def evaluate(args):
+    experts = list(args.experts)
+    if len(experts) != len(set(experts)) or len(experts) < 2:
+        raise ValueError("Require at least two distinct named experts")
     partition = json.loads((ROOT / "configs/v0.7.0_partitions.json").read_text())
     config = json.loads((ROOT / "configs/decision-models.json").read_text())
     records = sorted(partition["endpoint_records"]["meta_development"], key=lambda x: x["sid"])
@@ -35,11 +38,11 @@ def evaluate(args):
     frame = pd.DataFrame([endpoint_features(x) for x in records])
     # The geometry allowlist above never reads CSV/reference metrics as features.
     metrics = pd.read_csv(args.benchmark / "reaction_metrics.csv")
-    if set(metrics.reaction) != set(reactions) or set(metrics.model) != set(EXPERTS):
-        raise ValueError("Benchmark must contain exactly the 128 frozen meta-development reactions and four experts")
-    if len(metrics) != len(reactions) * len(EXPERTS) or metrics.duplicated(["reaction", "model"]).any():
+    if set(metrics.reaction) != set(reactions) or set(metrics.model) != set(experts):
+        raise ValueError("Benchmark must contain exactly the 128 frozen meta-development reactions and requested experts")
+    if len(metrics) != len(reactions) * len(experts) or metrics.duplicated(["reaction", "model"]).any():
         raise ValueError("Expected one independent metric per reaction/expert")
-    losses = metrics.pivot(index="reaction", columns="model", values="barrier_error_eV").loc[reactions, EXPERTS].abs().to_numpy()
+    losses = metrics.pivot(index="reaction", columns="model", values="barrier_error_eV").loc[reactions, experts].abs().to_numpy()
     if not np.isfinite(losses).all():
         raise ValueError("Missing or non-finite expert errors")
     groups = np.array([x["formula"] for x in records])
@@ -48,9 +51,9 @@ def evaluate(args):
     winner = np.argmin(losses, axis=1)
     oracle = np.min(losses, axis=1)
     fixed_errors = losses[:, best_fixed]
-    force_rmse = metrics.pivot(index="reaction", columns="model", values="force_component_rmse_eV_per_A").loc[reactions, EXPERTS].to_numpy()
-    ts_force_rmse = metrics.pivot(index="reaction", columns="model", values="ts_region_force_component_rmse_eV_per_A").loc[reactions, EXPERTS].to_numpy()
-    reaction_energy_errors = metrics.pivot(index="reaction", columns="model", values="reaction_energy_error_eV").loc[reactions, EXPERTS].abs().to_numpy()
+    force_rmse = metrics.pivot(index="reaction", columns="model", values="force_component_rmse_eV_per_A").loc[reactions, experts].to_numpy()
+    ts_force_rmse = metrics.pivot(index="reaction", columns="model", values="ts_region_force_component_rmse_eV_per_A").loc[reactions, experts].to_numpy()
+    reaction_energy_errors = metrics.pivot(index="reaction", columns="model", values="reaction_energy_error_eV").loc[reactions, experts].abs().to_numpy()
     atom_counts = np.asarray([item["atoms"] for item in records], float)
 
     def selected_metrics(choice):
@@ -66,17 +69,17 @@ def evaluate(args):
     summary = {"status": "running", "scope": "meta-development formula-grouped OOF on fixed DFT path geometries; router inputs are endpoint-only",
         "prospective_holdout_opened": False, "legacy_test_used_for_fitting": False,
         "reactions": len(records), "formulas": len(set(groups)), "feature_count": x.shape[1],
-        "feature_names": list(frame.columns), "experts": EXPERTS,
-        "best_fixed_descriptive": EXPERTS[best_fixed],
-        "fixed_expert_barrier_MAE_eV": dict(zip(EXPERTS, np.mean(losses, axis=0).tolist())),
+        "feature_names": list(frame.columns), "experts": experts,
+        "best_fixed_descriptive": experts[best_fixed],
+        "fixed_expert_barrier_MAE_eV": dict(zip(experts, np.mean(losses, axis=0).tolist())),
         "oracle_unattainable": {"barrier_MAE_eV": float(np.mean(oracle)),
             "headroom_eV": float(np.mean(fixed_errors-oracle)),
-            "winner_counts": dict(zip(EXPERTS, np.bincount(winner, minlength=len(EXPERTS)).tolist())),
+            "winner_counts": dict(zip(experts, np.bincount(winner, minlength=len(experts)).tolist())),
             "warning": "selects using each evaluation reference label; cannot be deployed"},
-        "fixed_expert_all_metrics": {name: selected_metrics(np.full(len(records), i)) for i,name in enumerate(EXPERTS)},
+        "fixed_expert_all_metrics": {name: selected_metrics(np.full(len(records), i)) for i,name in enumerate(experts)},
         "barrier_oracle_all_metrics": selected_metrics(winner),
         "routing_objective": "expected absolute barrier error; other reported metrics are outcomes, not guaranteed improvements",
-        "selection": "all learners fixed before meta outcomes; no tuning on these out-of-fold predictions",
+        "selection": args.study_scope,
         "models": {}, "started_at_utc": datetime.now(timezone.utc).isoformat()}
     save_json(output / "headroom.json", summary)
     print(json.dumps({"best_fixed": summary["best_fixed_descriptive"], "fixed": float(np.mean(fixed_errors)), "oracle": float(np.mean(oracle))}), flush=True)
@@ -91,15 +94,15 @@ def evaluate(args):
         baseline_choices[test] = int(np.argmin(np.mean(losses[train], axis=0)))
     selected_errors = {"fold_selected_fixed": losses[np.arange(len(records)), baseline_choices], "oracle_unattainable": oracle}
     choices = {"fold_selected_fixed": baseline_choices}
-    for expert in range(len(EXPERTS)):
-        selected_errors[f"always_{EXPERTS[expert]}"] = losses[:, expert]
+    for expert in range(len(experts)):
+        selected_errors[f"always_{experts[expert]}"] = losses[:, expert]
     baseline = selected_errors["fold_selected_fixed"]
     torch.set_num_threads(4)
     for method in args.methods:
         path = output / f"{method}.json"
         if path.exists():
             cached = json.loads(path.read_text())
-            if cached["reactions"] != reactions or cached["folds"] != fold_ids.tolist():
+            if cached["reactions"] != reactions or cached["folds"] != fold_ids.tolist() or cached.get("experts", EXPERTS) != experts:
                 raise ValueError(f"Cached identity mismatch for {method}")
             choice = np.asarray(cached["choices"], dtype=int)
             summary["models"][method] = cached["summary"]
@@ -118,8 +121,8 @@ def evaluate(args):
                     predicted = np.maximum(estimator.predict(x[test]), 0.)
                     choice[test] = np.argmin(predicted, axis=1)
                 elif method in ("tabpfn", "tabicl"):
-                    predicted = np.empty((len(test), len(EXPERTS)))
-                    for expert in range(len(EXPERTS)):
+                    predicted = np.empty((len(test), len(experts)))
+                    for expert in range(len(experts)):
                         item = config["models"][f"{method}_regressor"]
                         settings = {"device": "mps", "n_estimators": 4, "random_state": config["seed"]+fold,
                             "model_path": str(ROOT / item["local"] / item["file"])}
@@ -142,8 +145,8 @@ def evaluate(args):
                     from jevmlx import choose
                     imputer = make_pipeline(SimpleImputer(strategy="median", keep_empty_features=True), StandardScaler())
                     z_train, z_test = imputer.fit_transform(x[train]), imputer.transform(x[test])
-                    codes = ["OFF23", "MH1", "MH0", "FINETUNED"]
-                    options = dict(zip(codes, EXPERTS))
+                    codes = ["OFF23", "MH1", "MH0", "FINETUNED"] if experts == EXPERTS else [f"EXPERT_{i}" for i in range(len(experts))]
+                    options = dict(zip(codes, experts))
                     means = dict(zip(codes, np.mean(losses[train], axis=0).round(5).tolist()))
                     for index, j in enumerate(test):
                         nearest = np.argsort(np.mean((z_train-z_test[index])**2, axis=1))[:8]
@@ -173,7 +176,7 @@ def evaluate(args):
                     "mean_score_minus_accuracy": float(np.mean(confidence-correct)),
                     "top_label_binary_brier": float(np.mean((confidence-correct)**2)),
                     "scope": "OOF developmental diagnostic for matching the minimum-error expert; not calibrated DFT precision probability"}
-            cached = {"reactions": reactions, "folds": fold_ids.tolist(), "choices": choice.tolist(),
+            cached = {"experts": experts, "reactions": reactions, "folds": fold_ids.tolist(), "choices": choice.tolist(),
                 "confidence": [float(v) if np.isfinite(v) else None for v in confidence], "summary": result}
             save_json(path, cached)
             summary["models"][method] = result
@@ -199,5 +202,7 @@ if __name__ == "__main__":
     parser.add_argument("--benchmark", type=Path, default=ROOT/"results/v0.7.0/meta_development_mac")
     parser.add_argument("--output", type=Path, default=ROOT/"results/v0.7.0/router")
     parser.add_argument("--headroom-only", action="store_true")
+    parser.add_argument("--experts", nargs="+", default=EXPERTS)
+    parser.add_argument("--study-scope", default="all learners fixed before original meta outcomes; no tuning on these out-of-fold predictions")
     parser.add_argument("--methods", nargs="+", choices=["ridge","extratrees","tabpfn","tabicl","jevmlx"], default=["ridge","extratrees","tabpfn","tabicl"])
     evaluate(parser.parse_args())

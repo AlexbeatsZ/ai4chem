@@ -1,0 +1,395 @@
+{
+  "status": "completed",
+  "finished_at_utc": "2026-11-23T23:42:31.294602+00:00",
+  "scope": "exploratory same-meta expansion after original results; all oracles are unattainable",
+  "holdout_labels_evaluated": false,
+  "reactions": 128,
+  "architecture_families": [
+    "MACE",
+    "AIMNet2",
+    "ANI",
+    "Orb"
+  ],
+  "original_four": {
+    "experts": [
+      "off23-small",
+      "mh1-omol",
+      "mh0-rgd1",
+      "legacy_mh1_256"
+    ],
+    "fixed": {
+      "off23-small": {
+        "barrier_MAE_eV": 0.5355465021745616,
+        "barrier_absolute_error_p90_eV": 1.1083705470771748,
+        "force_global_component_RMSE_eV_per_A": 0.5160281976471118,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.720763070513271,
+        "reaction_energy_MAE_eV": 0.4671642484163243,
+        "choices": {
+          "off23-small": 128,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0
+        }
+      },
+      "mh1-omol": {
+        "barrier_MAE_eV": 0.3033762803738469,
+        "barrier_absolute_error_p90_eV": 0.5144295396291454,
+        "force_global_component_RMSE_eV_per_A": 0.1764359068266209,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.1945409639064718,
+        "reaction_energy_MAE_eV": 0.18414067676970802,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 128,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0
+        }
+      },
+      "mh0-rgd1": {
+        "barrier_MAE_eV": 0.6953578948798054,
+        "barrier_absolute_error_p90_eV": 1.0859988042750046,
+        "force_global_component_RMSE_eV_per_A": 0.1913743719796297,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.24187080839183323,
+        "reaction_energy_MAE_eV": 0.3834083846138441,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 128,
+          "legacy_mh1_256": 0
+        }
+      },
+      "legacy_mh1_256": {
+        "barrier_MAE_eV": 0.13157462861627778,
+        "barrier_absolute_error_p90_eV": 0.2854841177568232,
+        "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+        "reaction_energy_MAE_eV": 0.06648164593789119,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 128
+        }
+      }
+    },
+    "barrier_oracle_unattainable": {
+      "barrier_MAE_eV": 0.08947608517847527,
+      "barrier_absolute_error_p90_eV": 0.20214006593787417,
+      "force_global_component_RMSE_eV_per_A": 0.2567832353770582,
+      "mean_reaction_TS_force_RMSE_eV_per_A": 0.25738372550138633,
+      "reaction_energy_MAE_eV": 0.09442027970153077,
+      "choices": {
+        "off23-small": 26,
+        "mh1-omol": 15,
+        "mh0-rgd1": 2,
+        "legacy_mh1_256": 85
+      }
+    },
+    "force_guarded_oracle_unattainable": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "choices": {
+        "off23-small": 0,
+        "mh1-omol": 0,
+        "mh0-rgd1": 0,
+        "legacy_mh1_256": 128
+      }
+    },
+    "multi_metric_guarded_oracle_unattainable": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "choices": {
+        "off23-small": 0,
+        "mh1-omol": 0,
+        "mh0-rgd1": 0,
+        "legacy_mh1_256": 128
+      }
+    },
+    "force_best_counts": {
+      "off23-small": 0,
+      "mh1-omol": 0,
+      "mh0-rgd1": 0,
+      "legacy_mh1_256": 128
+    },
+    "alternative_force_improvement_reactions": 0,
+    "joint_barrier_force_improvement_cases": {
+      "off23-small": [],
+      "mh1-omol": [],
+      "mh0-rgd1": []
+    },
+    "aggregate_guarded_oracle_unattainable": {
+      "solver_status": 0,
+      "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "optimality_proved": true,
+      "mip_gap": 0.0,
+      "guards": "aggregate force MSE, mean per-reaction TS force RMSE and reaction-energy MAE no worse than baseline",
+      "warning": "uses evaluation labels and is unattainable; not a deployable router",
+      "metrics": {
+        "barrier_MAE_eV": 0.13157462861627778,
+        "barrier_absolute_error_p90_eV": 0.2854841177568232,
+        "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+        "reaction_energy_MAE_eV": 0.06648164593789119,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 128
+        }
+      }
+    }
+  },
+  "expanded_eight": {
+    "experts": [
+      "off23-small",
+      "mh1-omol",
+      "mh0-rgd1",
+      "legacy_mh1_256",
+      "aimnet2-wb97m",
+      "aimnet2-rxn",
+      "ani2x",
+      "orbmol-conservative"
+    ],
+    "fixed": {
+      "off23-small": {
+        "barrier_MAE_eV": 0.5355465021745616,
+        "barrier_absolute_error_p90_eV": 1.1083705470771748,
+        "force_global_component_RMSE_eV_per_A": 0.5160281976471118,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.720763070513271,
+        "reaction_energy_MAE_eV": 0.4671642484163243,
+        "choices": {
+          "off23-small": 128,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 0
+        }
+      },
+      "mh1-omol": {
+        "barrier_MAE_eV": 0.3033762803738469,
+        "barrier_absolute_error_p90_eV": 0.5144295396291454,
+        "force_global_component_RMSE_eV_per_A": 0.1764359068266209,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.1945409639064718,
+        "reaction_energy_MAE_eV": 0.18414067676970802,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 128,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 0
+        }
+      },
+      "mh0-rgd1": {
+        "barrier_MAE_eV": 0.6953578948798054,
+        "barrier_absolute_error_p90_eV": 1.0859988042750046,
+        "force_global_component_RMSE_eV_per_A": 0.1913743719796297,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.24187080839183323,
+        "reaction_energy_MAE_eV": 0.3834083846138441,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 128,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 0
+        }
+      },
+      "legacy_mh1_256": {
+        "barrier_MAE_eV": 0.13157462861627778,
+        "barrier_absolute_error_p90_eV": 0.2854841177568232,
+        "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+        "reaction_energy_MAE_eV": 0.06648164593789119,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 128,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 0
+        }
+      },
+      "aimnet2-wb97m": {
+        "barrier_MAE_eV": 0.2020819498956925,
+        "barrier_absolute_error_p90_eV": 0.4946328099666061,
+        "force_global_component_RMSE_eV_per_A": 0.2600252111131598,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.34752669057343155,
+        "reaction_energy_MAE_eV": 0.1826838448019572,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 128,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 0
+        }
+      },
+      "aimnet2-rxn": {
+        "barrier_MAE_eV": 0.2663744296484594,
+        "barrier_absolute_error_p90_eV": 0.47138412785684947,
+        "force_global_component_RMSE_eV_per_A": 0.22407940398149706,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.26546357851475477,
+        "reaction_energy_MAE_eV": 0.19745325503474914,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 128,
+          "ani2x": 0,
+          "orbmol-conservative": 0
+        }
+      },
+      "ani2x": {
+        "barrier_MAE_eV": 0.5861073951321103,
+        "barrier_absolute_error_p90_eV": 1.1525240646771633,
+        "force_global_component_RMSE_eV_per_A": 0.5475173023464636,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.6517942960421179,
+        "reaction_energy_MAE_eV": 0.4013382531093086,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 0,
+          "ani2x": 128,
+          "orbmol-conservative": 0
+        }
+      },
+      "orbmol-conservative": {
+        "barrier_MAE_eV": 0.28947813224661445,
+        "barrier_absolute_error_p90_eV": 0.4143460271382537,
+        "force_global_component_RMSE_eV_per_A": 0.1579056790144823,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.16368639809872648,
+        "reaction_energy_MAE_eV": 0.18954373700716332,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 0,
+          "legacy_mh1_256": 0,
+          "aimnet2-wb97m": 0,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 128
+        }
+      }
+    },
+    "barrier_oracle_unattainable": {
+      "barrier_MAE_eV": 0.060014111008978695,
+      "barrier_absolute_error_p90_eV": 0.13246804195441655,
+      "force_global_component_RMSE_eV_per_A": 0.2849268828047719,
+      "mean_reaction_TS_force_RMSE_eV_per_A": 0.3183176326461498,
+      "reaction_energy_MAE_eV": 0.1293716619071716,
+      "choices": {
+        "off23-small": 19,
+        "mh1-omol": 9,
+        "mh0-rgd1": 2,
+        "legacy_mh1_256": 48,
+        "aimnet2-wb97m": 33,
+        "aimnet2-rxn": 9,
+        "ani2x": 8,
+        "orbmol-conservative": 0
+      }
+    },
+    "force_guarded_oracle_unattainable": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "choices": {
+        "off23-small": 0,
+        "mh1-omol": 0,
+        "mh0-rgd1": 0,
+        "legacy_mh1_256": 128,
+        "aimnet2-wb97m": 0,
+        "aimnet2-rxn": 0,
+        "ani2x": 0,
+        "orbmol-conservative": 0
+      }
+    },
+    "multi_metric_guarded_oracle_unattainable": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_force_RMSE_eV_per_A": 0.12766044710942098,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "choices": {
+        "off23-small": 0,
+        "mh1-omol": 0,
+        "mh0-rgd1": 0,
+        "legacy_mh1_256": 128,
+        "aimnet2-wb97m": 0,
+        "aimnet2-rxn": 0,
+        "ani2x": 0,
+        "orbmol-conservative": 0
+      }
+    },
+    "force_best_counts": {
+      "off23-small": 0,
+      "mh1-omol": 0,
+      "mh0-rgd1": 0,
+      "legacy_mh1_256": 119,
+      "aimnet2-wb97m": 0,
+      "aimnet2-rxn": 0,
+      "ani2x": 0,
+      "orbmol-conservative": 9
+    },
+    "alternative_force_improvement_reactions": 9,
+    "joint_barrier_force_improvement_cases": {
+      "off23-small": [],
+      "mh1-omol": [],
+      "mh0-rgd1": [],
+      "aimnet2-wb97m": [],
+      "aimnet2-rxn": [],
+      "ani2x": [],
+      "orbmol-conservative": []
+    },
+    "aggregate_guarded_oracle_unattainable": {
+      "solver_status": 0,
+      "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "optimality_proved": true,
+      "mip_gap": 0.0,
+      "guards": "aggregate force MSE, mean per-reaction TS force RMSE and reaction-energy MAE no worse than baseline",
+      "warning": "uses evaluation labels and is unattainable; not a deployable router",
+      "metrics": {
+        "barrier_MAE_eV": 0.12780341598434575,
+        "barrier_absolute_error_p90_eV": 0.2854841177568232,
+        "force_global_component_RMSE_eV_per_A": 0.09182798453399692,
+        "mean_reaction_TS_force_RMSE_eV_per_A": 0.12616765405743863,
+        "reaction_energy_MAE_eV": 0.06536064004493625,
+        "choices": {
+          "off23-small": 0,
+          "mh1-omol": 0,
+          "mh0-rgd1": 1,
+          "legacy_mh1_256": 123,
+          "aimnet2-wb97m": 1,
+          "aimnet2-rxn": 0,
+          "ani2x": 0,
+          "orbmol-conservative": 3
+        }
+      }
+    }
+  },
+  "raw_cross_DFT_comparison": true,
+  "foundation_reaction_overlap_verified": false
+}

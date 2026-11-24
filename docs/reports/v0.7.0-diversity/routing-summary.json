@@ -1,0 +1,282 @@
+{
+  "status": "meta_development_oof_complete",
+  "scope": "meta-development formula-grouped OOF on fixed DFT path geometries; router inputs are endpoint-only",
+  "prospective_holdout_opened": false,
+  "legacy_test_used_for_fitting": false,
+  "reactions": 128,
+  "formulas": 42,
+  "feature_count": 38,
+  "feature_names": [
+    "atoms",
+    "count_H",
+    "count_C",
+    "count_N",
+    "count_O",
+    "reactant_components",
+    "reactant_min_radius_ratio_1_1",
+    "reactant_min_radius_ratio_1_6",
+    "reactant_min_radius_ratio_1_7",
+    "reactant_min_radius_ratio_1_8",
+    "reactant_min_radius_ratio_6_6",
+    "reactant_min_radius_ratio_6_7",
+    "reactant_min_radius_ratio_6_8",
+    "reactant_min_radius_ratio_7_7",
+    "reactant_min_radius_ratio_7_8",
+    "reactant_min_radius_ratio_8_8",
+    "reactant_distance_q10",
+    "reactant_distance_q50",
+    "reactant_distance_q90",
+    "product_components",
+    "product_min_radius_ratio_1_1",
+    "product_min_radius_ratio_1_6",
+    "product_min_radius_ratio_1_7",
+    "product_min_radius_ratio_1_8",
+    "product_min_radius_ratio_6_6",
+    "product_min_radius_ratio_6_7",
+    "product_min_radius_ratio_6_8",
+    "product_min_radius_ratio_7_7",
+    "product_min_radius_ratio_7_8",
+    "product_min_radius_ratio_8_8",
+    "product_distance_q10",
+    "product_distance_q50",
+    "product_distance_q90",
+    "formed_bonds",
+    "broken_bonds",
+    "mean_pair_distance_change",
+    "max_pair_distance_change",
+    "rms_pair_distance_change"
+  ],
+  "experts": [
+    "off23-small",
+    "mh1-omol",
+    "mh0-rgd1",
+    "legacy_mh1_256",
+    "aimnet2-wb97m",
+    "aimnet2-rxn",
+    "ani2x",
+    "orbmol-conservative"
+  ],
+  "best_fixed_descriptive": "legacy_mh1_256",
+  "fixed_expert_barrier_MAE_eV": {
+    "off23-small": 0.5355465021745616,
+    "mh1-omol": 0.3033762803738469,
+    "mh0-rgd1": 0.6953578948798054,
+    "legacy_mh1_256": 0.13157462861627778,
+    "aimnet2-wb97m": 0.2020819498956925,
+    "aimnet2-rxn": 0.2663744296484593,
+    "ani2x": 0.5861073951321103,
+    "orbmol-conservative": 0.28947813224661445
+  },
+  "oracle_unattainable": {
+    "barrier_MAE_eV": 0.060014111008978695,
+    "headroom_eV": 0.07156051760729909,
+    "winner_counts": {
+      "off23-small": 19,
+      "mh1-omol": 9,
+      "mh0-rgd1": 2,
+      "legacy_mh1_256": 48,
+      "aimnet2-wb97m": 33,
+      "aimnet2-rxn": 9,
+      "ani2x": 8,
+      "orbmol-conservative": 0
+    },
+    "warning": "selects using each evaluation reference label; cannot be deployed"
+  },
+  "fixed_expert_all_metrics": {
+    "off23-small": {
+      "barrier_MAE_eV": 0.5355465021745616,
+      "barrier_absolute_error_p90_eV": 1.1083705470771748,
+      "force_global_component_RMSE_eV_per_A": 0.5160281976471118,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.720763070513271,
+      "reaction_energy_MAE_eV": 0.4671642484163243,
+      "error_over_0.1eV_fraction": 0.828125
+    },
+    "mh1-omol": {
+      "barrier_MAE_eV": 0.3033762803738469,
+      "barrier_absolute_error_p90_eV": 0.5144295396291454,
+      "force_global_component_RMSE_eV_per_A": 0.1764359068266209,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.1945409639064718,
+      "reaction_energy_MAE_eV": 0.18414067676970802,
+      "error_over_0.1eV_fraction": 0.875
+    },
+    "mh0-rgd1": {
+      "barrier_MAE_eV": 0.6953578948798054,
+      "barrier_absolute_error_p90_eV": 1.0859988042750046,
+      "force_global_component_RMSE_eV_per_A": 0.1913743719796297,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.2418708083918332,
+      "reaction_energy_MAE_eV": 0.3834083846138441,
+      "error_over_0.1eV_fraction": 0.9765625
+    },
+    "legacy_mh1_256": {
+      "barrier_MAE_eV": 0.13157462861627778,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.127660447109421,
+      "reaction_energy_MAE_eV": 0.06648164593789119,
+      "error_over_0.1eV_fraction": 0.546875
+    },
+    "aimnet2-wb97m": {
+      "barrier_MAE_eV": 0.2020819498956925,
+      "barrier_absolute_error_p90_eV": 0.4946328099666061,
+      "force_global_component_RMSE_eV_per_A": 0.26002521111315985,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.34752669057343155,
+      "reaction_energy_MAE_eV": 0.1826838448019572,
+      "error_over_0.1eV_fraction": 0.6640625
+    },
+    "aimnet2-rxn": {
+      "barrier_MAE_eV": 0.26637442964845937,
+      "barrier_absolute_error_p90_eV": 0.47138412785684947,
+      "force_global_component_RMSE_eV_per_A": 0.2240794039814971,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.26546357851475477,
+      "reaction_energy_MAE_eV": 0.19745325503474914,
+      "error_over_0.1eV_fraction": 0.828125
+    },
+    "ani2x": {
+      "barrier_MAE_eV": 0.5861073951321103,
+      "barrier_absolute_error_p90_eV": 1.1525240646771633,
+      "force_global_component_RMSE_eV_per_A": 0.5475173023464636,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.6517942960421179,
+      "reaction_energy_MAE_eV": 0.4013382531093086,
+      "error_over_0.1eV_fraction": 0.9140625
+    },
+    "orbmol-conservative": {
+      "barrier_MAE_eV": 0.28947813224661445,
+      "barrier_absolute_error_p90_eV": 0.4143460271382537,
+      "force_global_component_RMSE_eV_per_A": 0.1579056790144823,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.16368639809872645,
+      "reaction_energy_MAE_eV": 0.18954373700716332,
+      "error_over_0.1eV_fraction": 0.9765625
+    }
+  },
+  "barrier_oracle_all_metrics": {
+    "barrier_MAE_eV": 0.060014111008978695,
+    "barrier_absolute_error_p90_eV": 0.13246804195441655,
+    "force_global_component_RMSE_eV_per_A": 0.2849268828047719,
+    "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.3183176326461498,
+    "reaction_energy_MAE_eV": 0.1293716619071716,
+    "error_over_0.1eV_fraction": 0.2109375
+  },
+  "routing_objective": "expected absolute barrier error; other reported metrics are outcomes, not guaranteed improvements",
+  "selection": "Exploratory architecture expansion after original pilot; original learner hyperparameters reused without OOF tuning",
+  "models": {
+    "ridge": {
+      "barrier_MAE_eV": 0.18307721811921995,
+      "barrier_absolute_error_p90_eV": 0.4003176781770132,
+      "force_global_component_RMSE_eV_per_A": 0.22090190700792417,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.2515442063519764,
+      "reaction_energy_MAE_eV": 0.11198779467077957,
+      "error_over_0.1eV_fraction": 0.578125,
+      "expert_selection_accuracy_vs_oracle": 0.359375,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.05150258950294218,
+        "formula_cluster_ci95_eV": [
+          0.01591365761081709,
+          0.09292496588688381
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 0.007117291010217741,
+      "fold_seconds": [
+        0.002727083003264852,
+        0.0011862919927807525,
+        0.0010800830059451982,
+        0.0010683750006137416,
+        0.001055458007613197
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "extratrees": {
+      "barrier_MAE_eV": 0.1313398028824011,
+      "barrier_absolute_error_p90_eV": 0.2854841177568232,
+      "force_global_component_RMSE_eV_per_A": 0.09359406438827317,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.12862823955289207,
+      "reaction_energy_MAE_eV": 0.06767267777728847,
+      "error_over_0.1eV_fraction": 0.546875,
+      "expert_selection_accuracy_vs_oracle": 0.3828125,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": -0.0002348257338766757,
+        "formula_cluster_ci95_eV": [
+          -0.0007983513302120592,
+          0.0
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 0.35504120799305383,
+      "fold_seconds": [
+        0.07516725000459701,
+        0.07101212500128895,
+        0.06918716699874494,
+        0.07024395799089689,
+        0.06943070799752604
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "tabpfn": {
+      "barrier_MAE_eV": 0.14200934250375497,
+      "barrier_absolute_error_p90_eV": 0.3004392247250507,
+      "force_global_component_RMSE_eV_per_A": 0.10611162688817265,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.13766900654840747,
+      "reaction_energy_MAE_eV": 0.0694638336060649,
+      "error_over_0.1eV_fraction": 0.5625,
+      "expert_selection_accuracy_vs_oracle": 0.359375,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.010434713887477187,
+        "formula_cluster_ci95_eV": [
+          0.00016932359712868472,
+          0.023272753558951968
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 15.651110249993508,
+      "fold_seconds": [
+        3.847661749998224,
+        2.8620781249919673,
+        2.9296572919993196,
+        3.0163265410083113,
+        2.9953865419956855
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    },
+    "tabicl": {
+      "barrier_MAE_eV": 0.15038904381593485,
+      "barrier_absolute_error_p90_eV": 0.33243420652406713,
+      "force_global_component_RMSE_eV_per_A": 0.12357830011903864,
+      "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.15371468353243026,
+      "reaction_energy_MAE_eV": 0.08162072316051663,
+      "error_over_0.1eV_fraction": 0.578125,
+      "expert_selection_accuracy_vs_oracle": 0.3359375,
+      "paired_vs_fold_selected_fixed": {
+        "mean_eV": 0.018814415199657073,
+        "formula_cluster_ci95_eV": [
+          0.0058650660609429065,
+          0.03495363826842371
+        ],
+        "clusters": 42,
+        "replicates": 2000
+      },
+      "oof_fit_and_batch_predict_seconds": 25.189549292001175,
+      "fold_seconds": [
+        5.272315291993436,
+        5.0201627500064205,
+        4.971217124999384,
+        4.922822666005231,
+        5.003031458996702
+      ],
+      "timing_scope": "includes fold fitting and batch prediction; not a deployment single-query latency"
+    }
+  },
+  "started_at_utc": "2026-11-23T23:43:37.170207+00:00",
+  "baseline": {
+    "barrier_MAE_eV": 0.13157462861627778,
+    "barrier_absolute_error_p90_eV": 0.2854841177568232,
+    "force_global_component_RMSE_eV_per_A": 0.09189807132304621,
+    "mean_reaction_TS_region_force_RMSE_eV_per_A": 0.127660447109421,
+    "reaction_energy_MAE_eV": 0.06648164593789119,
+    "error_over_0.1eV_fraction": 0.546875,
+    "rule": "select best fixed expert using only the current fold's training labels"
+  },
+  "finished_at_utc": "2026-11-23T23:44:18.399143+00:00"
+}
