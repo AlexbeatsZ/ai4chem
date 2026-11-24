@@ -25,15 +25,13 @@ instructions still determine the group's assigned slot and submission details.
   Mamba 2.6.0 at `/home/meta/.local/opt/miniforge3/bin/mamba`.
 - v0.1.0 validated with Python 3.12.16, torch 2.15.0+cu134, mace-torch
   0.3.17 and ASE 3.29.0. Initial download and cached rerun both passed.
-- v0.1 water finite energy/forces and saved ASE readback passed; outputs in `results/`.
 - Remote is `https://github.com/AlexbeatsZ/ai4chem`; GitHub reported public on 2026-11-22.
 - v0.2.0 reads ten test reactions selected with seed 42 from the pinned JMP
   Hugging Face export. `data/transition1x_test_10.h5` retains 13,348 source
   configurations and the benchmark evaluates 100 final-band images on CUDA float64.
 - Three baselines passed. OFF23 / MH-1 omol / MH-0 rgd1 barrier MAEs are
   0.614896 / 0.311887 / 0.606168 eV. Detailed outputs are in `results/v0.2.0/`.
-- Installed pyarrow 26.0.1 in the isolated environment. Lock now uses version
-  pins, including packaging==26.3, and is Linux CUDA specific.
+- Per-host environments retain their own dependency locks; do not reuse CUDA pins on Mac.
 - v0.3.0 fixed 77 development / 20 validation / 210 final reactions. Four 8-epoch
   runs completed on nested 64/256 train frames, one frame per unique train reaction.
 - Validation selected mh1_full_256. On 210 final reactions barrier MAE changed
@@ -92,8 +90,9 @@ instructions still determine the group's assigned slot and submission details.
   foundation, up to 40 epochs/patience 12, original loss/lr. All retain old anchors.
   Data sampling contrasts have equal reaction counts; only the two 4096 arms have
   equal label/epoch ceilings. Record actual time and updates.
-- Next: optimizer/replay comparisons, three seeds for promising settings, freeze
-  models/router, then prospective static/path-search/DFT validation.
+- v0.9 CUDA optimizer/force-weight controls and two additional selected-setting seeds
+  queue behind the v0.7 runner lock; read `docs/design/optimizer-study.md`.
+  Final models/router still require freezing before prospective static/search/DFT.
 - v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent59171
   runs CPU training alongside searches under `configs/v0.8.0_execution.json`.
   Read `docs/design/specialization.md`; finite development analyzer waits for all
@@ -187,7 +186,7 @@ The smoke test requires CUDA and writes `results/smoke_h2o.extxyz` and
 
 - `docs/project-background.md` is the research and course entrypoint. Read before
   planning new work; it integrates motivation, related literature and priorities.
-- `docs/design/model-improvement.md` fixes v0.7 training, data roles and evaluation.
+- `docs/design/model-improvement.md` fixes v0.7 data roles; `optimizer-study.md` fixes v0.9.
 - `docs/design/decision-routing.md` and `expert-diversity.md` fix routing and expanded-family studies.
 - `docs/design/v0.6.0-pilot.md` fixes the post-hoc candidate, Mac control, budgets
   and acceptance before either new full-chain computation starts.

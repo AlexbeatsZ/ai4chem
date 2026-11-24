@@ -9,6 +9,7 @@
 | 节点 | 当前任务 | 权威状态与恢复入口 |
 | --- | --- | --- |
 | OMEN | v0.7 四臂 CUDA 对照，前三臂完成、path4096 运行 | results/v0.7.0/state.json；native owner 39092，启动命令在 results/coordination/model-v07 |
+| OMEN | v0.9 三个新学习率/force 设置和两个种子重复，待原锁释放再跑 | results/v0.9.0/state.json；results/coordination/model-v09 |
 | Mac | 八反应三专家端点搜索，AIMNet2-rxn 八项完成，其余仍运行 | results/v0.7.0/diversity_search/<expert>/state.json；results/coordination/diversity-search |
 | Mac | v0.8 七项等更新专门化训练，数据读回完成，global512 已开始 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
 | 室友 Gaussian | AIMNet2-rxn/rxn8694，四线程/4 GB TS→频率→双向 IRC→稳定末端 | worker results/rxn8694-aimnet2-rxn-gaussian16w-r1；native owner 5232，00:33Z 启动 |

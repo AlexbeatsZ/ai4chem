@@ -1,0 +1,57 @@
+{
+  "version": "v0.9.0",
+  "frozen_at_utc": "2026-11-24T01:06:50.389602+00:00",
+  "source_revision": "fac02fc7019ae95a6957b0723b467f6e56745fd2",
+  "training_seed": 20261116,
+  "predecessor_wait_hours": 10,
+  "candidate_data_arms": [
+    "mh1_random4096",
+    "mh1_path4096"
+  ],
+  "data_selection": "After all v0.7 arms complete and release the existing runner lock, select the better of the two matched 4096-frame arms by validation barrier MAE, then TS-region force RMSE, then name. Freeze the concrete input record before any new training.",
+  "training": {
+    "epochs": 40,
+    "patience": 100,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "energy_weight": 10.0,
+    "forces_weight": 1.0,
+    "dtype": "float64",
+    "E0s": "estimated",
+    "device": "cuda"
+  },
+  "grid_new_arms": [
+    {
+      "name": "mh1_opt_lr1e4_f10_s0",
+      "training_overrides": {
+        "learning_rate": 0.0001,
+        "forces_weight": 10.0
+      }
+    },
+    {
+      "name": "mh1_opt_lr1e3_f1_s0",
+      "training_overrides": {
+        "learning_rate": 0.001,
+        "forces_weight": 1.0
+      }
+    },
+    {
+      "name": "mh1_opt_lr1e3_f10_s0",
+      "training_overrides": {
+        "learning_rate": 0.001,
+        "forces_weight": 10.0
+      }
+    }
+  ],
+  "reused_grid_baseline": "Selected completed v0.7 arm, same foundation/seed/4096 frames/batch4/40 actual epochs/lr1e-4/force1. Its previous computation remains charged and reported, not called a new run or omitted from cost.",
+  "hyperparameter_selection": "Select minimum validation barrier MAE among completed first-seed settings whose validation force RMSE AND TS-region force RMSE are no worse than the reused baseline; tie-break TS-force then name. Baseline always eligible. Failed trials retained, never silently replaced. Other energy metrics are reported outcomes, not constrained guarantees.",
+  "additional_seeds": [
+    20261117,
+    20261118
+  ],
+  "repeat_policy": "Freeze selected hyperparameters before two additional seeds; report all three separately and mean/sample SD. No best-seed-only result and no further adaptation on repeats.",
+  "budgets": "Three new grid arms plus two selected-parameter seed repeats, each4096 frames x40 epochs at batch4, estimated40960 updates each. Reuse original data baseline explicitly. Equal per-arm updates/labels, not equal aggregate tuning budget or exact FLOPs/walltime.",
+  "scope": "Exploratory validation selection and meta-development only; no prospective holdout labels, no legacy test fitting. New meta metrics cannot change the frozen selection rule.",
+  "failure_policy": "No automatic training retry or incomplete-log overwrite. Preserve failed trial and continue other prespecified arms. If repeat fails, summary remains incomplete.",
+  "hardware": "Existing OMEN CUDA Mamba environment, one training worker at a time after predecessor lock release, four CPU threads; no installation or global setting changes."
+}
