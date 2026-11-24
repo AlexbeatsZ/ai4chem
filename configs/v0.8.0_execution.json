@@ -1,13 +1,13 @@
 {
-  "version": "v0.8.0-execution-amendment-1",
-  "amended_at_utc": "2026-11-24T00:43:48.720548+00:00",
+  "version": "v0.8.0-execution-amendment-3",
+  "amended_at_utc": "2026-11-24T01:28:00.876577+00:00",
   "partition_frozen_at_utc": "2026-11-24T00:19:54.281880+00:00",
-  "reason": "AIMNet search finished while two slower search owners remain. Release idle CPU capacity before starting any specialization training; preserve frozen labels, seeds, optimizer, update budgets and checkpoint selection.",
-  "cpu_thread_budget": 12,
+  "reason": "After preserving the original trainer and launching two regional experts, four top samples still showed 29.5-34.9% idle CPU and 57-GiB unused memory during initialization. Admit a fourth necessary training control on the 16-core/128-GiB Mac, then observe steady training; nominal thread limits are not sustained CPU demand. No scientific settings changed.",
+  "cpu_thread_budget": 22,
   "search_threads": 3,
   "training_threads": 4,
-  "max_training_workers": 3,
-  "dispatch_rule": "floor((12 - 3 * active_searches) / 4), clamped to [0,3]. Missing search state reserves threads; failed search or twelve-hour waiting deadline blocks new dispatch. Existing training drains without being killed.",
+  "max_training_workers": 4,
+  "dispatch_rule": "floor((22 - 3 * active_searches) / 4), clamped to [0,4]. Nominal caps can oversubscribe 16 physical cores based on measured CPU headroom. Reload resource amendments between dispatch cycles; shrinking capacity never kills active workers. Preserve existing exact-command locked workers; no training restart or implicit retry.",
   "scientific_protocol_changed": false,
   "wall_time_comparison": "Record concurrency and actual wall time; equal-update systems do not imply equal wall time or FLOPs."
 }

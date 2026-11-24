@@ -2,12 +2,16 @@
 
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 import warnings
 import numpy as np
 from specialization_gate import fit_gate, predict_gate
-from run_specialization import validate_budgets, training_capacity
+from run_specialization import AdoptedWorker, existing_workers, validate_budgets, training_capacity
 
 
 class SpecializationTests(unittest.TestCase):
@@ -53,6 +57,54 @@ class SpecializationTests(unittest.TestCase):
             self.assertEqual(training_capacity(stages,execution),expected)
         self.assertEqual(training_capacity({"a":"missing","b":"completed","c":"completed"},execution),2)
         self.assertEqual(training_capacity({"a":"failed","b":"completed","c":"completed"},execution),0)
+
+    def test_expanded_capacity_runs_three_trainers_with_two_searches(self):
+        execution = {"cpu_thread_budget":18,"search_threads":3,
+                     "training_threads":4,"max_training_workers":3}
+        self.assertEqual(training_capacity({"a":"searching","b":"completed","c":"searching"},execution),3)
+        execution.update(cpu_thread_budget=22,max_training_workers=4)
+        self.assertEqual(training_capacity({"a":"searching","b":"completed","c":"searching"},execution),4)
+
+    def test_adoption_observes_locked_live_worker_without_restarting_it(self):
+        with tempfile.TemporaryDirectory(dir="/tmp/.agents") as temporary:
+            directory = Path(temporary)
+            script = ("import fcntl,json,os,sys; from pathlib import Path; "
+                      "p=Path(sys.argv[1]); f=(p/'worker.lock').open('a'); "
+                      "fcntl.flock(f,fcntl.LOCK_EX); "
+                      "(p/'state.json').write_text(json.dumps({'owner_pid':os.getpid(),'experiment':'demo','stage':'training'})); "
+                      "print('ready',flush=True); sys.stdin.read(); "
+                      "(p/'state.json').write_text(json.dumps({'owner_pid':os.getpid(),'experiment':'demo','stage':'completed'}))")
+            process = subprocess.Popen([sys.executable,"-c",script,str(directory),
+                "run_specialization.py","--arm","demo"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
+            try:
+                self.assertEqual(process.stdout.readline().strip(),"ready")
+                record = json.loads((directory/"state.json").read_text())
+                observed = AdoptedWorker(directory,"demo",record)
+                self.assertEqual(observed.pid,process.pid)
+                self.assertIsNone(observed.poll())
+                process.stdin.close()
+                self.assertEqual(observed.wait(timeout=5),0)
+                self.assertEqual(process.wait(timeout=5),0)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
+                if not process.stdin.closed:
+                    process.stdin.close()
+                process.stdout.close()
+
+    def test_recovery_refuses_unrelated_owner_and_failed_evidence(self):
+        with tempfile.TemporaryDirectory(dir="/tmp/.agents") as temporary:
+            directory = Path(temporary)
+            with self.assertRaisesRegex(RuntimeError,"no matching live owner"):
+                AdoptedWorker(directory,"demo",{"owner_pid":os.getpid()})
+            arm = directory/"training"/"demo"
+            arm.mkdir(parents=True)
+            evidence = {"experiment":"demo","stage":"failed","owner_pid":os.getpid()}
+            (arm/"state.json").write_text(json.dumps(evidence))
+            with self.assertRaisesRegex(RuntimeError,"no implicit retry"):
+                existing_workers([{"name":"demo"}],directory)
+            self.assertEqual(json.loads((arm/"state.json").read_text()),evidence)
 
 
 if __name__ == "__main__":

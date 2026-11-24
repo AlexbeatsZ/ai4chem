@@ -93,8 +93,10 @@ instructions still determine the group's assigned slot and submission details.
 - v0.9 CUDA optimizer/force-weight controls and two additional selected-setting seeds
   queue behind the v0.7 runner lock; read `docs/design/optimizer-study.md`.
   Final models/router still require freezing before prospective static/search/DFT.
-- v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent59171
-  runs CPU training alongside searches under `configs/v0.8.0_execution.json`.
+- v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent2061
+  runs four CPU training workers alongside two searches; the previous global trainer
+  was adopted without restart. `configs/v0.8.0_execution.json` records measured
+  nominal oversubscription and can change admission capacity without restarting workers.
   Read `docs/design/specialization.md`; finite development analyzer waits for all
   seven benchmarks using `configs/v0.8.0_analysis.json`, without opening holdouts.
 - User proposed an expert library with a local decision router. First quantify

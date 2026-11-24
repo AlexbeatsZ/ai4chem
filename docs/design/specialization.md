@@ -66,8 +66,8 @@ energy/force 权重 10/1、E0 estimated、no_scaling。先保持原优化器隔�
 OMEN 的完整原数据准备：`scripts/launch_model_study.ps1 -Stage specialization-prepare`。
 准备与当前 CUDA 队列独立，产物 `data/v0.8.0`，完整读回检查标签和预算。
 Mac 接收数据、冻结配置及已有单头 foundation 后，使用现有 mac-mace Pixi
-环境运行 `python -u run_specialization.py`。每模型四 CPU 线程，最多三个
-并行；先等待三家族端点搜索先导终态，避免 CPU 过度竞争。
+环境运行 `python -u run_specialization.py`。每模型四 CPU 线程，初始并发和
+等待约束保留在冻结 protocol 中；实际资源调度使用独立 execution 修订。
 可用系统自带的进程级 `caffeinate -i` 保持这项任务期间唤醒，不改全局电源配置。
 
 逐模型状态/官方日志在 `results/v0.8.0/training/<name>`；总状态在
@@ -98,3 +98,24 @@ ExtraTrees 风险路由、不可部署 oracle。全部沿用冻结几何 OOD 回
 这是受控训练后的开发比较，不是新泛化检验。可用 decision-models 原生环境
 运行 `python scripts/analyze_specialization.py --wait-hours 72`，有限等待既有训练，
 任一训练失败则停下保留证据，不重试、不打开 holdout、不覆盖完成分析。
+
+## 实测负载后的调度修订与进程接管
+
+November 23 本地 17:22 实测 16 核、128 GiB Mac 仍约 51.7% CPU 空闲、
+63 GiB 内存未使用；四线程上限的实际训练约占 1.6 核，两组搜索各约 1.3–1.4 核。
+线程上限不等于持续占用；用户要求提高并发，修订 2 将名义预算增至十八，
+活动搜索仍各预留三、训练仍四，最多三个训练，因此两搜索时也允许三个训练。
+这是基于负载的适度线程超额分配，不能声称是十八个物理核。
+
+调度器每轮重新读取 execution，保留所有观察到的版本和时间；缩容只阻止
+新增，不杀在运行的任务。替换旧调度父进程时只终止确认身份的父 PID，
+保留 worker 和官方训练子进程；新调度器在取得全局锁后检查精确命令、解释器、
+worker.lock 已被占用，接管已有 worker 的监测。失败或中断证据不自动重试，
+不覆盖已有训练；终态仍须 worker 状态完成，旧训练的 seed、线程数和步数不变。
+替换前后状态、训练 PID 和启动参数保存在 results/coordination/specialization-v08。
+
+同一轮修订 2 启动后四次 top 采样仍有 29.5–34.9% idle、57 GiB 未使用；
+新任务还处于 E0 初始化，不能当成正式训练稳态。资源修订 3 把名义上限
+增至二十二、最多四个训练，仍保留每任务实际四线程和搜索三线程。继续
+观察正式训练的 CPU/内存与进度，资源可在线缩减新增容量，不能杀已有训练。
+这项修改只提升独立工作的并发，不改变冻结的四系统公平更新预算。
