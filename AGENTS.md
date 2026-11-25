@@ -23,16 +23,11 @@ instructions still determine the group's assigned slot and submission details.
   `/Users/meta/Developer/ai4chem`. Both were externally migrated on November 23.
 - OMEN RTX4060 has 8188 MiB VRAM; isolated `ai4chem` uses Python 3.12 and
   Mamba 2.6.0 at `/home/meta/.local/opt/miniforge3/bin/mamba`.
-- v0.1 CUDA/readiness and v0.2 ten-reaction benchmarks passed; per-host locks
-  remain separate. v0.3 selected mh1_full_256: final210 barrier MAE0.131641eV,
-  force RMSE0.111649eV/A. Old287 test reactions are already used.
-- v0.4 endpoint searches and five selected Gaussian chains completed; conditional
-  selected-five barrier MAE0.103424eV. See results/v0.4.0 and ts-search.md.
-- v0.5.0 is complete/published November23,2026 with eight verified assets.
-  All96 strategy units/83 unique searches and three Gaussian reactions passed
-  final verification. Holdout12 original S0/S1/S2 saddle+IRC3/3/3, fine-tuned5/6/6;
-  strict pipeline3/3/3 and5/5/5. Nine DFT units reuse three unique jobs.
-  Do not restart completed coordinators from historical runtime snapshots.
+- v0.1–v0.4 CUDA, training, searches and selected Gaussian chains are complete.
+  v0.3 selected mh1_full_256; old287 test reactions are already used.
+- v0.5 is published/verified:96 strategy units,83 unique searches,3 Gaussian jobs.
+  Holdout12 saddle+IRC original3/3/3, fine-tuned5/6/6; strict3/3/3 and5/5/5.
+  Detailed metrics remain in version reports. Never restart completed coordinators.
 - OMEN Windows Gaussian is C:\Users\Meta\AppData\Local\Programs\g16w\g16.exe;
   CLI uses input/output arguments. Project wrapper uses process-local environment.
 - Standard .model serialization and reloaded inference passed; optional upstream
@@ -41,6 +36,9 @@ instructions still determine the group's assigned slot and submission details.
 # Active Work
 
 - November25 user reiterated: prioritize training better models for group results.
+  They also require methods beyond scale; v0.10 expands data, not parameters.
+  Read `docs/design/training-methods.md`: TS-aware objectives, common-DFT
+  AIMNet adaptation, targeted training-side labels, then EMA/LoRA controls.
   v0.8 seven models/analysis are complete. Global512 validation60 barrier MAE
   0.111033270eV, force RMSE0.090200620eV/A; v0.9 completed all five new runs
   and retained lr1e-4/force1. Wider reaction coverage is the next training priority.
@@ -79,11 +77,9 @@ instructions still determine the group's assigned slot and submission details.
   cloud server test, then five-member task distribution. Do not create/buy a server
   or dispatch to other humans/cloud yet. Three existing local nodes are separately
   authorized on November24. Read `docs/design/cloud-workers.md`.
-- Native Linux Gaussian remains pending the user's next-day files. ML readiness now
-  passed independently on OMEN: fresh locked environment, CUDA force difference,
-  two epochs/reload and native Windows-owned unattended return. Mac loaded the
-  returned model; see docs/reports/cloud-ml-readiness/README.md. Actual cloud
-  acceptance and original Gaussian/group-dispatch gates remain pending.
+- Native Linux Gaussian/user-provided cloud acceptance remain pending. OMEN ML
+  readiness passed isolated lock/CUDA force difference/twoepochs/reload/native
+  unattended return; Mac reloaded it. See docs/reports/cloud-ml-readiness/README.md.
 - User wants unattended group work. Five self-contained paired random4096/path4096
   seed20261124–28 packages are ready in results/group-training/paired-sampling-r1;
   no overlap with seed16–18. November24 assigns original five pairs to local
@@ -115,21 +111,21 @@ instructions still determine the group's assigned slot and submission details.
   under `results/coordination/model-v07/`. Check actual owner before restarting.
 - Mac: isolated `environments/decision-models` for local MLX/MPS inference.
   Package installation, real weight inference and chemistry benefit are separate checks.
-- Local TabPFN/TabICL MPS and jevmlx MLX inference passed. The 128-reaction static
-  meta pilot shows no force-safe oracle gain with the old expert pool; see
-  `docs/reports/v0.7.0-routing/README.md`. Endpoint-search benefit is still untested.
+- TabPFN/TabICL MPS and jevmlx MLX inference passed. Old-pool meta128 showed no
+  force-safe oracle gain; see docs/reports/v0.7.0-routing/README.md.
 - Eight experts/four families now evaluated: AIMNet2/rxn, ANI and Orb were added.
   Read `docs/design/expert-diversity.md`; the new grouped pilot shows no deployed
-  multi-metric routing gain. Eight-reaction/three-expert endpoint searches are frozen.
+  multi-metric routing gain. All24 endpoint search units are complete: oldMACE
+  strict1/8,AIMNet4/8,Orb0/8; MACE/AIMNet successes are disjoint. This does not
+  compare the new512 model or establish a DFT population rate. Static specialist
+  systems also lost to general512; see docs/reports/v0.8.0-specialization.
 - Roommate AIMNet2-rxn/rxn8694 Gaussian finished at 02:35Z November 24 (Nov 23
   local); Mac recovered all raw evidence and independently verified the full chain
   at 03:43Z. Electronic barrier 2.625419123 eV versus MLIP 2.044812811 eV; one
   post-hoc development candidate, not a population success-rate/accuracy claim.
   See `docs/reports/v0.7.2-diversity-dft/README.md`. Owner5232 is terminal; no rerun.
-- v0.5 is complete/published and must not be restarted. v0.6 r2 is terminal:
-  Gaussian rxn9456 full chain passed (barrier 4.677548685 eV); Mac same-candidate
-  chain failed with a real negative-curvature endpoint and exhausted backward IRC.
-  `docs/reports/v0.6.0-pilot.md` records this one post-hoc recovery, not a new cohort.
+- v0.6 r2 is terminal: Gaussian9456 passed, Mac failed with negative endpoint
+  curvature/exhausted backwardIRC. docs/reports/v0.6.0-pilot.md is post-hoc, not a cohort.
 - Mac rxn0666 positive-control full chain and four engine tolerances passed.
 - Host access/recovery lives in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`.
   No live coordinators remain from v0.6. ROG availability was not accepted.
@@ -187,6 +183,7 @@ completed or active study merely to inspect its status.
 # Docs Index
 
 - `docs/design/model-growth.md`: v0.10 wider coverage and guarded seed repeats.
+- `docs/design/training-methods.md`: beyond-scale directions and expert evidence.
 - `docs/design/local-compute-queue.md` fixes the November24 three-host queues.
 - `docs/design/cloud-workers.md`: bootstrap, acceptance and group-dispatch gates.
 - `docs/project-background.md` is the research and course entrypoint. Read before

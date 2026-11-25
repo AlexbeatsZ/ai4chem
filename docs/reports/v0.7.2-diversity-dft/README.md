@@ -43,5 +43,7 @@ JSON 身份后复用，随后收到 8,861,220 字节/32 文件并通过 ZIP CRC�
   --output /tmp/.agents/ai4chem-rxn8694-assessment.json
 ```
 
-其余专家的搜索仍按冻结预算继续。完整 24 单元比较和前瞻 holdout 尚未完成；
-此记录不修改已发布 v0.5/v0.6，也不开放 holdout 标签。
+November25核对时，完整24个MLIP搜索单元均已完成；严格通过为旧MACE1/8、
+AIMNet4/8、Orb0/8，见v0.7.0-diversity/search-summary.json。其余DFT候选
+仍按各自独立验收状态记录，prospective holdout未开放。本条单候选DFT记录
+不修改已发布v0.5/v0.6，也不能当作八反应总体DFT成功率。
