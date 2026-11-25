@@ -47,8 +47,12 @@ instructions still determine the group's assigned slot and submission details.
   Read `docs/design/model-growth.md`, `configs/v0.10.0.json`: nested1024/2048
   reactions,8frames each,20epochs; retain all512 old reactions/4096 exact labels.
   Two first-seed models then two fixed repeats only for a guarded improvement.
-  CPU preparation may overlap old CUDA; growth waits for actual overnight/v09/v07
-  locks and terminal queue state. No model restart or prospective labels.
+  OMEN data preparation passed10:41Z:8192/16384frames, all4096 old labels retained.
+  Native52656/WSL31216/Python67371 is verified waiting on the old owner.lock;
+  it will train after overnight/v09/v07 locks and terminal state. No restart.
+  v0.10.0-model-growth prerelease published10:43Z against2bc4491; four assets
+  verified, including the completed512-model weight (not an untrained growth model).
+  Mac recovery: results/coordination/model-v10/omen-activation-verification.json.
 
 - November24 user authorized >=18h queues on roommate/OMEN/Mac. Read
   `docs/design/local-compute-queue.md` and `configs/overnight-20261124.json`.
