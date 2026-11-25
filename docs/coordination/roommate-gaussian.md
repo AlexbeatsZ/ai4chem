@@ -1,6 +1,6 @@
 # 室友 Gaussian 节点
 
-最后核实：2026-11-24T17:26Z（洛杉矶 November 24）。
+最后核实：2026-11-25T12:13:40Z（洛杉矶 November 25 04:13）。
 用户明确授权通过 SSH 使用室友电脑的现有 Gaussian 一起计算。
 连接账户与地址保存在同步任务日志，不写入公开仓库。
 
@@ -35,6 +35,16 @@ summary.json 记录主机、实际 Gaussian banner、输入方法、资源、用
 runner 的 Gaussian 环境变量只作用于进程，不更改用户或系统配置。
 
 ## 当前分配
+
+November25 11:16Z用户因朋友需要用电脑要求暂停；无Gaussian在算，精确挂起
+原pool owner29700及其console21336，本机四个回收器同步挂起。12:13Z用户
+重新允许使用后，核对原命令、创建时间、全部挂起线程和未过期截止，原样
+恢复这两个进程及四个回收器，没有另起pool或重算旧项。12:13:40Z实际观察
+到训练侧force项rxn0559-r10-minus的g16运行，可用内存6.83GiB；新增标签仍
+隔离等待对齐。原November25 17:24:51Z（洛杉矶09:24）接单截止不延长，仍然
+max2、每项四线程/2GB、6GiB接单门槛，到点排空。两次操作回执保留在worker
+queue的user-pause-20261125.json与user-resume-20261125.json；Mac核对证据
+位于results/coordination/model-v10/*user-resume*。
 
 用户在November24明确要求本节点、OMEN、本机都有至少18小时工作储备。
 16:13Z原serial owner13616启动队列；November24 17:24:51Z按用户进一步授权，

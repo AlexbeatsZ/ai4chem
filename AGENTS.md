@@ -70,12 +70,13 @@ instructions still determine the group's assigned slot and submission details.
   November25 07:00Z admission2/nice10 transition verified. Original science
   drains naturally; old scheduler10062 is retired. r1 remains mac-infra-r1.
   OMEN61077 completed seed24 and is training path25; seed26 remains pending.
-  ROOMMATE PAUSED by user November25 11:16Z because friend needs PC. Exact
-  scheduler29700/conhost21336 suspended; noGaussian science was active. Mac
-  collectors13752/13753/13755/16314 also suspended. Resume only on new user
-  instruction, preserve identities/progress; original17:24:51Z deadline not extended.
-  Pause receipts: worker queue/user-pause-20261125.json and Mac
-  results/coordination/model-v10/*user-pause*. Labels remain quarantined.
+  ROOMMATE RESUMED by new user instruction November25 12:13Z after11:16Z pause.
+  Exact scheduler29700/conhost21336 restored after command/creation/thread checks;
+  Mac collectors13752/13753/13755/16314 resumed, no replacement/restarted science.
+  Fresh12:15:56Z saw activeGaussian/force log; terminal records173→178,free6.95GiB.
+  Original17:24:51Z admission deadline unchanged; max2/fourthreads/2GB/6GiB gate.
+  Receipts: worker queue/user-resume-20261125.json and Mac
+  results/coordination/model-v10/*user-resume*. Labels remain quarantined.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
   WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.
