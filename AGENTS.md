@@ -40,6 +40,16 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November25 user reiterated: prioritize training better models for group results.
+  v0.8 seven models/analysis are complete. Global512 validation60 barrier MAE
+  0.111033270eV, force RMSE0.090200620eV/A; v0.9 completed all five new runs
+  and retained lr1e-4/force1. Wider reaction coverage is the next training priority.
+  Read `docs/design/model-growth.md`, `configs/v0.10.0.json`: nested1024/2048
+  reactions,8frames each,20epochs; retain all512 old reactions/4096 exact labels.
+  Two first-seed models then two fixed repeats only for a guarded improvement.
+  CPU preparation may overlap old CUDA; growth waits for actual overnight/v09/v07
+  locks and terminal queue state. No model restart or prospective labels.
+
 - November24 user authorized >=18h queues on roommate/OMEN/Mac. Read
   `docs/design/local-compute-queue.md` and `configs/overnight-20261124.json`.
   Seven paired random/path repeats are reserved: seeds24–26 OMEN,27–30 Mac
@@ -49,13 +59,10 @@ instructions still determine the group's assigned slot and submission details.
   `configs/roommate-pool-20261124.json`,2GB/fourthreads each,6GiB launch gate,
   max2 workers,24h wall admission then drain; adopt current chain, no restart.
   Runtime is results/overnight-20261124; verify owners before starting/recovering.
-  Mac boost owner37519 adopted workers10064/10065 without restarting trainers
-  10110/10111; added seeds29/30 workers37529/37530, trainers37577/37576.
-  Four pairs run until November25 07:00Z (=15:00 UTC+8); then admission2/nice10
-  for active worker trees, natural drain (may still have >2 live workers).
-  Read configs/mac-idle-window-20261124.json and handoff-from-10062.json;
-  old scheduler10062 is retired. r1 remains mac-infra-r1, no scientific retry.
-  OMEN native22604/WSL61077 waits on v0.9 lock; v0.9 is on selected seed2.
+  Mac37519 now has all four random arms completed and four path arms running;
+  November25 07:00Z admission2/nice10 transition verified. Original science
+  drains naturally; old scheduler10062 is retired. r1 remains mac-infra-r1.
+  OMEN61077 completed seed24 and is training path25; seed26 remains pending.
   Roommate serial13616 retired at17:24Z; pool29700 adopted0255 child33396
   without restart, launched3342 child26464; fresh SSH saw two g16 instances.
   Pool admission endsNovember25 17:24:51Z, then drains. Labels stay quarantined.
@@ -79,32 +86,23 @@ instructions still determine the group's assigned slot and submission details.
   queues and adds two fixed pairs; no other-human/cloud dispatch.
   Linux entry is bash member-NN/start.sh. WSL must use the native Windows
   scripts/launch_training_bundle.ps1 owner; generic WSL detach is rejected.
-- User has about two weeks and wants better models; they will write the report.
 - Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
 - v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
   and prospective holdouts of 64 train + 64 val reactions. Concrete IDs/endpoint
   records are in `configs/v0.7.0_partitions.json`, frozen before new training.
 - No prospective holdout labels are opened by the screening runner. The old 287
   test reactions are already used; never call them unseen or fit the new router on them.
-- All 13 pinned train shards are downloaded; source files are frame-sharded. The first
-  shard has portions of 9,561 reactions and incomplete histories for all old 256.
-  Final paths require complete contiguous fid histories across the full source.
-- First-stage arms: anchor256_long, path2048, random4096, path4096; same MH-1
-  foundation, up to 40 epochs/patience 12, original loss/lr. All retain old anchors.
-  Data sampling contrasts have equal reaction counts; only the two 4096 arms have
-  equal label/epoch ceilings. Record actual time and updates.
+- All13 pinned train shards are on OMEN; paths require complete contiguous fid
+  histories across the full source. v0.7 four controlled arms retain old anchors;
+  only random4096/path4096 share label/epoch ceilings. Details remain in design.
 - v0.7 four arms completed 40 actual epochs each and validation60 at 03:44Z
   November24 (Nov23 local). random4096 selected, barrier MAE0.125968657 eV and
   force RMSE0.090547554 eV/A; see `docs/reports/v0.7.0-screening/README.md`.
-- v0.9 obtained the released v0.7 runner lock and started the first CUDA force-loss
-  control at 03:45:56Z; read `docs/design/optimizer-study.md`.
-  Final models/router still require freezing before prospective static/search/DFT.
-- v0.8 uses 512 train reactions/shared labels/equal updates. Mac native parent2061
-  has six completed tasks and the adopted global worker59207 finishing; searches
-  are terminal. `configs/v0.8.0_execution.json` records measured
-  nominal oversubscription and can change admission capacity without restarting workers.
-  Read `docs/design/specialization.md`; finite development analyzer waits for all
-  seven benchmarks using `configs/v0.8.0_analysis.json`, without opening holdouts.
+- v0.9 finished November24 21:31Z; higher learning rate/force weight did not
+  replace the baseline. Read `docs/design/optimizer-study.md`.
+- v0.8 global512 is the best current validation candidate. Development analysis
+  completed November24 18:41Z; specialists/router did not beat it consistently.
+  Raw results: results/v0.8.0/development_analysis. All holdouts remain unopened.
 - User proposed an expert library with a local decision router. First quantify
   oracle headroom on meta-development, then compare endpoint-only TabPFN/TabICL,
   Jev-style local decisions and simple baselines with grouped out-of-fold estimates.
@@ -184,6 +182,7 @@ completed or active study merely to inspect its status.
 
 # Docs Index
 
+- `docs/design/model-growth.md`: v0.10 wider coverage and guarded seed repeats.
 - `docs/design/local-compute-queue.md` fixes the November24 three-host queues.
 - `docs/design/cloud-workers.md`: bootstrap, acceptance and group-dispatch gates.
 - `docs/project-background.md` is the research and course entrypoint. Read before

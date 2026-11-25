@@ -1,0 +1,53 @@
+{
+  "version": "v0.10.0",
+  "frozen_at_utc": "2026-11-25T10:32:14.854723+00:00",
+  "source_revision": "fac02fc7019ae95a6957b0723b467f6e56745fd2",
+  "seed": 20261125,
+  "training_seed": 20261116,
+  "reaction_counts": [
+    1024,
+    2048
+  ],
+  "frames_per_reaction": 8,
+  "preparation_batch_reactions": 64,
+  "predecessor_wait_hours": 72,
+  "training": {
+    "epochs": 20,
+    "patience": 100,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "energy_weight": 10.0,
+    "forces_weight": 1.0,
+    "dtype": "float64",
+    "E0s": "estimated",
+    "device": "cuda"
+  },
+  "baseline": {
+    "name": "mh1_global512_e40",
+    "model": "models/v0.8.0/mh1_global512_e40.model",
+    "reactions": 512,
+    "frames": 4096,
+    "epochs": 40,
+    "validation_reactions": 60,
+    "validation_metrics": {
+      "relative_energy_mae_eV": 0.052097278042811015,
+      "relative_energy_rmse_eV": 0.08923762505342342,
+      "barrier_mae_eV": 0.11103327014150939,
+      "force_component_mae_eV_per_A": 0.04611619077517829,
+      "force_component_rmse_eV_per_A": 0.09020062019679295,
+      "ts_region_force_component_rmse_eV_per_A": 0.13351334271574533
+    },
+    "evidence": "results/v0.8.0/validation/mh1_global512_e40/benchmark_summary.json"
+  },
+  "additional_seeds": [
+    20261117,
+    20261118
+  ],
+  "selection": "Minimum validation60 barrier MAE among candidates with force RMSE and TS-force RMSE both no worse than the frozen512 baseline; tie-break TS-force then name. Baseline always eligible. No improvement stops promotion. Freeze winner before two fixed repeats; report every attempt and all seeds.",
+  "data": "Retain every v0.8 baseline sid/fid; nested new endpoint-diverse official-train reactions, eight path8 frames each. Exclude all meta/holdouts/validation/historic evaluation IDs. No quarantined Gaussian labels.",
+  "budget": "1024x8x20/batch4=40960 estimated updates;2048x8x20/batch4=81920; at most two fixed-seed repeats of a guarded winner. More labels and compute reported explicitly.",
+  "scope": "Model improvement using existing public target-DFT labels; development metrics only. Prospective labels remain unopened until final model/evaluation budget freeze.",
+  "authorization": "November25: user prioritizes training better models for group results; continue on the existing authorized local nodes. No cloud purchase or other-human dispatch.",
+  "automatic_training_retries": 0,
+  "holdout_labels_evaluated": false
+}

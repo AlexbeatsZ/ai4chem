@@ -11,6 +11,8 @@ case "${1:-study}" in
   study) entry=run_model_study.py ;;
   specialization-prepare) entry=scripts/prepare_specialization.py ;;
   optimizer-study) entry=run_optimizer_study.py ;;
+  growth-prepare) exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u run_model_growth.py --prepare-only ;;
+  growth) entry=run_model_growth.py ;;
   *) exit 2 ;;
 esac
 exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u "$entry"

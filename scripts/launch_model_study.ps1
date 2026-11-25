@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('download','prepare','study','specialization-prepare','optimizer-study')][string]$Stage = 'study',
+    [ValidateSet('download','prepare','study','specialization-prepare','optimizer-study','growth-prepare','growth')][string]$Stage = 'study',
     [switch]$Worker
 )
 $ErrorActionPreference = 'Stop'
@@ -7,6 +7,8 @@ $project = Split-Path -Parent $PSScriptRoot
 $runtimeName = switch($Stage) {
     'specialization-prepare' {'specialization-v08'}
     'optimizer-study' {'model-v09'}
+    'growth-prepare' {'model-v10'}
+    'growth' {'model-v10'}
     default {'model-v07'}
 }
 $runtime = Join-Path $project ('results\coordination\'+$runtimeName)
