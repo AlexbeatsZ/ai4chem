@@ -6,6 +6,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+. (Join-Path $PSScriptRoot 'worker_transport.ps1')
 foreach($value in @($WorkerRoot,$JobDirectory,$WorkerSsh)) {
     if($value -notmatch '^[A-Za-z0-9_./:\\@-]+$') { throw 'Use simple space-free worker paths and SSH identity.' }
 }
@@ -19,9 +20,7 @@ function Remote([string]$Script,[switch]$RemoveArchive,[switch]$StreamOutput) {
         if($LASTEXITCODE -ne 0) { throw "Worker command failed: $Script" }
         return
     }
-    $result = & ssh @arguments
-    if($LASTEXITCODE -ne 0) { throw "Worker command failed: $Script" }
-    return ($result -join "`n")
+    return (Invoke-WorkerCommand -Executable (Get-Command ssh -CommandType Application).Source -Arguments $arguments)
 }
 if($Action -eq 'Status') { Remote 'status_gaussian_chain.ps1' -StreamOutput; return }
 if($Action -eq 'Cleanup') { Remote 'export_gaussian_chain.ps1' -RemoveArchive; return }

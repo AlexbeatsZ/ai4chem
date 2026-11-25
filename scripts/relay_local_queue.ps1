@@ -3,6 +3,7 @@ param([Parameter(Mandatory=$true)][ValidateSet('Status','Export')][string]$Actio
     [string]$WorkerSsh='ai4chem-worker')
 $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
+. (Join-Path $PSScriptRoot 'worker_transport.ps1')
 foreach($value in @($WorkerRoot,$QueueDirectory,$WorkerSsh)){if($value -notmatch '^[A-Za-z0-9_./:\@-]+$'){throw 'Unsupported worker path or identity.'}}
 $script=if($Action -eq 'Status'){'status_gaussian_queue.ps1'}else{'export_gaussian_queue.ps1'}
 $arguments=@('-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',($WorkerRoot+'/scripts/'+$script),'-QueueDirectory',$QueueDirectory)
@@ -13,9 +14,8 @@ if($Action -eq 'Status'){
     if($LASTEXITCODE -ne 0){throw 'Queue observation failed.'}
     return
 }
-$raw=& ssh @arguments
-if($LASTEXITCODE -ne 0){throw 'Queue observation/export failed.'}
-$receipt=($raw -join "`n") | ConvertFrom-Json
+$raw=Invoke-WorkerCommand -Executable (Get-Command ssh -CommandType Application).Source -Arguments $arguments
+$receipt=$raw | ConvertFrom-Json
 $project=Split-Path -Parent $PSScriptRoot
 $output=Join-Path $project 'results\overnight-20261124\roommate-return'
 New-Item -ItemType Directory -Path $output -Force | Out-Null
