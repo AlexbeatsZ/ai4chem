@@ -74,7 +74,10 @@ instructions still determine the group's assigned slot and submission details.
   Exact scheduler29700/conhost21336 restored after command/creation/thread checks;
   Mac collectors13752/13753/13755/16314 resumed, no replacement/restarted science.
   Fresh12:15:56Z saw activeGaussian/force log; terminal records173→178,free6.95GiB.
-  Original17:24:51Z admission deadline unchanged; max2/fourthreads/2GB/6GiB gate.
+  November25 new user authorizes task coverage through November26 09:00UTC+8
+  (=01:00Z); explicit continuation waits original17:24:51Z pool drain, then takes
+  untouched force claims with same max2/fourthreads/2GB/6GiB gate. Deployment
+  pending; read configs/roommate-until-0900-20261125.json before any restart.
   Receipts: worker queue/user-resume-20261125.json and Mac
   results/coordination/model-v10/*user-resume*. Labels remain quarantined.
   Export repair deployed: worker_transport.ps1 uses CMD native file redirection,

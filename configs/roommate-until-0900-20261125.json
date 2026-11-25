@@ -1,0 +1,12 @@
+{
+  "version": "roommate-until-utc8-0900-r1",
+  "authorized_at_utc": "2026-11-25T14:03:32Z",
+  "user_request": "Add tasks so computation has work until UTC+8 09:00.",
+  "admission_deadline_utc": "2026-11-26T01:00:00Z",
+  "deadline_utc8": "2026-11-26T09:00:00+08:00",
+  "predecessor_expected_owner": 29700,
+  "policy": "Wait for the original pool and scientific jobs to drain, then claim only untouched members of the frozen force reserve. Keep original claims, terminal outcomes, failure stop and resource envelope. Stop new admission at the explicit deadline and drain. No retries or automatic label merge.",
+  "scientific_inputs_changed": false,
+  "new_geometries_created": 0,
+  "prospective_holdout_labels_evaluated": false
+}

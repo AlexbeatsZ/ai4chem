@@ -1,6 +1,7 @@
 param(
     [string]$QueueDirectory,[string]$ExecutionFile,[string]$GaussianDirectory='C:\G16W',
-    [switch]$Worker,[int]$TakeoverOwner=0,[string]$ForceItem='', [switch]$FunctionsOnly
+    [switch]$Worker,[int]$TakeoverOwner=0,[string]$ForceItem='', [switch]$FunctionsOnly,
+    [string]$ContinuationFile='', [int]$ContinueAfterOwner=0
 )
 $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
@@ -35,6 +36,24 @@ function Claim-Item([string]$Directory,[string]$Name){
         $bytes=[Text.Encoding]::UTF8.GetBytes((@{name=$Name;owner_pid=$PID;claimed_at_utc=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json))
         $stream.Write($bytes,0,$bytes.Length)
     }finally{$stream.Dispose()}
+}
+function Get-RemainingForceItems($Task,[string]$Directory,$Previous){
+    $names=@{}
+    foreach($item in $Task.force_items){
+        if($names.ContainsKey($item.name)){throw 'Duplicate frozen force identity.'}
+        $names[$item.name]=$true
+        $claim=Join-Path $Directory ('claims\'+$item.name+'.json')
+        $folder=Join-Path $Directory ('forces\'+$item.name)
+        if(Test-Path -LiteralPath $claim){
+            $record=Read-Json (Join-Path $folder 'receipt.json')
+            if($record.name -cne $item.name -or $record.status -notin @('failed','raw_label_completed_pending_alignment')){throw 'Claimed force lacks matching terminal evidence.'}
+            $outcomes=@($Previous.outcomes|Where-Object {$_.name -ceq $item.name})
+            if($outcomes.Count -ne 1 -or $outcomes[0].status -cne $record.status){throw 'Claimed force differs from predecessor outcome.'}
+            continue
+        }
+        if(Test-Path -LiteralPath $folder){throw 'Unclaimed force evidence must be diagnosed, never overwritten.'}
+        [pscustomobject]@{kind='force';name=$item.name;directory=('forces/'+$item.name)}
+    }
 }
 if($FunctionsOnly){return}
 if(-not $QueueDirectory){throw 'QueueDirectory required.'}
@@ -76,6 +95,35 @@ $execution=Read-Json $ExecutionFile
 Assert-PoolSettings $execution
 $stateFile=Join-Path $QueueDirectory 'queue-state.json'
 $poolStartFile=Join-Path $QueueDirectory 'pool-start.json'
+$continuation=$null
+$continuationStartFile=Join-Path $QueueDirectory 'continuation-start.json'
+if($ContinuationFile){
+    $ContinuationFile=(Resolve-Path -LiteralPath $ContinuationFile).Path
+    $continuation=Read-Json $ContinuationFile
+    $absoluteDeadline=[DateTimeOffset]::Parse($continuation.admission_deadline_utc).UtcDateTime
+    if($absoluteDeadline -le [DateTime]::UtcNow -or $absoluteDeadline -gt [DateTime]::UtcNow.AddHours(24)){throw 'Continuation requires an explicit future deadline within24h.'}
+    if(-not $ContinueAfterOwner){throw 'Explicit predecessor owner required.'}
+    if($continuation.predecessor_expected_owner -and $continuation.predecessor_expected_owner -ne $ContinueAfterOwner){throw 'Predecessor differs from frozen continuation configuration.'}
+}
+if(-not $Worker -and $continuation){
+    $previous=Read-Json $stateFile
+    if($previous.owner_pid -ne $ContinueAfterOwner -or $previous.status -ne 'running'){throw 'Continuation predecessor differs from current running queue.'}
+    $owner=Get-CimInstance Win32_Process -Filter ('ProcessId='+$ContinueAfterOwner)
+    Assert-ChildIdentity $owner 'run_gaussian_pool.ps1' $QueueDirectory
+    $start=[ordered]@{submitted_at_utc=[DateTime]::UtcNow.ToString('o');predecessor_owner_pid=$ContinueAfterOwner;
+        predecessor_command=$owner.CommandLine;predecessor_created_utc=$owner.CreationDate.ToUniversalTime().ToString('o');
+        deadline_utc=$absoluteDeadline.ToString('o');continuation=$continuation;predecessor_snapshot=$previous;
+        scientific_children_restarted=$false}
+    $file=[IO.File]::Open($continuationStartFile,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+    $file.Dispose();Write-Json $continuationStartFile $start
+    $command="`"$powershell`" -NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -QueueDirectory `"$QueueDirectory`" -ExecutionFile `"$ExecutionFile`" -GaussianDirectory `"$GaussianDirectory`" -ContinuationFile `"$ContinuationFile`" -ContinueAfterOwner $ContinueAfterOwner -Worker"
+    $startup=New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly -Property @{ShowWindow=[uint16]0}
+    $created=Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine=$command;CurrentDirectory=$project;ProcessStartupInformation=$startup}
+    if($created.ReturnValue -ne 0){throw 'Continuation owner failed to start; original science remains unchanged.'}
+    $start['owner_pid']=$created.ProcessId;Write-Json $continuationStartFile $start
+    $start|ConvertTo-Json -Depth 8
+    return
+}
 if(-not $Worker){
     if(Test-Path -LiteralPath $poolStartFile){throw 'Pool already submitted; inspect existing owner and evidence.'}
     if(-not $TakeoverOwner){throw 'Explicit existing serial owner is required for this dispatch.'}
@@ -119,17 +167,48 @@ if(-not $Worker){
     return
 }
 
-$lock=[IO.File]::Open((Join-Path $QueueDirectory 'queue.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
-$receipt=Read-Json $poolStartFile
-if(-not $receipt.adopted){throw 'Missing explicit adoption receipt.'}
-if(Test-Path -LiteralPath (Join-Path $QueueDirectory 'pool-worker-start.json')){throw 'Pool worker already ran; no implicit recovery.'}
-Write-Json (Join-Path $QueueDirectory 'pool-worker-start.json') @{owner_pid=$PID;started_at_utc=[DateTime]::UtcNow.ToString('o')}
-$claims=Join-Path $QueueDirectory 'claims';New-Item -ItemType Directory -Path $claims -ErrorAction Stop|Out-Null
+$lock=$null
+if($continuation){
+    $start=Read-Json $continuationStartFile
+    if($start.predecessor_owner_pid -ne $ContinueAfterOwner -or $start.continuation.admission_deadline_utc -cne $continuation.admission_deadline_utc){throw 'Continuation submission identity differs.'}
+    $workerStart=Join-Path $QueueDirectory 'continuation-worker-start.json'
+    $file=[IO.File]::Open($workerStart,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+    $file.Dispose();Write-Json $workerStart @{owner_pid=$PID;started_at_utc=[DateTime]::UtcNow.ToString('o')}
+    $continuationStateFile=Join-Path $QueueDirectory 'continuation-state.json'
+    $waiting=[ordered]@{owner_pid=$PID;status='waiting_for_predecessor';started_at_utc=[DateTime]::UtcNow.ToString('o');
+        admission_deadline_utc=$absoluteDeadline.ToString('o');predecessor_owner_pid=$ContinueAfterOwner}
+    Write-Json $continuationStateFile $waiting
+    while(-not $lock){
+        if([DateTime]::UtcNow -ge $absoluteDeadline){$waiting.status='expired_without_admission';Write-Json $continuationStateFile $waiting;return}
+        $owner=Get-CimInstance Win32_Process -Filter ('ProcessId='+$ContinueAfterOwner)
+        if($owner){
+            if($owner.CommandLine -cne $start.predecessor_command -or
+                $owner.CreationDate.ToUniversalTime().ToString('o') -cne $start.predecessor_created_utc){throw 'Predecessor PID changed identity.'}
+        }else{
+            try{$lock=[IO.File]::Open((Join-Path $QueueDirectory 'queue.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)}catch [IO.IOException]{}
+        }
+        $waiting['updated_at_utc']=[DateTime]::UtcNow.ToString('o');Write-Json $continuationStateFile $waiting
+        if(-not $lock){Start-Sleep -Seconds $execution.poll_seconds}
+    }
+    $previous=Read-Json $stateFile
+    if($previous.owner_pid -ne $ContinueAfterOwner -or $previous.status -notin @('wall_budget_reached','prepared_pool_exhausted') -or @($previous.active).Count){$lock.Dispose();throw 'Predecessor is not safely drained; no automatic recovery.'}
+    Write-Json (Join-Path $QueueDirectory 'pre-continuation-state.json') $previous
+    $receipt=[pscustomobject]@{previous_state=$previous;adopted=@()}
+    $waiting.status='running';Write-Json $continuationStateFile $waiting
+}else{
+    $lock=[IO.File]::Open((Join-Path $QueueDirectory 'queue.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+    $receipt=Read-Json $poolStartFile
+    if(-not $receipt.adopted){throw 'Missing explicit adoption receipt.'}
+    if(Test-Path -LiteralPath (Join-Path $QueueDirectory 'pool-worker-start.json')){throw 'Pool worker already ran; no implicit recovery.'}
+    Write-Json (Join-Path $QueueDirectory 'pool-worker-start.json') @{owner_pid=$PID;started_at_utc=[DateTime]::UtcNow.ToString('o')}
+}
+$claims=Join-Path $QueueDirectory 'claims'
+if(-not $continuation){New-Item -ItemType Directory -Path $claims -ErrorAction Stop|Out-Null}
 $state=[ordered]@{host=$env:COMPUTERNAME;owner_pid=$PID;started_at_utc=$receipt.previous_state.started_at_utc;
     pool_started_at_utc=[DateTime]::UtcNow.ToString('o');status='running';stage='adopting';
     outcomes=@($receipt.previous_state.outcomes);active=@();compute_seconds=[double]$receipt.previous_state.compute_seconds;
     execution=$execution;holdout_labels_evaluated=$false;training_merge_authorized=$false;automatic_retries=0}
-$deadline=[DateTime]::UtcNow.AddHours($execution.wall_hours_from_pool_start)
+$deadline=if($continuation){$absoluteDeadline}else{[DateTime]::UtcNow.AddHours($execution.wall_hours_from_pool_start)}
 $state['admission_deadline_utc']=$deadline.ToString('o')
 $active=@{};$pending=[Collections.Generic.Queue[object]]::new();$failures=0;$admissionBlocked=$false
 function Save-State{
@@ -137,6 +216,11 @@ function Save-State{
     Write-Json $stateFile $state
 }
 try{
+    if($continuation){
+        foreach($item in @(Get-RemainingForceItems $task $QueueDirectory $receipt.previous_state)){$pending.Enqueue($item)}
+        if($state.outcomes.Count){foreach($outcome in @($state.outcomes)[($state.outcomes.Count-1)..0]){if($outcome.status -eq 'failed'){$failures++}else{break}}}
+        $state['continuation_from_owner']=$ContinueAfterOwner
+    }else{
     foreach($item in $task.chains){
         $folder=Join-Path $QueueDirectory $item.directory;$path=Join-Path $folder 'worker-state.json'
         $inputTask=Read-Json (Join-Path $folder 'task.json')
@@ -160,6 +244,7 @@ try{
     foreach($item in $task.force_items){
         if(Test-Path -LiteralPath (Join-Path $QueueDirectory ('forces\'+$item.name))){throw 'Existing force evidence requires diagnosis before pool takeover.'}
         $pending.Enqueue(@{kind='force';name=$item.name;directory=('forces/'+$item.name)})
+    }
     }
     Save-State
     while($pending.Count -or $active.Count){
@@ -210,4 +295,5 @@ try{
     $state.status='blocked';$state['error']=$_.Exception.ToString();$state['scientific_children_left_running_for_diagnosis']=$true
 }finally{
     $state['finished_at_utc']=[DateTime]::UtcNow.ToString('o');Save-State;$lock.Dispose()
+    if($continuation){$waiting.status=$state.status;$waiting['finished_at_utc']=$state.finished_at_utc;Write-Json $continuationStateFile $waiting}
 }

@@ -3,6 +3,11 @@ $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
 $QueueDirectory=(Resolve-Path -LiteralPath $QueueDirectory).Path
 $state=[IO.File]::ReadAllText((Join-Path $QueueDirectory 'queue-state.json')) | ConvertFrom-Json
+$continuationFile=Join-Path $QueueDirectory 'continuation-start.json'
+if(Test-Path -LiteralPath $continuationFile){
+    $continuation=[IO.File]::ReadAllText($continuationFile)|ConvertFrom-Json
+    if($continuation.owner_pid -and (Get-CimInstance Win32_Process -Filter ('ProcessId='+$continuation.owner_pid))){throw 'Continuation still owns or awaits the queue; defer terminal export.'}
+}
 if($state.status -eq 'running' -or (Get-Process -Id $state.owner_pid -ErrorAction SilentlyContinue)){throw 'Queue still active.'}
 foreach($child in @($state.active)){
     if($child.owner_pid -and (Get-CimInstance Win32_Process -Filter ('ProcessId='+$child.owner_pid))){throw 'Scientific child still active; retain partial evidence without exporting.'}

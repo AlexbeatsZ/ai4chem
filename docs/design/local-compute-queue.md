@@ -129,3 +129,33 @@ configs/mac-idle-window-20261124.json --adopt-owner <已核对旧调度PID>`。
 自然排空，届时活跃任务数可能仍大于2；这是让交互程序优先获得CPU，不承诺
 立即将CPU占用降至某个百分比。没有强杀训练或丢弃进度。此边界已用真实
 合成进程跨过短截止时间验证，实际15:00回落尚待届时观察。
+
+## November25 延长室友储备至 UTC+8 次日09:00
+
+用户在November25约14:03Z（UTC+8当日22:03）要求多加任务，确保到UTC+8的
+09:00都有工作。明确目标为2026-11-26T09:00:00+08:00，即01:00Z；不是已过
+的November25上午。原pool29700仍按17:24:51Z（UTC+8次日01:24）截止排空，
+不终止当前Gaussian或重新执行既有任务。
+
+`configs/roommate-until-0900-20261125.json`冻结明确绝对截止。
+同一`run_gaussian_pool.ps1`的`-ContinuationFile ... -ContinueAfterOwner 29700`
+入口先创建唯一continuation-start回执和原生命令owner，等待原PID/命令/创建
+时间吻合的父进程自然退出，并取得同一queue.lock。只接受已排空的
+wall_budget_reached/prepared_pool_exhausted前置状态；异常/连续失败导致的
+阻塞不能由接续隐式恢复。完整旧终态另存pre-continuation-state.json。
+
+接手时依据原queue.json及独占claims重建未开始的force列表。已认领项必须
+有同名终态receipt并与原outcomes一致，成功/失败都跳过；残留目录无claim、
+缺少终态或身份冲突都停止。沿用旧outcomes、累计成本及末尾失败计数，只对
+未认领项目CreateNew领取。不能重新跑三条TS/IRC链，不添加新几何或打开holdout。
+
+14:04Z实际有4225项未开始；每30秒最多放行一项，队列储备至少35.2小时，
+明显超过到目标的约10.9小时。新增的是原有有效储备的运行窗口；不为占机
+额外造标签。保持max2、每项四线程/2GB、6GiB接单门槛和3次连续失败停止。
+到01:00Z停止接新项，当前项自然收尾，内存/硬件异常仍按原规则等待或阻塞。
+
+status在前后两阶段间把仍存活的continuation owner计入owner_alive，并展示
+总截止和current_phase_deadline_utc；export在接续owner存活时拒绝终态打包，
+避免原queue观察器16314过早结束。72小时collector寿命已覆盖新期限。Windows
+合成前置进程自然排空、已有失败证据保留、新项恰好一次、交接不误报owner
+丢失/不提前导出均须通过；实际部署还要fresh SSH确认两owner及原Gaussian。
