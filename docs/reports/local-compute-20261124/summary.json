@@ -1,0 +1,48 @@
+{
+  "study_type": "post_hoc_development_not_independent_holdout",
+  "source": "three immutable AIMNet development candidates reserved on November24; pre-existing calculations recovered without rerun",
+  "changes_v05_results": false,
+  "holdout_labels_opened": false,
+  "results": [
+    {
+      "reaction": "rxn0255",
+      "status": "assessed",
+      "study_type": "post_hoc_development_not_independent_holdout",
+      "scientific_retry": false,
+      "dft_verified": true,
+      "ts_valid": true,
+      "expected_connectivity": true,
+      "electronic_barrier_eV": 3.0859385523984746,
+      "mlip_to_dft_ts_rmsd_A": 0.030702811145923076,
+      "assessed_at_utc": "2026-11-25T12:38:00.256278+00:00",
+      "source_finished_at_utc": "2026-11-24T19:06:05.7833439Z",
+      "source_elapsed_seconds": 10374.672596,
+      "irc_complete": true,
+      "stable_endpoints": true
+    },
+    {
+      "reaction": "rxn3342",
+      "status": "assessed",
+      "study_type": "post_hoc_development_not_independent_holdout",
+      "scientific_retry": false,
+      "dft_verified": true,
+      "ts_valid": true,
+      "expected_connectivity": true,
+      "electronic_barrier_eV": 4.82132140315625,
+      "mlip_to_dft_ts_rmsd_A": 0.059250609537098875,
+      "assessed_at_utc": "2026-11-25T12:37:59.107784+00:00",
+      "source_finished_at_utc": "2026-11-24T22:37:43.4570689Z",
+      "source_elapsed_seconds": 18770.065786799998,
+      "irc_complete": true,
+      "stable_endpoints": true
+    },
+    {
+      "reaction": "rxn4757",
+      "status": "worker_failed",
+      "study_type": "post_hoc_development_not_independent_holdout",
+      "scientific_retry": false,
+      "dft_verified": false,
+      "error": "System.Management.Automation.RuntimeException: IRC exhausted its fixed budget: irc_forward"
+    }
+  ]
+}

@@ -77,10 +77,12 @@ instructions still determine the group's assigned slot and submission details.
   Original17:24:51Z admission deadline unchanged; max2/fourthreads/2GB/6GiB gate.
   Receipts: worker queue/user-resume-20261125.json and Mac
   results/coordination/model-v10/*user-resume*. Labels remain quarantined.
-  Export repair: worker_transport.ps1 uses CMD native file redirection/180s timeout;
-  generic async pipes still hung with actual Windows SSH. Native stream/exit/
-  timeout tests and real terminal export passed. Deploy final file transport on
-  OMEN then verify original three collectors' actual ZIP/assessment; no new science.
+  Export repair deployed: worker_transport.ps1 uses CMD native file redirection,
+  180s timeout; real SSH+stream/exit/timeout tests passed. All3 chain archives now
+  on Mac:0255/3342 independently DFT-verified,4757 failed fixed forwardIRC320.
+  Collectors13752/13753/13755 terminal; queue16314 observes continued force work.
+  Latest queue records223,free7.10GiB; no orphan exports. No scientific reruns.
+  See docs/reports/local-compute-20261124; v0.7.9-roommate-transfer released.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
   WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.

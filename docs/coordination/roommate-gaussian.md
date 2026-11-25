@@ -21,6 +21,11 @@
 `results/node-readiness/<host>/20261123T095946Z/`。
 Mac 另保存输入、日志与摘要；运行时证据位于 Git 忽略的 results/，不发布个人路径。
 
+November25 12:38Z三条原候选已全部回收：0255和3342通过独立完整DFT验收，
+4757正向IRC耗尽原320点预算，失败原始证据保留，均未重跑。具体电子能垒
+与开发身份见docs/reports/local-compute-20261124。受力储备继续计算，末次
+核对223项终态、free7.10GiB，无旧导出进程；新增标签仍需对齐。
+
 ## 执行入口
 
 任务包包含项目 `run_gaussian_job.ps1` 与 `scripts/smoke_gaussian_node.ps1`：
