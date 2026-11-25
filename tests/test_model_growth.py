@@ -1,12 +1,17 @@
 """Scientific role isolation and immutable nesting for coverage expansion."""
 
 import copy
+import fcntl
+import json
 import math
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
 from model_growth_data import excluded_roles, validate_partition
 from prepare_transition1x import REVISION
-from run_model_growth import valid_metrics
+from run_model_growth import valid_metrics, wait_for_cuda
 
 
 class GrowthBoundaries(unittest.TestCase):
@@ -67,6 +72,46 @@ class GrowthBoundaries(unittest.TestCase):
             for value in (math.nan, math.inf, -.01):
                 with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                     valid_metrics({**good, key: value})
+
+    def test_real_cuda_locks_remain_exclusive_after_the_old_queue_drains(self):
+        with tempfile.TemporaryDirectory(dir="/tmp/.agents") as directory:
+            root = Path(directory)
+            queue = root / "results/overnight-20261124/omen"
+            queue.mkdir(parents=True)
+            for version in ("v0.9.0", "v0.7.0"):
+                (root / "results" / version).mkdir()
+            path = queue / "owner.lock"
+            old_owner = path.open("a")
+            fcntl.flock(old_owner, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            observed = []
+
+            def drain(_):
+                (queue / "state.json").write_text(json.dumps(dict(status="completed")))
+                old_owner.close()
+
+            with patch("run_model_growth.ROOT", root), patch("run_model_growth.time.sleep", drain):
+                locks = wait_for_cuda(dict(predecessor_wait_hours=1), lambda stage, **kw: observed.append(stage))
+            try:
+                self.assertEqual(observed, ["waiting_for_existing_cuda_owner"])
+                self.assertEqual(len(locks), 3)
+                for owned in locks:
+                    with Path(owned.name).open("a") as contender:
+                        with self.assertRaises(BlockingIOError):
+                            fcntl.flock(contender, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            finally:
+                for owned in locks:
+                    owned.close()
+
+    def test_unlocked_but_nonterminal_queue_cannot_admit_new_training(self):
+        with tempfile.TemporaryDirectory(dir="/tmp/.agents") as directory:
+            root = Path(directory)
+            queue = root / "results/overnight-20261124/omen"
+            queue.mkdir(parents=True)
+            (queue / "state.json").write_text(json.dumps(dict(status="running")))
+            for version in ("v0.9.0", "v0.7.0"):
+                (root / "results" / version).mkdir()
+            with patch("run_model_growth.ROOT", root), self.assertRaisesRegex(RuntimeError, "terminal"):
+                wait_for_cuda(dict(predecessor_wait_hours=1), lambda *a, **kw: None)
 
 
 if __name__ == "__main__":

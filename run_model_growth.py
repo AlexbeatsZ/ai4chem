@@ -27,23 +27,28 @@ def wait_for_cuda(protocol, update):
     """Use the same kernel locks as the existing CUDA queue, in its lock order."""
     locks = []
     start = time.monotonic()
-    for relative in ("results/overnight-20261124/omen/owner.lock",
-                     "results/v0.9.0/runner.lock", "results/v0.7.0/runner.lock"):
-        lock = (ROOT / relative).open("a")
-        while True:
-            try:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                break
-            except BlockingIOError:
-                if time.monotonic()-start > protocol["predecessor_wait_hours"]*3600:
-                    raise TimeoutError("Existing CUDA queue did not release its locks")
-                update("waiting_for_existing_cuda_owner", waiting_for=relative)
-                time.sleep(30)
-        locks.append(lock)
-    predecessor = json.loads((ROOT / "results/overnight-20261124/omen/state.json").read_text())
-    if predecessor["status"] not in ("completed", "completed_with_failures"):
-        raise RuntimeError("Existing queue is not in a documented terminal state")
-    return locks
+    try:
+        for relative in ("results/overnight-20261124/omen/owner.lock",
+                         "results/v0.9.0/runner.lock", "results/v0.7.0/runner.lock"):
+            lock = (ROOT / relative).open("a")
+            locks.append(lock)
+            while True:
+                try:
+                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    if time.monotonic()-start > protocol["predecessor_wait_hours"]*3600:
+                        raise TimeoutError("Existing CUDA queue did not release its locks")
+                    update("waiting_for_existing_cuda_owner", waiting_for=relative)
+                    time.sleep(30)
+        predecessor = json.loads((ROOT / "results/overnight-20261124/omen/state.json").read_text())
+        if predecessor["status"] not in ("completed", "completed_with_failures"):
+            raise RuntimeError("Existing queue is not in a documented terminal state")
+        return locks
+    except BaseException:
+        for lock in locks:
+            lock.close()
+        raise
 
 
 def main():
