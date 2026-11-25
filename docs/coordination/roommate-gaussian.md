@@ -1,6 +1,6 @@
 # 室友 Gaussian 节点
 
-最后核实：2026-11-25T12:13:40Z（洛杉矶 November 25 04:13）。
+最后核实：2026-11-25T14:15:58Z（洛杉矶 November 25 06:15）。
 用户明确授权通过 SSH 使用室友电脑的现有 Gaussian 一起计算。
 连接账户与地址保存在同步任务日志，不写入公开仓库。
 
@@ -40,6 +40,15 @@ summary.json 记录主机、实际 Gaussian banner、输入方法、资源、用
 runner 的 Gaussian 环境变量只作用于进程，不更改用户或系统配置。
 
 ## 当前分配
+
+最新授权：用户要求到UTC+8的次日09:00都有任务，即November26 09:00+08:00
+（01:00Z）。原pool29700及Gaussian不重启，新增原生continuation39768已于
+14:13:39Z部署等待原owner正常排空，再在同一queue.lock下接未认领force。
+14:15:58Z独立SSH复核两owner存活，Gaussian实际运行、398项终态/4212项
+待算、free6.22GiB；储备按一项/30秒上限足够覆盖目标。原17:24:51Z只作为
+第一阶段截止，新的总体接单期限已获明确授权；01:00Z后只排空当前项。
+读取configs/roommate-until-0900-20261125.json与worker queue下continuation
+start/state；不要重新提交或根据旧暂停记录恢复历史进程。新标签仍隔离。
 
 November25 11:16Z用户因朋友需要用电脑要求暂停；无Gaussian在算，精确挂起
 原pool owner29700及其console21336，本机四个回收器同步挂起。12:13Z用户

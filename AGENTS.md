@@ -76,15 +76,17 @@ instructions still determine the group's assigned slot and submission details.
   Fresh12:15:56Z saw activeGaussian/force log; terminal records173→178,free6.95GiB.
   November25 new user authorizes task coverage through November26 09:00UTC+8
   (=01:00Z); explicit continuation waits original17:24:51Z pool drain, then takes
-  untouched force claims with same max2/fourthreads/2GB/6GiB gate. Deployment
-  pending; read configs/roommate-until-0900-20261125.json before any restart.
+  untouched force claims with same max2/fourthreads/2GB/6GiB gate. Native
+  continuation39768 verified waiting at14:15Z; original29700/Gaussian still run.
+  Read configs/roommate-until-0900-20261125.json; never resubmit either owner.
   Receipts: worker queue/user-resume-20261125.json and Mac
   results/coordination/model-v10/*user-resume*. Labels remain quarantined.
   Export repair deployed: worker_transport.ps1 uses CMD native file redirection,
   180s timeout; real SSH+stream/exit/timeout tests passed. All3 chain archives now
   on Mac:0255/3342 independently DFT-verified,4757 failed fixed forwardIRC320.
   Collectors13752/13753/13755 terminal; queue16314 observes continued force work.
-  Latest queue records223,free7.10GiB; no orphan exports. No scientific reruns.
+  Latest14:15:58Z queue records398/pending4212,free6.22GiB; actual g16 observed.
+  Status/export include continuation owner so collector16314 waits final deadline.
   See docs/reports/local-compute-20261124; v0.7.9-roommate-transfer released.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
