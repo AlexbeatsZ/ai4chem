@@ -9,8 +9,9 @@ and compute cost, using endpoint-driven CI-NEB, frequency, IRC and independent D
 v0.5.0 is released. The separate v0.6.0 pilot checks the sole extra recovery and
 calibrates native Mac DFT. On November 23 the user clarified that they will write
 the report later and that roughly two weeks should be used to improve the model.
-The active priority is controlled data/optimization studies, repeated training,
-prospective evaluation and targeted DFT labels where they improve the potential.
+The active priority is stronger deliverable models plus a defensible method
+improvement. Cap exploratory comparisons and reserve compute to apply useful
+methods, train/repeat full weights and independently verify the selected model.
 For long calculations, stay active through waits (including overnight), inspect
 completion and advance the next authorized stage; keep handoff logs current.
 Reported course presentation dates are December 7 and 14, 2026. Original course
@@ -39,6 +40,10 @@ instructions still determine the group's assigned slot and submission details.
   They also require methods beyond scale; v0.10 expands data, not parameters.
   Read `docs/design/training-methods.md`: TS-aware objectives, common-DFT
   AIMNet adaptation, targeted training-side labels, then EMA/LoRA controls.
+  November25 further clarified: try the candidate methods in bounded pilots,
+  reserve compute for applying winners to actual models; initial GPU allocation
+  60% complete training/application,<=25% exploration,~15% final acceptance.
+  Debit already-committed queue cost first; do not launch every method at scale.
   v0.8 seven models/analysis are complete. Global512 validation60 barrier MAE
   0.111033270eV, force RMSE0.090200620eV/A; v0.9 completed all five new runs
   and retained lr1e-4/force1. Wider reaction coverage is the next training priority.
@@ -65,14 +70,16 @@ instructions still determine the group's assigned slot and submission details.
   November25 07:00Z admission2/nice10 transition verified. Original science
   drains naturally; old scheduler10062 is retired. r1 remains mac-infra-r1.
   OMEN61077 completed seed24 and is training path25; seed26 remains pending.
-  Roommate serial13616 retired at17:24Z; pool29700 adopted0255 child33396
-  without restart, launched3342 child26464; fresh SSH saw two g16 instances.
-  Pool admission endsNovember25 17:24:51Z, then drains. Labels stay quarantined.
+  ROOMMATE PAUSED by user November25 11:16Z because friend needs PC. Exact
+  scheduler29700/conhost21336 suspended; noGaussian science was active. Mac
+  collectors13752/13753/13755/16314 also suspended. Resume only on new user
+  instruction, preserve identities/progress; original17:24:51Z deadline not extended.
+  Pause receipts: worker queue/user-pause-20261125.json and Mac
+  results/coordination/model-v10/*user-pause*. Labels remain quarantined.
 
-- Mac now has Intel Gaussian 16 A.03 / GaussView 6.0.16 under
-  `~/.local/opt/gaussian16`; signed `~/Applications/GaussView.app` supplies its
-  process environment. Water wB97X/6-31G(d) Opt/Freq and GUI log display passed;
-  GUI submission, TS/IRC and production concurrency remain unverified. See mac-qc.md.
+- Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
+  WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.
+  See mac-qc.md for paths, signatures and process-local environment.
 - User requested OMEN validation of cloud deployment first, then a user-provided
   cloud server test, then five-member task distribution. Do not create/buy a server
   or dispatch to other humans/cloud yet. Three existing local nodes are separately
@@ -80,12 +87,9 @@ instructions still determine the group's assigned slot and submission details.
 - Native Linux Gaussian/user-provided cloud acceptance remain pending. OMEN ML
   readiness passed isolated lock/CUDA force difference/twoepochs/reload/native
   unattended return; Mac reloaded it. See docs/reports/cloud-ml-readiness/README.md.
-- User wants unattended group work. Five self-contained paired random4096/path4096
-  seed20261124–28 packages are ready in results/group-training/paired-sampling-r1;
-  no overlap with seed16–18. November24 assigns original five pairs to local
-  queues and adds two fixed pairs; no other-human/cloud dispatch.
-  Linux entry is bash member-NN/start.sh. WSL must use the native Windows
-  scripts/launch_training_bundle.ps1 owner; generic WSL detach is rejected.
+- Five self-contained group-training packages are now reserved to local queues;
+  no other-human/cloud dispatch. Linux: bash member-NN/start.sh; WSL requires
+  scripts/launch_training_bundle.ps1 native owner, generic detach is rejected.
 - Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
 - v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
   and prospective holdouts of 64 train + 64 val reactions. Concrete IDs/endpoint
@@ -103,14 +107,11 @@ instructions still determine the group's assigned slot and submission details.
 - v0.8 global512 is the best current validation candidate. Development analysis
   completed November24 18:41Z; specialists/router did not beat it consistently.
   Raw results: results/v0.8.0/development_analysis. All holdouts remain unopened.
-- User proposed an expert library with a local decision router. First quantify
-  oracle headroom on meta-development, then compare endpoint-only TabPFN/TabICL,
-  Jev-style local decisions and simple baselines with grouped out-of-fold estimates.
-  Fix one expert for an entire reaction path; image-by-image switching is not built.
-- OMEN: `results/v0.7.0/state.json`, official logs under training/, launcher records
-  under `results/coordination/model-v07/`. Check actual owner before restarting.
-- Mac: isolated `environments/decision-models` for local MLX/MPS inference.
-  Package installation, real weight inference and chemistry benefit are separate checks.
+- Expert library/router uses meta-development/groupedOOF; each reaction retains
+  one expert. Image-by-image switching is not built. See decision-routing.md.
+- OMEN per-version state/official training logs and results/coordination/model-v*/
+  identify owners. Mac decision-models environment supports MLX/MPS analysis;
+  installation, real inference and chemistry benefit are distinct acceptance gates.
 - TabPFN/TabICL MPS and jevmlx MLX inference passed. Old-pool meta128 showed no
   force-safe oracle gain; see docs/reports/v0.7.0-routing/README.md.
 - Eight experts/four families now evaluated: AIMNet2/rxn, ANI and Orb were added.
@@ -119,11 +120,9 @@ instructions still determine the group's assigned slot and submission details.
   strict1/8,AIMNet4/8,Orb0/8; MACE/AIMNet successes are disjoint. This does not
   compare the new512 model or establish a DFT population rate. Static specialist
   systems also lost to general512; see docs/reports/v0.8.0-specialization.
-- Roommate AIMNet2-rxn/rxn8694 Gaussian finished at 02:35Z November 24 (Nov 23
-  local); Mac recovered all raw evidence and independently verified the full chain
-  at 03:43Z. Electronic barrier 2.625419123 eV versus MLIP 2.044812811 eV; one
-  post-hoc development candidate, not a population success-rate/accuracy claim.
-  See `docs/reports/v0.7.2-diversity-dft/README.md`. Owner5232 is terminal; no rerun.
+- Roommate AIMNet/rxn8694 fullGaussian independently passed: electronic barrier
+  2.625419123eV vs MLIP2.044812811eV; one post-hoc candidate. Owner5232 terminal,
+  no rerun. See docs/reports/v0.7.2-diversity-dft/README.md for raw evidence.
 - v0.6 r2 is terminal: Gaussian9456 passed, Mac failed with negative endpoint
   curvature/exhausted backwardIRC. docs/reports/v0.6.0-pilot.md is post-hoc, not a cohort.
 - Mac rxn0666 positive-control full chain and four engine tolerances passed.
