@@ -77,10 +77,10 @@ instructions still determine the group's assigned slot and submission details.
   Original17:24:51Z admission deadline unchanged; max2/fourthreads/2GB/6GiB gate.
   Receipts: worker queue/user-resume-20261125.json and Mac
   results/coordination/model-v10/*user-resume*. Labels remain quarantined.
-  Export transport repair: worker_transport.ps1 uses native Process/asynchronous
-  stdout+stderr/180s timeout, avoiding Windows PowerShell capture hangs. Three
-  chain collectors temporarily SIGSTOP for repair; totalqueue16314 stays active.
-  Resume the same three after OMEN deployment, verify actual ZIP/assessment.
+  Export repair: worker_transport.ps1 uses CMD native file redirection/180s timeout;
+  generic async pipes still hung with actual Windows SSH. Native stream/exit/
+  timeout tests and real terminal export passed. Deploy final file transport on
+  OMEN then verify original three collectors' actual ZIP/assessment; no new science.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
   WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.

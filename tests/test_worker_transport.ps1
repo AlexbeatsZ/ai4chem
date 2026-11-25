@@ -1,4 +1,5 @@
-param([string]$ProjectRoot=(Split-Path -Parent $PSScriptRoot))
+param([string]$ProjectRoot=(Split-Path -Parent $PSScriptRoot),
+    [string]$WorkerSsh='', [string]$WorkerRoot='', [string]$JobDirectory='')
 $ErrorActionPreference='Stop'
 . (Join-Path $ProjectRoot 'scripts\worker_transport.ps1')
 $directory=Join-Path ([IO.Path]::GetTempPath()) ('.agents\ai4chem-transport-test-'+[Guid]::NewGuid().ToString('N'))
@@ -31,6 +32,15 @@ if($Mode -eq 'flood') {
     catch { $timedOut=$_.Exception.Message.Contains('finite timeout') }
     if(-not $timedOut -or $watch.Elapsed.TotalSeconds -ge 5) { throw 'Timeout did not terminate the transport promptly.' }
     Write-Output 'PASS: large stdout/stderr, nonzero exit and bounded transport timeout.'
+    if($WorkerSsh -or $WorkerRoot -or $JobDirectory) {
+        if(-not $WorkerSsh -or -not $WorkerRoot -or -not $JobDirectory) { throw 'Supply all existing terminal worker identities.' }
+        $arguments=@('-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,
+            'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',
+            ($WorkerRoot+'/scripts/export_gaussian_chain.ps1'),'-JobDirectory',$JobDirectory)
+        $receipt=(Invoke-WorkerCommand (Get-Command ssh -CommandType Application).Source $arguments 20000)|ConvertFrom-Json
+        if($receipt.files -le 0 -or $receipt.bytes -le 0 -or -not $receipt.archive) { throw 'Terminal SSH export returned an invalid receipt.' }
+        Write-Output 'PASS: actual Windows OpenSSH terminal archive export, without scientific restart.'
+    }
 } finally {
     Remove-Item -LiteralPath $directory -Recurse -Force
 }

@@ -70,10 +70,12 @@ git忽略的`results/overnight-20261124/`。启动前检查已有输出和活动
 
 November25恢复节点时发现：Windows PowerShell直接用`$result = & ssh ...`
 捕获终态导出回执会挂起，中转进程在Mac240秒超时后残留；Status流式输出
-正常不代表Export也正常。两个relay的Export改用`worker_transport.ps1`原生
-Process，先异步排空stdout/stderr，再有限180秒WaitForExit；非零退出传出
-错误，超时只终止传输进程。不能用Start-Process再Refresh后空ExitCode当作
-成功。Windows真进程测试覆盖双流各1MiB、退出7和500ms超时；继续保留终态
+正常不代表Export也正常。原生Process异步双流在通用测试通过后，对真实
+Windows OpenSSH管道仍阻塞，必须另验真实SSH。两个relay的Export最终改用
+`worker_transport.ps1`经CMD原生文件重定向，退出后读取独立回执文件，180秒
+有限WaitForExit；非零退出传出错误，超时只结束所创建的传输进程树。不能用
+Start-Process再Refresh后空ExitCode当作成功。Windows真进程测试覆盖双流
+各1MiB、退出7、500ms超时及可选的真实终态SSH导出；继续保留终态
 ZIP身份校验，科学进程、数据预算与固定有限collector不因传输修复而重启。
 
 ## November24 清理后台后的双槽位修订
