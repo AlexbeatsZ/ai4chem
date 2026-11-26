@@ -48,12 +48,14 @@ instructions still determine the group's assigned slot and submission details.
   `docs/design/ts-weight-study.md`, `configs/compute-20261126.json`.
   OMEN2048 s0/s1 completed: validationbarrier0.106280/0.103625,
   force0.082694/0.082712; originalgrowth67371 runs s2, do not restart.
-  New TS-weight owner waits growth lock/terminal, then512x8/8epoch uniform vs
+  New native35116/WSL75451 TS-weight owner waits growth lock/terminal; preparation
+  passed512+2048 officialloader/readback14:26Z. Then512x8/8epoch uniform vs
   normalizedTSx2 pilot; only guarded improvement admits2048x8/20epoch fullmodel.
   Roommate old39768 drained01:04:57Z:1486outcomes/1483rawforce labels,
   101996.62worker seconds. Mac recovered34868884byte/13591entryZIP CRCpassed.
   Eight6Dreferences differ frompubliclabels; quarantine stays. New16job5D/grid
   calibration serial4threads/2GB,4GiBgate,2nativehours,owner30184 actuallyactive.
+  Both2048completedweights recoveredtoMac; energy/forces/forceFD<=3.30e-7passed.
   Actualreceipts:results/coordination/compute-20261126; noholdout opening/retries.
 
 - November25 user reiterated: prioritize training better models for group results.

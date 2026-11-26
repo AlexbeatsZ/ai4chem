@@ -1,29 +1,30 @@
 param([Parameter(Mandatory=$true)][ValidateSet('Status','Export')][string]$Action,
     [Parameter(Mandatory=$true)][string]$WorkerRoot,[Parameter(Mandatory=$true)][string]$QueueDirectory,
-    [string]$WorkerSsh='ai4chem-worker')
+    [string]$WorkerSsh='ai4chem-worker',[string]$WorkerHostName='',[string]$WorkerHostKeyAlias='')
 $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
 . (Join-Path $PSScriptRoot 'worker_transport.ps1')
 foreach($value in @($WorkerRoot,$QueueDirectory,$WorkerSsh)){if($value -notmatch '^[A-Za-z0-9_./:\@-]+$'){throw 'Unsupported worker path or identity.'}}
+foreach($value in @($WorkerHostName,$WorkerHostKeyAlias)){if($value -and $value -notmatch '^[A-Za-z0-9_.-]+$'){throw 'Unsupported per-command worker host override.'}}
 $script=if($Action -eq 'Status'){'status_gaussian_queue.ps1'}else{'export_gaussian_queue.ps1'}
-$arguments=@('-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',($WorkerRoot+'/scripts/'+$script),'-QueueDirectory',$QueueDirectory)
+$transport=@('-o','BatchMode=yes','-o','ConnectTimeout=10')
+if($WorkerHostName){$transport+=@('-o',('HostName='+$WorkerHostName))}
+if($WorkerHostKeyAlias){$transport+=@('-o',('HostKeyAlias='+$WorkerHostKeyAlias))}
+$arguments=@('-n','-T')+$transport+@($WorkerSsh,'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',($WorkerRoot+'/scripts/'+$script),'-QueueDirectory',$QueueDirectory)
 if($Action -eq 'Status'){
-    # Match the existing chain relay: stream bounded status rather than capture
-    # a native SSH pipe in an intermediate Windows PowerShell process.
-    & ssh @arguments
-    if($LASTEXITCODE -ne 0){throw 'Queue observation failed.'}
+    Invoke-WorkerCommand -Executable (Get-Command ssh -CommandType Application).Source -Arguments $arguments
     return
 }
 $raw=Invoke-WorkerCommand -Executable (Get-Command ssh -CommandType Application).Source -Arguments $arguments
 $receipt=$raw | ConvertFrom-Json
 $project=Split-Path -Parent $PSScriptRoot
-$output=Join-Path $project 'results\overnight-20261124\roommate-return'
+$queueName=Split-Path -Leaf $QueueDirectory.TrimEnd('/','\')
+$output=Join-Path $project ('results\coordination\queue-returns\'+$queueName)
 New-Item -ItemType Directory -Path $output -Force | Out-Null
 $archive=Join-Path $output 'return.zip'
 if(-not(Test-Path -LiteralPath $archive)){
     $partial=Join-Path $output 'return.partial.zip'
-    & scp -q -o BatchMode=yes -o ConnectTimeout=10 ($WorkerSsh+':'+$receipt.archive.Replace('\','/')) $partial
-    if($LASTEXITCODE -ne 0){throw 'Terminal queue relay failed.'}
+    Invoke-WorkerCommand -Executable (Get-Command scp -CommandType Application).Source -Arguments (@('-q')+$transport+@(($WorkerSsh+':'+$receipt.archive.Replace('\','/')),$partial)) | Out-Null
     Move-Item -LiteralPath $partial -Destination $archive
 }
 if((Get-Item -LiteralPath $archive).Length -ne $receipt.bytes){throw 'Terminal queue relay size differs.'}

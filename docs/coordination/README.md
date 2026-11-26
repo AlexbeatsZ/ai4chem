@@ -8,16 +8,16 @@
 
 | 节点 | 当前任务 | 权威状态与恢复入口 |
 | --- | --- | --- |
-| OMEN | v0.7 四臂 CUDA 对照，前三臂完成、path4096 运行 | results/v0.7.0/state.json；native owner 39092，启动命令在 results/coordination/model-v07 |
-| OMEN | v0.9 三个新学习率/force 设置和两个种子重复，待原锁释放再跑 | results/v0.9.0/state.json；results/coordination/model-v09 |
-| Mac | v0.8五模型完成/两项继续；新增四组成对训练（八模型、两worker） | results/overnight-20261124/mac；owner10062，27/28种子已进入官方初始验证；29/30排队 |
-| Mac | v0.8 七项等更新专门化训练，数据读回完成，global512 已开始 | results/v0.8.0/state.json；results/coordination/specialization-v08 |
-| 室友 Gaussian | November24 长队列：0255→3342→4757 完整链，再隔离 force 标签；双槽位至November25 17:24Z墙钟接新期限 | results/overnight-20261124/roommate；pool29700，原0255 child33396保持，新3342 child26464并行；17:25Z fresh SSH见两个g16，free7.57GiB |
-| ROG | 00:51Z 已恢复 SSH，可用内存 5.277 GiB；现有分析环境，无新科学计算 | 计算工具尚需按任务验收，不能把连接成功当成训练/DFT 可用 |
+| OMEN | v0.10覆盖2048最后固定种子20261118训练；首种子及20261117完成 | results/v0.10.0/state.json；WSL67371，原生launcher维持，不重启 |
+| OMEN | TS加权512/4096、8轮两臂先导；通过才完整2048/20轮 | results/ts-weight-20261126；原生owner35116/WSL75451，等待真实growth锁；准备已读回通过 |
+| Mac | 原八臂配对终态；回收/独立标签校准与真实模型重载 | results/coordination/compute-20261126；2048s0/s1已实际重载和forceFD |
+| 室友 Gaussian | 新16项5D/两网格校准，串行四线程/2GB/4GiB gate | calibration-20261126；原生owner30184；旧39768已01:04:57Z正常drain，旧标签保持隔离 |
+| ROG | 现有分析环境，本轮无新计算 | 不把连接成功当作训练/DFT可用 |
 
-OMEN 已完成 random4096：60 条 validation 能垒 MAE 0.125969 eV、力 RMSE
-0.090548 eV/Å；这比旧微调同集 0.137937/0.095218 好，但仍是开发结果。
-path4096 尚未完成。所有 prospective holdout 参考标签继续封存。
+November26新任务配置和设计为`configs/compute-20261126.json`及
+`docs/design/ts-weight-study.md`。OMEN增长队列优先，新方法等待锁；
+室友先解决reference标签差异，不继续盲目生成6D离路径标签。
+所有prospective参考标签保持封存。
 
 ## 目录和访问
 
