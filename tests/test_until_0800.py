@@ -1,5 +1,7 @@
 """Deadline admission and separate label-extension/model-promotion decisions."""
 from datetime import datetime, timezone
+import json
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 
@@ -8,6 +10,20 @@ from run_ts_weight_study import promotes
 
 
 class OvernightBoundaries(unittest.TestCase):
+    def test_two_search_cohorts_are_disjoint_frozen_meta_and_have_two_models(self):
+        root=Path(__file__).resolve().parents[1]
+        roles=json.loads((root/'configs/v0.7.0_partitions.json').read_text())
+        cohorts=[]
+        for prefix in ('growth','omen-growth'):
+            protocol=json.loads((root/f'configs/{prefix}-search-until-0800-20261126.json').read_text())
+            self.assertEqual(protocol['experts'],['global512','coverage2048s0'])
+            ids={row['sid'] for row in protocol['endpoint_records']}
+            self.assertEqual(len(ids),8)
+            self.assertTrue(ids<=set(roles['meta_development']))
+            self.assertFalse(ids & (set(roles['holdout_train'])|set(roles['holdout_val'])))
+            cohorts.append(ids)
+        self.assertFalse(cohorts[0]&cohorts[1])
+
     def test_absolute_utc8_boundary(self):
         protocol={'deadline_utc':'2026-11-27T00:00:00+00:00'}
         with patch('run_mac_offpath_study.datetime') as clock:

@@ -1,13 +1,12 @@
 {
   "version": "growth-search-until-0800-20261126",
-  "frozen_at_utc": "2026-11-24T00:04:39.448801+00:00",
+  "frozen_at_utc": "2026-11-26T15:16:25.305237+00:00",
   "experts": [
-    "legacy_mh1_256",
-    "aimnet2-rxn",
-    "orbmol-conservative"
+    "global512",
+    "coverage2048s0"
   ],
   "seed": 20261124,
-  "selection": "eight from frozen meta-development using endpoint-only kind/formula/atom-count/bond-change diversity; no reference labels or per-model outcomes used for selection",
+  "selection": "Reuse the fixed previous8metaendpoints; no new outcome-based selection.",
   "endpoint_records": [
     {
       "sid": 255,
@@ -1384,12 +1383,9 @@
   "endpoint_gate": "both endpoints converge and retain mapped input bonds before NEB; failures stay in denominator",
   "minimum_acceptance": "two IRC endpoints, projected Hessian, no frequency below -50 cm^-1; soft negatives retained",
   "input_scope": "only endpoint coordinates and atomic numbers; no intermediate geometry/energy/forces supplied to search",
-  "evaluation_scope": "MLIP-only exploratory development, eight paired reactions/24 model-reaction units; prospective holdouts remain unopened",
+  "evaluation_scope": "MLIP-only development acceptance,eight paired reactions/16model-reactionunits; prospective holdouts unopened; no automaticDFT.",
   "retries": "none; bounded iteration budgets copied unchanged from v0.4; interrupted evidence requires inspection",
-  "models": [
-    "global512",
-    "coverage2048s0"
-  ],
   "scope": "Fixed previous8metaendpoint records, new512/2048model development acceptance. Not independentholdout orDFTverified.",
-  "admission_deadline_utc": "2026-11-27T00:00:00+00:00"
+  "admission_deadline_utc": "2026-11-27T00:00:00+00:00",
+  "source_endpoint_protocol_frozen_at_utc": "2026-11-24T00:04:39.448801+00:00"
 }

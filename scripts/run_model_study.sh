@@ -14,6 +14,7 @@ case "${1:-study}" in
   growth-prepare) exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u run_model_growth.py --prepare-only ;;
   growth) entry=run_model_growth.py ;;
   ts-weight-study) entry=run_ts_weight_study.py ;;
+  overnight-acceptance) entry=run_overnight_acceptance.py ;;
   ts-weight-prepare) exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u run_ts_weight_study.py --prepare-only ;;
   *) exit 2 ;;
 esac

@@ -47,12 +47,16 @@ instructions still determine the group's assigned slot and submission details.
 - November26 user extended ALLthreehosts throughUTC+8November27 08:00
   (=2026-11-27T00:00Z). Read docs/design/overnight-until-0800.md and
   configs/three-host-until-0800-20261126.json. PreserveOMENgrowth/TSowners.
-  Macnewtwo4threadworkers:2048s0warmstart8480frame/20epochpublicreplaycontrol,
+  Macowner69899/two4threadworkers69904+69905actuallytraining:
+  2048s0warmstart8480frame/20epochpublicreplaycontrol,
   plus544frame/4epochpublic-vs-new5Dlabelpilot; strictguardadmitsfulladaptation.
-  Roommate1152unique5Dreserve(next128oldtrainreactions)waitsnormaloffpath32drain
+  Roommatenative3248owns1152unique5Dreserve(next128oldtrainreactions),
+  waitsnormaloffpath32drain
   andactualMacpilotgate; stopadmission00:00Z,draincurrent. No retries/auto merge.
   Macafter00:00Znonewstages,exactworker treesnice>=10,naturallydrain. Free
   slotsbeforecutoffcanrun16frozen512/2048metaendpointsearchacceptanceunits.
+  OMENnewacceptanceownerwaitsTSnormalcompletion,then<=3hreservedGPUadmission
+  onanother8metareactions(disjointfromMac),16units,deadline00:00Z.
 
 - November26 user renewed roommate/OMEN assignments. Read
   `docs/design/ts-weight-study.md`, `configs/compute-20261126.json`.

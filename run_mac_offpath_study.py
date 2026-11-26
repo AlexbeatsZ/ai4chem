@@ -16,6 +16,8 @@ from ase.io import read, write
 from model_study_data import ROOT, save_json
 from run_model_growth import valid_metrics
 from run_ts_weight_study import promotes
+sys.path.insert(0, str(ROOT/'scripts'))
+from run_paired_queue import lower_priority
 
 PROTOCOL = ROOT / 'configs/three-host-until-0800-20261126.json'
 OUTPUT = ROOT / 'results/until-0800-20261126'
@@ -206,7 +208,6 @@ def main():
     state=dict(owner_pid=os.getpid(),status='running',started_at_utc=now(),deadline_utc=protocol['deadline_utc'],active={},outcomes=[])
     active={}
     pending_search=['global512','coverage2048s0']
-    from scripts.run_paired_queue import lower_priority
     for role in ('full-control','adaptation'):
         log=(OUTPUT/f'{role}-owner.log').open('x')
         child=subprocess.Popen([sys.executable,'-u',str(Path(__file__).resolve()),'--worker',role],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT)

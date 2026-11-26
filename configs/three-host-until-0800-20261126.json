@@ -34,7 +34,8 @@
     "reserve_acceptance": "When training slots free before08:00, fixed8metaendpoint reactions xglobal512/coverage2048s0,16MLIP-only units. Same existing search budgets; no reference paths or prospective labels; no automaticDFT dispatch."
   },
   "omen": {
-    "policy": "Preserve growth s2 and deployed TS pilot/application owner. Current remaining growth about6-7h plus1.5h pilot, conditional8h full application. No additional GPU exploration. Existing frozen studies drain normally."
+    "policy": "Preserve growth s2 and deployed TS pilot/application owner. Current remaining growth about6-7h plus1.5h pilot, conditional8h full application. No additional GPU exploration. Existing frozen studies drain normally.",
+    "reserved_acceptance": "After normal TS completion, use<=3h GPU admission budget for16global512/2048units on8other frozenmetaendpoints, disjointfromMac. Stop new reactions at00:00Z; in-flight units drain. Not additional GPU method exploration."
   },
   "roommate": {
     "predecessor": "offpath32-20261126",
