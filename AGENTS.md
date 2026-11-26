@@ -34,18 +34,15 @@ instructions still determine the group's assigned slot and submission details.
 - Standard .model serialization and reloaded inference passed; optional upstream
   MH1 TorchScript export fails and is not the accepted artifact.
 
-# Active Work
+- v0.11 MoE pilot completed. External composition mixture improves forces but
+  worsens barriers. Matched 49k residual adapters each trained64reactions/512frames,
+  2epochs/256updates: singlehead barrier0.109724/force0.090517,sharedexperts
+  0.110541/0.090429 vs512 baseline0.111033/0.090201. Neither passes force guards.
+  No promotion/retry. Real force-gradients/reload/symmetry and109regressions passed;
+  newGPU/DFT0. Read docs/design/soft-mixture.md and docs/reports/v0.11.0-moe.
+  v0.11.0-moe-pilot release8258281 verified8assets,including1024standardweight.
 
-- November25 user requested literature-grounded MoE work and actual advancement.
-  Read `docs/design/soft-mixture.md`. v0.11 external three-member soft mixture is
-  trained/verified: forces improve but barriers worsen; no promotion. Real shared
-  MACE trunk + scalar residual experts passed force-gradient/reload/symmetry checks.
-  `configs/residual-moe-pilot-20261125.json` freezes two matched 49k adapters on
-  64train reactions/512frames,2epochs/256updates each,Mac1thread/nice10/1800s.
-  Both finite trainings/validation completed: singlehead barrier0.109724/force
-  0.090517,sharedexperts0.110541/0.090429 vsglobal0.111033/0.090201.
-  Neither passed force guards; no promotion/retry. Standard gates and real adapter
-  weights are saved. Read docs/reports/v0.11.0-moe; zero new GPU/DFT,holdout unopened.
+# Active Work
 
 - November25 user reiterated: prioritize training better models for group results.
   They also require methods beyond scale; v0.10 expands data, not parameters.
@@ -70,34 +67,19 @@ instructions still determine the group's assigned slot and submission details.
   verified, including the completed512-model weight (not an untrained growth model).
   Mac recovery: results/coordination/model-v10/omen-activation-verification.json.
 
-- November24 user authorized >=18h queues on roommate/OMEN/Mac. Read
-  `docs/design/local-compute-queue.md` and `configs/overnight-20261124.json`.
-  Seven paired random/path repeats are reserved: seeds24–26 OMEN,27–30 Mac
-  (full seeds20261124–30). Do not redistribute original member01–05 ZIPs.
-  Roommate receives three AIMNet chains0255/3342/4757 then quarantined train-side
-  force labels. November24 after idle-app cleanup user authorized two-slot pool:
-  `configs/roommate-pool-20261124.json`,2GB/fourthreads each,6GiB launch gate,
-  max2 workers,24h wall admission then drain; adopt current chain, no restart.
-  Runtime is results/overnight-20261124; verify owners before starting/recovering.
-  Mac all eight paired arms completed2026-11-26 01:07:10Z; no restart.
-  Last OMEN observationNovember25:61077 completed seed24,training path25,
-  seed26 pending; inspect fresh state before new GPU allocation.
-  ROOMMATE RESUMED by new user instruction November25 12:13Z after11:16Z pause.
-  Exact scheduler29700/conhost21336 restored after command/creation/thread checks;
-  Mac collectors13752/13753/13755/16314 resumed, no replacement/restarted science.
-  Fresh12:15:56Z saw activeGaussian/force log; terminal records173→178,free6.95GiB.
-  November25 new user authorizes task coverage through November26 09:00UTC+8
-  (=01:00Z); explicit continuation waits original17:24:51Z pool drain, then takes
-  untouched force claims with same max2/fourthreads/2GB/6GiB gate. Native
-  continuation39768 verified waiting at14:15Z; original29700/Gaussian still run.
-  Read configs/roommate-until-0900-20261125.json; never resubmit either owner.
-  Receipts: worker queue/user-resume-20261125.json and Mac
-  results/coordination/model-v10/*user-resume*. Labels remain quarantined.
-  CMD redirection/180s export repair is deployed and actually verified. All3
-  chains recovered:0255/3342 independently DFT-verified,4757 failed forwardIRC320.
-  Chain collectors terminal; last14:15:58Z queue398/pending4212/free6.22GiB.
-  Final01:00Z deadline has since passed; actual finaldrain/collector16314 not
-  reverified in this MoE task. See docs/reports/local-compute-20261124.
+- November24 three-host queues: read docs/design/local-compute-queue.md and
+  configs/overnight-20261124.json. Seeds24–26OMEN/27–30Mac remain assigned;
+  original member01–05ZIPs must not be redistributed. Runtime results/overnight-20261124.
+  Mac eight paired arms completed2026-11-26 01:07Z; OMEN growth subsequently active.
+  Roommate pool29700 and continuation39768 were last verifiedNovember25 14:15Z;
+  same max2/fourthreads/2GB each/6GiB launch gate,398terminal/4212pending.
+  Final admissionNovember26 01:00Z (=09:00UTC+8) has passed; finaldrain/collector16314
+  not reverified here. Never resubmit either owner; inspect
+  configs/roommate-until-0900-20261125.json and actual worker identity/state first.
+  CMD-redirection/180s export repair actually passed. Three chains recovered:
+  0255/3342 independently DFT-verified,4757 failed forwardIRC320; no science retry.
+  All new force labels remain quarantined. See docs/reports/local-compute-20261124
+  and synchronized task log for prior user pause/resume and exact recovery receipts.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
   WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.
