@@ -11,7 +11,7 @@
 | OMEN | v0.10覆盖2048最后固定种子20261118训练；首种子及20261117完成 | results/v0.10.0/state.json；WSL67371，原生launcher维持，不重启 |
 | OMEN | TS加权512/4096、8轮两臂先导；通过才完整2048/20轮 | results/ts-weight-20261126；原生owner35116/WSL75451，等待真实growth锁；准备已读回通过 |
 | Mac | 原八臂配对终态；回收/独立标签校准与真实模型重载 | results/coordination/compute-20261126；2048s0/s1已实际重载和forceFD |
-| 室友 Gaussian | 新16项5D/两网格校准，串行四线程/2GB/4GiB gate | calibration-20261126；原生owner30184；旧39768已01:04:57Z正常drain，旧标签保持隔离 |
+| 室友 Gaussian | 16项校准已终态；新32反应有限5D离路径批次 | offpath32-20261126；280新作业/8复用reference；串行4线程/2GB/4GiB gate/8作业小时；新旧标签隔离 |
 | ROG | 现有分析环境，本轮无新计算 | 不把连接成功当作训练/DFT可用 |
 
 November26新任务配置和设计为`configs/compute-20261126.json`及

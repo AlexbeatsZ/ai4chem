@@ -54,7 +54,11 @@ instructions still determine the group's assigned slot and submission details.
   Roommate old39768 drained01:04:57Z:1486outcomes/1483rawforce labels,
   101996.62worker seconds. Mac recovered34868884byte/13591entryZIP CRCpassed.
   Eight6Dreferences differ frompubliclabels; quarantine stays. New16job5D/grid
-  calibration serial4threads/2GB,4GiBgate,2nativehours,owner30184 actuallyactive.
+  calibration30184 completed16/16at14:34:53Z,875.95s; all3Nalignmentpassed.
+  Newoffpath32batch freezes32oldtrainreactions/2885Dframes(8refsreused/280new),
+  serial4threads/2GB/4GiBgate/8nativehours, native16128; labelsquarantined.
+  Macfinite12hcollector50081 automaticallyreturns/alignmentonly, no modelmerge.
+  Readconfigs/offpath32-20261126.json before furtherlabel/adapterdecisions.
   Both2048completedweights recoveredtoMac; energy/forces/forceFD<=3.30e-7passed.
   Actualreceipts:results/coordination/compute-20261126; noholdout opening/retries.
 

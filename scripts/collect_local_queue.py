@@ -18,6 +18,7 @@ def main():
     parser.add_argument('--worker-host-key-alias')
     parser.add_argument('--max-hours',type=float,default=72)
     parser.add_argument('--calibration-baseline')
+    parser.add_argument('--offpath-references')
     args=parser.parse_args()
     if not 0 < args.max_hours <= 72:
         parser.error('Finite observation must be within72h')
@@ -60,6 +61,11 @@ def main():
                         '--archive', str(archive), '--baseline', args.calibration_baseline,
                         '--output', str(output/'alignment')], check=True)
                     state['status']='calibration_returned_and_assessed'
+                if args.offpath_references:
+                    subprocess.run([os.sys.executable, str(Path(__file__).with_name('assess_offpath_batch.py')),
+                        '--archive', str(archive), '--references', args.offpath_references,
+                        '--output', str(output/'alignment')], check=True)
+                    state['status']='offpath_returned_and_aligned_quarantined'
                 save();return
             if not observed['owner_alive']:
                 state.update(status='owner_missing',finished_at_utc=datetime.now(timezone.utc).isoformat());save();return
