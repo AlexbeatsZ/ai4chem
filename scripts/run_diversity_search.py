@@ -33,16 +33,19 @@ def now():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--expert", required=True, choices=[
-        "legacy_mh1_256", "aimnet2-rxn", "orbmol-conservative"])
+        "legacy_mh1_256", "aimnet2-rxn", "orbmol-conservative", "global512", "coverage2048s0"])
+    parser.add_argument('--protocol', type=Path, default=PROTOCOL)
+    parser.add_argument('--output', type=Path, default=OUTPUT)
+    parser.add_argument('--deadline-utc')
     args = parser.parse_args()
     torch.set_num_threads(3)
-    protocol = json.loads(PROTOCOL.read_text())
+    protocol = json.loads(args.protocol.read_text())
     config = protocol["search_settings"]
     source = json.loads((ROOT / "configs/v0.7.0_partitions.json").read_text())
     allowed = set(source["meta_development"])
     if any(row["sid"] not in allowed for row in protocol["endpoint_records"]):
         raise ValueError("Search inputs must belong to the frozen meta-development pool")
-    directory = OUTPUT / args.expert
+    directory = args.output / args.expert
     directory.mkdir(parents=True, exist_ok=True)
     lock = (directory / "worker.lock").open("w")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -52,14 +55,21 @@ def main():
         "implementation_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()}
     save_json(directory / "state.json", state)
     try:
-        if args.expert == "legacy_mh1_256":
+        if args.expert in ("legacy_mh1_256", "global512", "coverage2048s0"):
             from mace.calculators import MACECalculator
-            calc = MACECalculator(model_paths=str(ROOT / "models/v0.3.0/mh1_full_256.model"),
+            checkpoints = {'legacy_mh1_256':'models/v0.3.0/mh1_full_256.model',
+                           'global512':'models/v0.8.0/mh1_global512_e40.model',
+                           'coverage2048s0':'models/v0.10.0/mh1_coverage2048_s0.model'}
+            calc = MACECalculator(model_paths=str(ROOT / checkpoints[args.expert]),
                                   device="cpu", default_dtype="float64", head="Default")
         else:
             calc = external_calculator(args.expert, "cpu", "float64")
         completed = []
         for entry in protocol["endpoint_records"]:
+            if args.deadline_utc and datetime.now(timezone.utc) >= datetime.fromisoformat(args.deadline_utc):
+                state.update(stage='admission_deadline_reached', completed=completed, finished_at_utc=now())
+                save_json(directory/'state.json',state)
+                return
             folder = directory / entry["reaction"]
             state.update(stage="searching", reaction=entry["reaction"], updated_at_utc=now(), completed=completed)
             save_json(directory / "state.json", state)

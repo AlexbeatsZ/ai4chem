@@ -1,0 +1,55 @@
+{
+  "version": "three-host-until-0800-20261126",
+  "authorized_at_utc": "2026-11-26T15:02:48.364997+00:00",
+  "deadline_utc": "2026-11-27T00:00:00+00:00",
+  "deadline_utc8": "2026-11-27T08:00:00+08:00",
+  "user_request": "Roommate, OMEN and Mac all have useful computation through UTC+8 08:00.",
+  "mac": {
+    "workers": 2,
+    "threads_per_worker": 4,
+    "after_deadline_nice": 10,
+    "after_deadline": "No new stages; exact running worker trees drain with nice>=10. No global power changes.",
+    "foundation": "models/v0.10.0/mh1_coverage2048_s0.model",
+    "seed": 2026112601,
+    "training": {
+      "patience": 100,
+      "batch_size": 4,
+      "learning_rate": 1e-05,
+      "energy_weight": 10.0,
+      "forces_weight": 1.0,
+      "dtype": "float64",
+      "E0s": "foundation",
+      "device": "cpu"
+    },
+    "full_epochs": 20,
+    "full_replay_frames": 8192,
+    "comparison_frames": 288,
+    "pilot_epochs": 4,
+    "pilot_replay_reactions": 32,
+    "pilot_total_frames": 544,
+    "expected_full_CPU_worker_hours": "About10-16h based on historical4096/40epoch runs, uncertain under changed concurrency.",
+    "full_promotion": "Only strict lower validation60 barrier with no worse whole-path/TS forces vs pilot public replay control and frozen2048s0.",
+    "next_label_gate": "Both pilot models actually trained/reloaded, all288 source-verified labels complete, new-label force RMSE improves vs matched public control; validation barrier <=1.10x and whole-path/TS force <=1.05x frozen2048s0. This development gate only admits one finite label extension, not model promotion.",
+    "holdout_labels_evaluated": false,
+    "reserve_acceptance": "When training slots free before08:00, fixed8metaendpoint reactions xglobal512/coverage2048s0,16MLIP-only units. Same existing search budgets; no reference paths or prospective labels; no automaticDFT dispatch."
+  },
+  "omen": {
+    "policy": "Preserve growth s2 and deployed TS pilot/application owner. Current remaining growth about6-7h plus1.5h pilot, conditional8h full application. No additional GPU exploration. Existing frozen studies drain normally."
+  },
+  "roommate": {
+    "predecessor": "offpath32-20261126",
+    "continuation": "offpath128-until-0800-20261126",
+    "new_reaction_offset": 32,
+    "new_reactions": 128,
+    "force_jobs": 1152,
+    "workers": 1,
+    "threads": 4,
+    "memory_GB": 2,
+    "minimum_available_GiB": 4,
+    "admission_deadline_utc": "2026-11-27T00:00:00Z",
+    "target_compute_hours": 12,
+    "policy": "Wait exact predecessor safe drain plus actual first-batch pilot gate. Only128 previously untouched reactions,9frozen geometries each,5D/7F UltraFine. No retries,3consecutive failures stop; stop new admission at08:00UTC+8 and drain. No automatic merge or full512 expansion.",
+    "reservoir_estimate": "1152jobs at recent20-40s gives6.4-12.8worker hours plus old batch; only actual runtime reported."
+  },
+  "automatic_retries": 0
+}

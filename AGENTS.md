@@ -44,6 +44,16 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November26 user extended ALLthreehosts throughUTC+8November27 08:00
+  (=2026-11-27T00:00Z). Read docs/design/overnight-until-0800.md and
+  configs/three-host-until-0800-20261126.json. PreserveOMENgrowth/TSowners.
+  Macnewtwo4threadworkers:2048s0warmstart8480frame/20epochpublicreplaycontrol,
+  plus544frame/4epochpublic-vs-new5Dlabelpilot; strictguardadmitsfulladaptation.
+  Roommate1152unique5Dreserve(next128oldtrainreactions)waitsnormaloffpath32drain
+  andactualMacpilotgate; stopadmission00:00Z,draincurrent. No retries/auto merge.
+  Macafter00:00Znonewstages,exactworker treesnice>=10,naturallydrain. Free
+  slotsbeforecutoffcanrun16frozen512/2048metaendpointsearchacceptanceunits.
+
 - November26 user renewed roommate/OMEN assignments. Read
   `docs/design/ts-weight-study.md`, `configs/compute-20261126.json`.
   OMEN2048 s0/s1 completed: validationbarrier0.106280/0.103625,
@@ -193,6 +203,7 @@ completed or active study merely to inspect its status.
 
 # Docs Index
 
+- `docs/design/overnight-until-0800.md`: three-host deadline, actual adaptation and gated label continuation.
 - `docs/design/ts-weight-study.md`: finite TS objective pilot/application and DFT label calibration.
 - `docs/design/soft-mixture.md`: external gates and matched shared-trunk residual pilot.
 - `docs/design/model-growth.md`: v0.10 wider coverage and guarded seed repeats.

@@ -64,7 +64,7 @@ def train(experiment, protocol, manifest, *, output_root=None, manifest_path=Non
     config = {
         "name": name, "seed": seed, "device": settings.get("device", "cuda"),
         "default_dtype": settings["dtype"],
-        "foundation_model": str(ROOT / "models/mh1-omol.model"),
+        "foundation_model": str(ROOT / experiment.get("foundation_model", "models/mh1-omol.model")),
         "foundation_model_readout": True, "multiheads_finetuning": False,
         "train_file": str(dataset), "valid_file": str(ROOT / experiment.get("valid_file", "data/v0.7.0/validation.extxyz")),
         "energy_key": "REF_energy", "forces_key": "REF_forces", "E0s": settings["E0s"],

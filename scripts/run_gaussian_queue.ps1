@@ -19,6 +19,8 @@ if(-not $Worker) {
 $lock=[IO.File]::Open((Join-Path $QueueDirectory 'queue.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
 if(Test-Path -LiteralPath $stateFile){$lock.Dispose();throw 'Existing queue evidence; no implicit restart.'}
 $state=[ordered]@{host=$env:COMPUTERNAME;owner_pid=$PID;started_at_utc=[DateTime]::UtcNow.ToString('o');status='running';stage='admission';outcomes=@();compute_seconds=0.0;holdout_labels_evaluated=$false;training_merge_authorized=$false;automatic_retries=0}
+$deadline=if($task.admission_deadline_utc){[DateTimeOffset]::Parse($task.admission_deadline_utc).UtcDateTime}else{[DateTime]::MaxValue}
+$state['admission_deadline_utc']=$deadline.ToString('o')
 function Save-State {
     $state.updated_at_utc=[DateTime]::UtcNow.ToString('o')
     $temporary=Join-Path $QueueDirectory 'queue-state.tmp'
@@ -27,18 +29,39 @@ function Save-State {
 }
 function Admit {
     while($true) {
+        if([DateTime]::UtcNow -ge $deadline){return $false}
         $os=Get-CimInstance Win32_OperatingSystem
         $active=@(Get-CimInstance Win32_Process | Where-Object {$_.Name -match '^(g16|l[0-9]+)\.exe$'})
         if($active.Count){throw 'Unexpected Gaussian process; stop instead of overlapping work.'}
-        if($os.FreePhysicalMemory -ge 4MB){return}
+        if($os.FreePhysicalMemory -ge 4MB){return ([DateTime]::UtcNow -lt $deadline)}
         $state.stage='waiting_for_4GiB_free';Save-State
         Start-Sleep -Seconds 60
     }
 }
 try {
     Save-State
+    if($task.predecessor_queue){
+        $state.stage='waiting_for_predecessor_and_pilot';Save-State
+        while($true){
+            if([DateTime]::UtcNow -ge $deadline){$state.status='admission_deadline_reached';return}
+            $previous=[IO.File]::ReadAllText((Join-Path $task.predecessor_queue 'queue-state.json'))|ConvertFrom-Json
+            $oldOwner=Get-CimInstance Win32_Process -Filter ('ProcessId='+$previous.owner_pid)
+            if($oldOwner -and ($oldOwner.Name -ne 'powershell.exe' -or -not $oldOwner.CommandLine.Replace('/','\').Contains($task.predecessor_queue.Replace('/','\')))){throw 'Predecessor PID changed identity.'}
+            if(-not $oldOwner -and $previous.status -ne 'running'){
+                if($previous.status -ne 'prepared_pool_exhausted' -or $previous.error){throw 'Predecessor did not drain successfully.'}
+                if(-not $task.gate_file){throw 'Continuation requires an actual pilot gate.'}
+                if((Test-Path -LiteralPath ($task.gate_file+'.ready')) -and (Test-Path -LiteralPath $task.gate_file)){
+                    $gate=[IO.File]::ReadAllText($task.gate_file)|ConvertFrom-Json
+                    if($gate.protocol -ne 'three-host-until-0800-20261126'){throw 'Pilot gate identity differs.'}
+                    if(-not $gate.allow_label_extension){$state.status='pilot_gate_declined';$state['pilot_gate']=$gate;return}
+                    $state['pilot_gate']=$gate;break
+                }
+            }
+            Save-State;Start-Sleep -Seconds 30
+        }
+    }
     foreach($item in $task.chains) {
-        Admit
+        if(-not(Admit)){break}
         $folder=Join-Path $QueueDirectory $item.directory
         if(Test-Path -LiteralPath (Join-Path $folder 'worker-state.json')){throw 'Existing chain output; inspect without overwrite.'}
         $state.stage=$item.job_id;Save-State
@@ -56,7 +79,7 @@ try {
     $consecutiveFailures=0
     foreach($item in $task.force_items) {
         if($state.compute_seconds -ge $task.target_compute_hours*3600){break}
-        Admit
+        if(-not(Admit)){break}
         $folder=Join-Path $QueueDirectory ('forces\'+$item.name)
         New-Item -ItemType Directory -Path $folder -ErrorAction Stop | Out-Null
         $input=Join-Path $folder 'force.gjf'
@@ -79,7 +102,7 @@ try {
         $state.outcomes+=$record;Save-State
         if($consecutiveFailures -ge 3){throw 'Three consecutive force failures; stop and retain evidence for diagnosis.'}
     }
-    $state.status=if($state.compute_seconds -ge $task.target_compute_hours*3600){'compute_budget_reached'}else{'prepared_pool_exhausted'}
+    $state.status=if([DateTime]::UtcNow -ge $deadline){'admission_deadline_reached'}elseif($state.compute_seconds -ge $task.target_compute_hours*3600){'compute_budget_reached'}else{'prepared_pool_exhausted'}
 } catch {
     $state.status='blocked';$state['error']=$_.Exception.ToString()
 } finally {
