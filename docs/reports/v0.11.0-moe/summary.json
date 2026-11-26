@@ -1,0 +1,447 @@
+{
+  "version": "v0.11.0-moe-pilot",
+  "scope": "Development-only external mixture and small shared-backbone adapter pilot",
+  "holdout_labels_evaluated": false,
+  "soft_mixture": {
+    "protocol": {
+      "version": "v0.11.0-soft-mixture-pilot",
+      "frozen_at_utc": "2026-11-26T05:36:00+00:00",
+      "purpose": "A bounded external soft-mixture pilot following the literature comparison; not a replication of Cu results or an internally trained sparse MoE.",
+      "members": [
+        {
+          "name": "mh1_global512_e40",
+          "model_file": "models/v0.8.0/mh1_global512_e40.model",
+          "size_bytes": 56945307
+        },
+        {
+          "name": "mh1_replay0_e32",
+          "model_file": "models/v0.8.0/mh1_replay0_e32.model",
+          "size_bytes": 56944983
+        },
+        {
+          "name": "mh1_replay1_e32",
+          "model_file": "models/v0.8.0/mh1_replay1_e32.model",
+          "size_bytes": 56944983
+        }
+      ],
+      "data": {
+        "gate_fit": "meta_development",
+        "development_check": "validation",
+        "gate_fit_reactions": 128,
+        "development_check_reactions": 60,
+        "frames_per_reaction": 10,
+        "roles": "Frozen MACE weights never receive meta labels. The gate fits only the pre-existing meta-development role; grouped OOF is exploratory development. Validation60 was already used for MACE checkpoints and is not a new independent test. Prospective64+64 stays unopened.",
+        "cache": "Reuse paired v0.8.0 prediction extxyz, checking numbers, coordinates, full reference energies/forces and exact frozen reaction identities against the original role HDF5.",
+        "new_DFT_labels": 0
+      },
+      "controls": [
+        "single_general",
+        "uniform",
+        "constant",
+        "composition_softmax"
+      ],
+      "features": [
+        "log_atoms",
+        "fraction_H",
+        "fraction_C",
+        "fraction_N",
+        "fraction_O"
+      ],
+      "folds": 5,
+      "group": "formula",
+      "seed": 20261125,
+      "objective": {
+        "energy_per_atom_weight": 10.0,
+        "force_component_weight": 1.0,
+        "aggregation": "Equal reactions; ten frames per reaction. Sum of squared per-atom absolute energy error and per-reaction mean Cartesian force error. Same weights mix energy and forces. No energy-only correction or learned energy offsets."
+      },
+      "optimizer": {
+        "max_iterations": 300,
+        "ftol": 1e-12,
+        "gtol": 1e-09,
+        "slope_l2": 1e-05,
+        "coefficient_bound": 8.0
+      },
+      "budget": {
+        "host": "Mac",
+        "threads": 1,
+        "max_wall_seconds": 900,
+        "new_GPU_training_hours": 0,
+        "new_DFT_hours": 0,
+        "max_fits": 12,
+        "automatic_retries": 0,
+        "inference": "Every mixture evaluates all three frozen members. All member bytes and historical training are charged; no free general fallback or sparse-speed claim."
+      },
+      "promotion": "Require lower barrier MAE and non-worse global/TS force RMSE than fixed general512 in both grouped OOF and validation60, and a grouped OOF paired barrier CI upper bound below zero. Passing only permits further cost/search assessment; never automatically replaces the final model or opens prospective.",
+      "sources": [
+        "https://arxiv.org/html/2603.07977v3",
+        "https://arxiv.org/html/2506.23971v2",
+        "https://orca.cardiff.ac.uk/id/eprint/189300/1/s41524-026-02280-x_reference.pdf",
+        "https://arxiv.org/html/2604.26143v1"
+      ]
+    },
+    "fit_wall_seconds": 3.7278800420463085,
+    "oof": {
+      "single_general": {
+        "barrier_MAE_eV": 0.10575673935579033,
+        "force_component_RMSE_eV_per_A": 0.08408221600826457,
+        "ts_force_component_RMSE_eV_per_A": 0.12657422419462724,
+        "mean_weights": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "paired_barrier_delta_vs_general": {
+          "mean_eV": 0.0,
+          "formula_cluster_ci95_eV": [
+            0.0,
+            0.0
+          ],
+          "clusters": 42,
+          "replicates": 2000
+        }
+      },
+      "uniform": {
+        "barrier_MAE_eV": 0.10785198667324636,
+        "force_component_RMSE_eV_per_A": 0.08220214520956573,
+        "ts_force_component_RMSE_eV_per_A": 0.12394930326647079,
+        "mean_weights": [
+          0.33333333333333354,
+          0.33333333333333354,
+          0.33333333333333354
+        ],
+        "paired_barrier_delta_vs_general": {
+          "mean_eV": 0.002095247317456028,
+          "formula_cluster_ci95_eV": [
+            -0.002042408257608277,
+            0.006860767709198866
+          ],
+          "clusters": 42,
+          "replicates": 2000
+        }
+      },
+      "constant": {
+        "barrier_MAE_eV": 0.10721398940170701,
+        "force_component_RMSE_eV_per_A": 0.0821243274378568,
+        "ts_force_component_RMSE_eV_per_A": 0.12392946847051099,
+        "mean_weights": [
+          0.4422453978295464,
+          0.3193767741791395,
+          0.2383778279913135
+        ],
+        "paired_barrier_delta_vs_general": {
+          "mean_eV": 0.0014572500459166804,
+          "formula_cluster_ci95_eV": [
+            -0.002132225640918634,
+            0.00547644735903582
+          ],
+          "clusters": 42,
+          "replicates": 2000
+        }
+      },
+      "composition_softmax": {
+        "barrier_MAE_eV": 0.1066345261369932,
+        "force_component_RMSE_eV_per_A": 0.08216991491798133,
+        "ts_force_component_RMSE_eV_per_A": 0.12420262055893572,
+        "mean_weights": [
+          0.4582676005275518,
+          0.31341201787628253,
+          0.22832038159616583
+        ],
+        "paired_barrier_delta_vs_general": {
+          "mean_eV": 0.0008777867812028717,
+          "formula_cluster_ci95_eV": [
+            -0.002684967973116473,
+            0.005059949726757493
+          ],
+          "clusters": 42,
+          "replicates": 2000
+        }
+      }
+    },
+    "validation": {
+      "single_general": {
+        "barrier_MAE_eV": 0.11103327014150939,
+        "force_component_RMSE_eV_per_A": 0.09020062019888245,
+        "ts_force_component_RMSE_eV_per_A": 0.13351334272953214
+      },
+      "uniform": {
+        "barrier_MAE_eV": 0.12033716998036349,
+        "force_component_RMSE_eV_per_A": 0.08789470652869197,
+        "ts_force_component_RMSE_eV_per_A": 0.13101706118309348
+      },
+      "constant": {
+        "barrier_MAE_eV": 0.11810614482020962,
+        "force_component_RMSE_eV_per_A": 0.08793751206615248,
+        "ts_force_component_RMSE_eV_per_A": 0.13115389855015722
+      },
+      "composition_softmax": {
+        "barrier_MAE_eV": 0.11676012933964254,
+        "force_component_RMSE_eV_per_A": 0.08820443901636126,
+        "ts_force_component_RMSE_eV_per_A": 0.13150688259149496
+      }
+    },
+    "promotion": {
+      "single_general": {
+        "oof_multi_metric_pass": false,
+        "validation_multi_metric_pass": false,
+        "oof_ci_upper_below_zero": false,
+        "eligible_for_cost_search_assessment": false
+      },
+      "uniform": {
+        "oof_multi_metric_pass": false,
+        "validation_multi_metric_pass": false,
+        "oof_ci_upper_below_zero": false,
+        "eligible_for_cost_search_assessment": false
+      },
+      "constant": {
+        "oof_multi_metric_pass": false,
+        "validation_multi_metric_pass": false,
+        "oof_ci_upper_below_zero": false,
+        "eligible_for_cost_search_assessment": false
+      },
+      "composition_softmax": {
+        "oof_multi_metric_pass": false,
+        "validation_multi_metric_pass": false,
+        "oof_ci_upper_below_zero": false,
+        "eligible_for_cost_search_assessment": false
+      }
+    },
+    "runtime_acceptance": {
+      "status": "passed",
+      "verified_at_utc": "2026-11-26T05:42:07.206545+00:00",
+      "scope": "Real CPU float64 three-member reload and numerical acceptance; no new reaction accuracy or TS-search result",
+      "reaction": "rxn0097",
+      "atoms": 8,
+      "weights": [
+        0.4368309204727463,
+        0.10009504678132335,
+        0.4630740327459304
+      ],
+      "cache_energy_difference_eV": 9.604264050722122e-10,
+      "cache_force_max_difference_eV_per_A": 5.031378918773921e-07,
+      "finite_difference_force_error_eV_per_A": 1.0476358678485065e-06,
+      "translation_energy_difference_eV": 0.0,
+      "translation_force_max_difference_eV_per_A": 5.3339277439334865e-14,
+      "rotation_energy_difference_eV": 9.809809853322804e-09,
+      "rotation_force_max_difference_eV_per_A": 5.08203442661781e-08,
+      "permutation_energy_difference_eV": 1.8189894035458565e-12,
+      "permutation_force_max_difference_eV_per_A": 9.71445146547012e-16,
+      "timing": {
+        "single_general": {
+          "seconds": [
+            0.05271370796253905,
+            0.05476529098814353,
+            0.051487249962519854,
+            0.051263874978758395
+          ],
+          "median_seconds": 0.05210047896252945
+        },
+        "composition_softmax": {
+          "seconds": [
+            0.15690654201898724,
+            0.1560801250161603,
+            0.15529991599032655,
+            0.15676599997095764
+          ],
+          "median_seconds": 0.15642306249355897
+        }
+      },
+      "mixture_to_single_median_time_ratio": 3.0023344431451022,
+      "constant_gate_reload_passed": true,
+      "torch_threads": 1,
+      "holdout_labels_evaluated": false
+    }
+  },
+  "residual": {
+    "protocol": {
+      "version": "v0.11.0-residual-moe-pilot",
+      "base_model": "models/v0.8.0/mh1_global512_e40.model",
+      "base_model_bytes": 56945307,
+      "train_file": "data/v0.8.0/general4096.extxyz",
+      "training_reactions": 64,
+      "frames_per_reaction": 8,
+      "selection": "Seeded 32 whole reactions from each frozen v0.8 geometry region; all adapters receive all same selected frames. No labels enter reaction selection.",
+      "seed": 20261125,
+      "experiments": [
+        "single_head",
+        "shared_experts"
+      ],
+      "architecture": {
+        "width_per_branch": 16,
+        "routed_experts": 2,
+        "shared_branches": 1,
+        "routing": "Atomic number H/C/N/O only; dense evaluation of two residual experts plus always-on shared branch",
+        "backbone": "Frozen global512; retain coordinate gradients through even scalar MACE descriptors",
+        "single_head": "Width48 compared with three width16 branches; 49248 vs49256 trainable adapter parameters on accepted backbone"
+      },
+      "training": {
+        "epochs": 2,
+        "batch_size": 4,
+        "learning_rate": 0.0001,
+        "energy_per_atom_weight": 10.0,
+        "force_component_weight": 1.0,
+        "optimizer": "Adam",
+        "dtype": "float64",
+        "checkpoint": "Final epoch only, retain initial zero-residual baseline; no early selection or retry"
+      },
+      "evaluation": {
+        "role": "validation60",
+        "frames": 600,
+        "meta_development": "Not used for fitting adapters; no additional residual pilot evaluation in this first finite batch",
+        "prospective": "Unopened",
+        "metrics": "Energy curves mixed/optimized before barriers; global and TS Cartesian force RMSE weighted by actual component counts"
+      },
+      "budget": {
+        "host": "Mac",
+        "threads": 1,
+        "nice": 10,
+        "max_wall_seconds": 1800,
+        "new_GPU_training_hours": 0,
+        "new_DFT_labels": 0,
+        "models": 2,
+        "updates_per_model": 256,
+        "automatic_retries": 0
+      },
+      "promotion": "Require shared_experts to lower validation barrier MAE and not worsen global/TS force RMSE vs frozen global512; to attribute any benefit to experts it must also beat the matched single-head adapter. This short pilot only permits larger matched training/repeats, not independent-generalization claims or prospective opening.",
+      "prerequisites": "External soft-mixture pilot and real shared-backbone force-gradient/serialization/symmetry interface acceptance must already be complete. Existing Mac paired queue must be completed and its owner lock available."
+    },
+    "wall_seconds": 594.725810541946,
+    "baseline": {
+      "barrier_MAE_eV": 0.11103327014150939,
+      "force_component_RMSE_eV_per_A": 0.09020062019888245,
+      "ts_force_component_RMSE_eV_per_A": 0.13351334272953214
+    },
+    "eligible_for_larger_matched_training": false,
+    "experiments": {
+      "single_head": {
+        "updates": 256,
+        "epochs": 2,
+        "training_seconds": 228.0349518339499,
+        "adapter_parameters": 49248,
+        "adapter_file": "results/v0.11.0/residual_pilot/single_head.pt",
+        "adapter_bytes": 404933,
+        "baseline_multi_metric_pass": false,
+        "metrics": {
+          "barrier_MAE_eV": 0.10972445000559977,
+          "force_component_RMSE_eV_per_A": 0.09051651913264362,
+          "ts_force_component_RMSE_eV_per_A": 0.133825240880153
+        }
+      },
+      "shared_experts": {
+        "updates": 256,
+        "epochs": 2,
+        "training_seconds": 225.78466641600244,
+        "adapter_parameters": 49256,
+        "adapter_file": "results/v0.11.0/residual_pilot/shared_experts.pt",
+        "adapter_bytes": 406969,
+        "baseline_multi_metric_pass": false,
+        "metrics": {
+          "barrier_MAE_eV": 0.11054067513888792,
+          "force_component_RMSE_eV_per_A": 0.09042938155427396,
+          "ts_force_component_RMSE_eV_per_A": 0.13363740387675416
+        }
+      }
+    },
+    "interface_acceptance": {
+      "status": "passed",
+      "verified_at_utc": "2026-11-26T05:45:48.555523+00:00",
+      "scope": "Two MACE-training frames, three optimizer updates for interface acceptance only; not a scientific performance study",
+      "training_frames": [
+        "rxn0010",
+        "rxn0010"
+      ],
+      "optimizer_steps": 3,
+      "invariant_features": 1024,
+      "backbone_features": 2560,
+      "backbone_parameters": 6178198,
+      "trainable_adapter_parameters": 49256,
+      "matched_single_head_parameters": 49248,
+      "losses": [
+        0.00100546058318695,
+        0.0009334039190572365,
+        0.0008511260101096068
+      ],
+      "update_seconds": [
+        0.4597627080511302,
+        0.418788000009954,
+        0.4696987920324318
+      ],
+      "element_gate_gradient_norm": [
+        0.0,
+        3.3347918693819283e-06,
+        6.172696435746947e-06
+      ],
+      "adapter_tensors_changed": 10,
+      "frozen_backbone_unchanged": true,
+      "adapter_reload_passed": true,
+      "finite_difference_force_error_eV_per_A": 3.319407103630212e-07,
+      "rotation_energy_difference_eV": 1.1737029126379639e-08,
+      "rotation_force_max_difference_eV_per_A": 1.4225414901591904e-08,
+      "new_GPU_training_hours": 0,
+      "holdout_labels_evaluated": false,
+      "checkpoint": "results/v0.11.0/residual_interface/numerical-prototype.pt",
+      "checkpoint_bytes": 407054,
+      "scientific_training_submitted": false,
+      "chemical_improvement_established": false
+    }
+  },
+  "new_GPU_training_hours": 0,
+  "new_DFT_labels": 0,
+  "automatic_training_retries": 0,
+  "Mac_prior_queue": "Eight paired arms completed2026-11-26T01:07:10Z; not restarted",
+  "parallel_coverage1024": {
+    "model_file": "models/v0.10.0/mh1_coverage1024_s0.model",
+    "run": {
+      "name": "mh1_coverage1024_s0",
+      "dataset": "coverage1024",
+      "train_size": 8192,
+      "train_file": "data/v0.10.0/coverage1024.extxyz",
+      "seed": 20261116,
+      "model_file": "models/v0.10.0/mh1_coverage1024_s0.model",
+      "model": "models/v0.10.0/mh1_coverage1024_s0.model",
+      "config": "results/v0.10.0/training/mh1_coverage1024_s0/config.yaml",
+      "best_epoch": 11,
+      "trained_epochs": 20,
+      "gradient_steps_estimated_from_logged_epochs": 40960,
+      "started_at_utc": "2026-11-25T18:52:01.408466+00:00",
+      "finished_at_utc": "2026-11-25T22:24:42.147801+00:00",
+      "elapsed_seconds": 12761.071786465996,
+      "heads": [
+        "Default"
+      ],
+      "optional_compiled_export_warning": false
+    },
+    "validation": {
+      "relative_energy_mae_eV": 0.04688330585309359,
+      "relative_energy_rmse_eV": 0.0838840283388811,
+      "barrier_mae_eV": 0.10796622667145736,
+      "force_component_mae_eV_per_A": 0.04505281071630111,
+      "force_component_rmse_eV_per_A": 0.08522260068998004,
+      "ts_region_force_component_rmse_eV_per_A": 0.12542740099455027
+    },
+    "meta_development": {
+      "relative_energy_mae_eV": 0.04008809113842062,
+      "relative_energy_rmse_eV": 0.06615157870010598,
+      "barrier_mae_eV": 0.10076604722529225,
+      "force_component_mae_eV_per_A": 0.04246683254723956,
+      "force_component_rmse_eV_per_A": 0.08016873681623021,
+      "ts_region_force_component_rmse_eV_per_A": 0.11955398106795233
+    },
+    "Mac_acceptance": {
+      "status": "passed",
+      "verified_at_utc": "2026-11-26T06:02:03.599730+00:00",
+      "model_file": "models/v0.10.0/mh1_coverage1024_s0.model",
+      "size_bytes": 56942889,
+      "all_parameters_finite": true,
+      "energy_eV": -6382.751745540383,
+      "force_shape": [
+        16,
+        3
+      ],
+      "force_finite_difference_error_eV_per_A": 3.257330130068681e-07,
+      "scope": "CPU reload/numerical acceptance, not a new accuracy or search benchmark",
+      "holdout_labels_evaluated": false
+    }
+  }
+}

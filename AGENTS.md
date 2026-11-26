@@ -36,6 +36,17 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November25 user requested literature-grounded MoE work and actual advancement.
+  Read `docs/design/soft-mixture.md`. v0.11 external three-member soft mixture is
+  trained/verified: forces improve but barriers worsen; no promotion. Real shared
+  MACE trunk + scalar residual experts passed force-gradient/reload/symmetry checks.
+  `configs/residual-moe-pilot-20261125.json` freezes two matched 49k adapters on
+  64train reactions/512frames,2epochs/256updates each,Mac1thread/nice10/1800s.
+  Both finite trainings/validation completed: singlehead barrier0.109724/force
+  0.090517,sharedexperts0.110541/0.090429 vsglobal0.111033/0.090201.
+  Neither passed force guards; no promotion/retry. Standard gates and real adapter
+  weights are saved. Read docs/reports/v0.11.0-moe; zero new GPU/DFT,holdout unopened.
+
 - November25 user reiterated: prioritize training better models for group results.
   They also require methods beyond scale; v0.10 expands data, not parameters.
   Read `docs/design/training-methods.md`: TS-aware objectives, common-DFT
@@ -51,8 +62,10 @@ instructions still determine the group's assigned slot and submission details.
   reactions,8frames each,20epochs; retain all512 old reactions/4096 exact labels.
   Two first-seed models then two fixed repeats only for a guarded improvement.
   OMEN data preparation passed10:41Z:8192/16384frames, all4096 old labels retained.
-  Native52656/WSL31216/Python67371 is verified waiting on the old owner.lock;
-  it will train after overnight/v09/v07 locks and terminal state. No restart.
+  FreshNovember26 06:02Z:1024 firstseed completed20epochs/best11; validation
+  barrier0.107966/force0.085223/TSforce0.125427 improves all512 metrics. Weight
+  recovered toMac and CPU reload/forceFD3.26e-7 passed. Native growth67371 now
+  trains2048 firstseed,GPU98%/5224MiB; original autoqueue continues,no restart.
   v0.10.0-model-growth prerelease published10:43Z against2bc4491; four assets
   verified, including the completed512-model weight (not an untrained growth model).
   Mac recovery: results/coordination/model-v10/omen-activation-verification.json.
@@ -66,10 +79,9 @@ instructions still determine the group's assigned slot and submission details.
   `configs/roommate-pool-20261124.json`,2GB/fourthreads each,6GiB launch gate,
   max2 workers,24h wall admission then drain; adopt current chain, no restart.
   Runtime is results/overnight-20261124; verify owners before starting/recovering.
-  Mac37519 now has all four random arms completed and four path arms running;
-  November25 07:00Z admission2/nice10 transition verified. Original science
-  drains naturally; old scheduler10062 is retired. r1 remains mac-infra-r1.
-  OMEN61077 completed seed24 and is training path25; seed26 remains pending.
+  Mac all eight paired arms completed2026-11-26 01:07:10Z; no restart.
+  Last OMEN observationNovember25:61077 completed seed24,training path25,
+  seed26 pending; inspect fresh state before new GPU allocation.
   ROOMMATE RESUMED by new user instruction November25 12:13Z after11:16Z pause.
   Exact scheduler29700/conhost21336 restored after command/creation/thread checks;
   Mac collectors13752/13753/13755/16314 resumed, no replacement/restarted science.
@@ -81,13 +93,11 @@ instructions still determine the group's assigned slot and submission details.
   Read configs/roommate-until-0900-20261125.json; never resubmit either owner.
   Receipts: worker queue/user-resume-20261125.json and Mac
   results/coordination/model-v10/*user-resume*. Labels remain quarantined.
-  Export repair deployed: worker_transport.ps1 uses CMD native file redirection,
-  180s timeout; real SSH+stream/exit/timeout tests passed. All3 chain archives now
-  on Mac:0255/3342 independently DFT-verified,4757 failed fixed forwardIRC320.
-  Collectors13752/13753/13755 terminal; queue16314 observes continued force work.
-  Latest14:15:58Z queue records398/pending4212,free6.22GiB; actual g16 observed.
-  Status/export include continuation owner so collector16314 waits final deadline.
-  See docs/reports/local-compute-20261124; v0.7.9-roommate-transfer released.
+  CMD redirection/180s export repair is deployed and actually verified. All3
+  chains recovered:0255/3342 independently DFT-verified,4757 failed forwardIRC320.
+  Chain collectors terminal; last14:15:58Z queue398/pending4212/free6.22GiB.
+  Final01:00Z deadline has since passed; actual finaldrain/collector16314 not
+  reverified in this MoE task. See docs/reports/local-compute-20261124.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
   WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.
@@ -116,8 +126,9 @@ instructions still determine the group's assigned slot and submission details.
   force RMSE0.090547554 eV/A; see `docs/reports/v0.7.0-screening/README.md`.
 - v0.9 finished November24 21:31Z; higher learning rate/force weight did not
   replace the baseline. Read `docs/design/optimizer-study.md`.
-- v0.8 global512 is the best current validation candidate. Development analysis
-  completed November24 18:41Z; specialists/router did not beat it consistently.
+- v0.10 coverage1024 firstseed is now the stronger completed validation candidate;
+  v0.8 global512 remains the frozen specialist/MoE baseline. Original specialist
+  analysis completed November24 18:41Z; router did not consistently beat512.
   Raw results: results/v0.8.0/development_analysis. All holdouts remain unopened.
 - Expert library/router uses meta-development/groupedOOF; each reaction retains
   one expert. Image-by-image switching is not built. See decision-routing.md.
@@ -193,6 +204,7 @@ completed or active study merely to inspect its status.
 
 # Docs Index
 
+- `docs/design/soft-mixture.md`: external gates and matched shared-trunk residual pilot.
 - `docs/design/model-growth.md`: v0.10 wider coverage and guarded seed repeats.
 - `docs/design/training-methods.md`: beyond-scale directions and expert evidence.
 - `docs/design/local-compute-queue.md` fixes the November24 three-host queues.

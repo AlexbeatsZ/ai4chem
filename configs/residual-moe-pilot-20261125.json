@@ -1,0 +1,17 @@
+{
+  "version": "v0.11.0-residual-moe-pilot",
+  "base_model": "models/v0.8.0/mh1_global512_e40.model",
+  "base_model_bytes": 56945307,
+  "train_file": "data/v0.8.0/general4096.extxyz",
+  "training_reactions": 64,
+  "frames_per_reaction": 8,
+  "selection": "Seeded 32 whole reactions from each frozen v0.8 geometry region; all adapters receive all same selected frames. No labels enter reaction selection.",
+  "seed": 20261125,
+  "experiments": ["single_head", "shared_experts"],
+  "architecture": {"width_per_branch": 16, "routed_experts": 2, "shared_branches": 1, "routing": "Atomic number H/C/N/O only; dense evaluation of two residual experts plus always-on shared branch", "backbone": "Frozen global512; retain coordinate gradients through even scalar MACE descriptors", "single_head": "Width48 compared with three width16 branches; 49248 vs49256 trainable adapter parameters on accepted backbone"},
+  "training": {"epochs": 2, "batch_size": 4, "learning_rate": 0.0001, "energy_per_atom_weight": 10.0, "force_component_weight": 1.0, "optimizer": "Adam", "dtype": "float64", "checkpoint": "Final epoch only, retain initial zero-residual baseline; no early selection or retry"},
+  "evaluation": {"role": "validation60", "frames": 600, "meta_development": "Not used for fitting adapters; no additional residual pilot evaluation in this first finite batch", "prospective": "Unopened", "metrics": "Energy curves mixed/optimized before barriers; global and TS Cartesian force RMSE weighted by actual component counts"},
+  "budget": {"host": "Mac", "threads": 1, "nice": 10, "max_wall_seconds": 1800, "new_GPU_training_hours": 0, "new_DFT_labels": 0, "models": 2, "updates_per_model": 256, "automatic_retries": 0},
+  "promotion": "Require shared_experts to lower validation barrier MAE and not worsen global/TS force RMSE vs frozen global512; to attribute any benefit to experts it must also beat the matched single-head adapter. This short pilot only permits larger matched training/repeats, not independent-generalization claims or prospective opening.",
+  "prerequisites": "External soft-mixture pilot and real shared-backbone force-gradient/serialization/symmetry interface acceptance must already be complete. Existing Mac paired queue must be completed and its owner lock available."
+}

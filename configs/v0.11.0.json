@@ -1,0 +1,30 @@
+{
+  "version": "v0.11.0-soft-mixture-pilot",
+  "frozen_at_utc": "2026-11-26T05:36:00+00:00",
+  "purpose": "A bounded external soft-mixture pilot following the literature comparison; not a replication of Cu results or an internally trained sparse MoE.",
+  "members": [
+    {"name": "mh1_global512_e40", "model_file": "models/v0.8.0/mh1_global512_e40.model", "size_bytes": 56945307},
+    {"name": "mh1_replay0_e32", "model_file": "models/v0.8.0/mh1_replay0_e32.model", "size_bytes": 56944983},
+    {"name": "mh1_replay1_e32", "model_file": "models/v0.8.0/mh1_replay1_e32.model", "size_bytes": 56944983}
+  ],
+  "data": {
+    "gate_fit": "meta_development",
+    "development_check": "validation",
+    "gate_fit_reactions": 128,
+    "development_check_reactions": 60,
+    "frames_per_reaction": 10,
+    "roles": "Frozen MACE weights never receive meta labels. The gate fits only the pre-existing meta-development role; grouped OOF is exploratory development. Validation60 was already used for MACE checkpoints and is not a new independent test. Prospective64+64 stays unopened.",
+    "cache": "Reuse paired v0.8.0 prediction extxyz, checking numbers, coordinates, full reference energies/forces and exact frozen reaction identities against the original role HDF5.",
+    "new_DFT_labels": 0
+  },
+  "controls": ["single_general", "uniform", "constant", "composition_softmax"],
+  "features": ["log_atoms", "fraction_H", "fraction_C", "fraction_N", "fraction_O"],
+  "folds": 5,
+  "group": "formula",
+  "seed": 20261125,
+  "objective": {"energy_per_atom_weight": 10.0, "force_component_weight": 1.0, "aggregation": "Equal reactions; ten frames per reaction. Sum of squared per-atom absolute energy error and per-reaction mean Cartesian force error. Same weights mix energy and forces. No energy-only correction or learned energy offsets."},
+  "optimizer": {"max_iterations": 300, "ftol": 1e-12, "gtol": 1e-9, "slope_l2": 0.00001, "coefficient_bound": 8.0},
+  "budget": {"host": "Mac", "threads": 1, "max_wall_seconds": 900, "new_GPU_training_hours": 0, "new_DFT_hours": 0, "max_fits": 12, "automatic_retries": 0, "inference": "Every mixture evaluates all three frozen members. All member bytes and historical training are charged; no free general fallback or sparse-speed claim."},
+  "promotion": "Require lower barrier MAE and non-worse global/TS force RMSE than fixed general512 in both grouped OOF and validation60, and a grouped OOF paired barrier CI upper bound below zero. Passing only permits further cost/search assessment; never automatically replaces the final model or opens prospective.",
+  "sources": ["https://arxiv.org/html/2603.07977v3", "https://arxiv.org/html/2506.23971v2", "https://orca.cardiff.ac.uk/id/eprint/189300/1/s41524-026-02280-x_reference.pdf", "https://arxiv.org/html/2604.26143v1"]
+}
