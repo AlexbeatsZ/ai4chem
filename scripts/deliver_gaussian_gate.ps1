@@ -2,6 +2,8 @@ param([Parameter(Mandatory=$true)][string]$SourceFile,[Parameter(Mandatory=$true
     [string]$WorkerHostName='GUGUGAGA.local',[string]$WorkerHostKeyAlias='192.168.31.41')
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'worker_transport.ps1')
+$SourceFile=$SourceFile.Replace('\','/')
+$QueueDirectory=$QueueDirectory.Replace('\','/')
 foreach($value in @($SourceFile,$QueueDirectory,$WorkerHostName,$WorkerHostKeyAlias)){
     if($value -notmatch '^[A-Za-z0-9_./:\-]+$'){throw 'Unsupported gate transfer identity.'}
 }
