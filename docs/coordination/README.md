@@ -8,16 +8,16 @@
 
 | 节点 | 当前任务 | 权威状态与恢复入口 |
 | --- | --- | --- |
-| OMEN | v0.10覆盖2048最后固定种子20261118训练；首种子及20261117完成 | results/v0.10.0/state.json；WSL67371，原生launcher维持，不重启 |
-| OMEN | TS加权512/4096、8轮两臂先导；通过才完整2048/20轮 | results/ts-weight-20261126；原生owner35116/WSL75451，等待真实growth锁；准备已读回通过 |
-| Mac | 原八臂配对终态；回收/独立标签校准与真实模型重载 | results/coordination/compute-20261126；2048s0/s1已实际重载和forceFD |
-| 室友 Gaussian | 16项校准已终态；新32反应有限5D离路径批次 | offpath32-20261126；280新作业/8复用reference；串行4线程/2GB/4GiB gate/8作业小时；新旧标签隔离 |
-| ROG | 现有分析环境，本轮无新计算 | 不把连接成功当作训练/DFT可用 |
+| OMEN | 原2048s2训练→TS两臂先导/条件完整应用→原预留GPU验收 | growth67371；TS35116/75451；验收25432/75777等待真实锁，验收不与Mac重复 |
+| Mac | 两份真实训练：8480帧20轮公共回放完整对照、544帧4轮公共/新5D适配 | owner69899；worker69904/69905；results/until-0800-20261126；释放slot可接16个固定端点验收 |
+| 室友 Gaussian | 原32反应5D批次继续；1152项新储备等待首批/实际适配gate | 原16128；接续3248；serial4threads/2GB/4GiBgate，00:00Z停接新作业；collector50081/73508 |
+| ROG | 本轮无新计算 | 现有分析环境，不把连接当作训练/DFT可用 |
 
-November26新任务配置和设计为`configs/compute-20261126.json`及
-`docs/design/ts-weight-study.md`。OMEN增长队列优先，新方法等待锁；
-室友先解决reference标签差异，不继续盲目生成6D离路径标签。
-所有prospective参考标签保持封存。
+November26用户将三台任务窗口明确到November27 08:00UTC+8（00:00Z）。
+协议`configs/three-host-until-0800-20261126.json`，设计
+`docs/design/overnight-until-0800.md`。Mac到点后不启新阶段、当前树nice至少10
+自然排空；室友新增reserve停止接新作业并收尾；OMEN原冻结训练自然完成。
+数据扩展门槛与模型晋级不同，gate拒绝/科学失败不以空转填时长。prospective封存。
 
 ## 目录和访问
 

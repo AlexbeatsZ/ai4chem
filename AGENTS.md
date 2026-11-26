@@ -44,117 +44,59 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
-- November26 user extended ALLthreehosts throughUTC+8November27 08:00
-  (=2026-11-27T00:00Z). Read docs/design/overnight-until-0800.md and
-  configs/three-host-until-0800-20261126.json. PreserveOMENgrowth/TSowners.
-  Macowner69899/two4threadworkers69904+69905actuallytraining:
-  2048s0warmstart8480frame/20epochpublicreplaycontrol,
-  plus544frame/4epochpublic-vs-new5Dlabelpilot; strictguardadmitsfulladaptation.
-  Roommatenative3248owns1152unique5Dreserve(next128oldtrainreactions),
-  waitsnormaloffpath32drain
-  andactualMacpilotgate; stopadmission00:00Z,draincurrent. No retries/auto merge.
-  Macafter00:00Znonewstages,exactworker treesnice>=10,naturallydrain. Free
-  slotsbeforecutoffcanrun16frozen512/2048metaendpointsearchacceptanceunits.
-  OMENnewacceptanceownerwaitsTSnormalcompletion,then<=3hreservedGPUadmission
-  onanother8metareactions(disjointfromMac),16units,deadline00:00Z.
-
-- November26 user renewed roommate/OMEN assignments. Read
-  `docs/design/ts-weight-study.md`, `configs/compute-20261126.json`.
-  OMEN2048 s0/s1 completed: validationbarrier0.106280/0.103625,
-  force0.082694/0.082712; originalgrowth67371 runs s2, do not restart.
-  New native35116/WSL75451 TS-weight owner waits growth lock/terminal; preparation
-  passed512+2048 officialloader/readback14:26Z. Then512x8/8epoch uniform vs
-  normalizedTSx2 pilot; only guarded improvement admits2048x8/20epoch fullmodel.
-  Roommate old39768 drained01:04:57Z:1486outcomes/1483rawforce labels,
-  101996.62worker seconds. Mac recovered34868884byte/13591entryZIP CRCpassed.
-  Eight6Dreferences differ frompubliclabels; quarantine stays. New16job5D/grid
-  calibration30184 completed16/16at14:34:53Z,875.95s; all3Nalignmentpassed.
-  Newoffpath32batch freezes32oldtrainreactions/2885Dframes(8refsreused/280new),
-  serial4threads/2GB/4GiBgate/8nativehours, native16128; labelsquarantined.
-  Macfinite12hcollector50081 automaticallyreturns/alignmentonly, no modelmerge.
-  Readconfigs/offpath32-20261126.json before furtherlabel/adapterdecisions.
-  Both2048completedweights recoveredtoMac; energy/forces/forceFD<=3.30e-7passed.
-  Actualreceipts:results/coordination/compute-20261126; noholdout opening/retries.
-
-- November25 user reiterated: prioritize training better models for group results.
-  They also require methods beyond scale; v0.10 expands data, not parameters.
-  Read `docs/design/training-methods.md`: TS-aware objectives, common-DFT
-  AIMNet adaptation, targeted training-side labels, then EMA/LoRA controls.
-  November25 further clarified: try the candidate methods in bounded pilots,
-  reserve compute for applying winners to actual models; initial GPU allocation
-  60% complete training/application,<=25% exploration,~15% final acceptance.
-  Debit already-committed queue cost first; do not launch every method at scale.
-  v0.8 seven models/analysis are complete. Global512 validation60 barrier MAE
-  0.111033270eV, force RMSE0.090200620eV/A; v0.9 completed all five new runs
-  and retained lr1e-4/force1. Wider reaction coverage is the next training priority.
-  Read `docs/design/model-growth.md`, `configs/v0.10.0.json`: nested1024/2048
-  reactions,8frames each,20epochs; retain all512 old reactions/4096 exact labels.
-  Two first-seed models then two fixed repeats only for a guarded improvement.
-  OMEN data preparation passed10:41Z:8192/16384frames, all4096 old labels retained.
-  November26 fresh growth completed2048s0/s1 and now runs s2; see new TS
-  task above. Earlier1024 standardweight CPUreload/forceFD3.26e-7 passed.
-
-- November24 paired queues are terminal on Mac; OMEN growth follows its completed
-  queue. Seeds24–26OMEN/27–30Mac remain assigned; originalmember01–05ZIPs must
-  not be redistributed. Three roommate chains recovered:0255/3342 independently
-  DFTverified,4757 failed fixedforwardIRC320; no science retry. Olderpool29700/
-  continuation39768 are terminal; never resubmit them. Currentrawforce/calibration
-  status is above; labels remain quarantined. Recoveryreceipts live under
-  results/coordination and docs/reports/local-compute-20261124.
-
-- Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
-  WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.
-  See mac-qc.md for paths, signatures and process-local environment.
-- User requested OMEN validation of cloud deployment first, then a user-provided
-  cloud server test, then five-member task distribution. Do not create/buy a server
-  or dispatch to other humans/cloud yet. Three existing local nodes are separately
-  authorized on November24. Read `docs/design/cloud-workers.md`.
-- Native Linux Gaussian/user-provided cloud acceptance remain pending. OMEN ML
-  readiness passed isolated lock/CUDA force difference/twoepochs/reload/native
-  unattended return; Mac reloaded it. See docs/reports/cloud-ml-readiness/README.md.
-- Five self-contained group-training packages are now reserved to local queues;
-  no other-human/cloud dispatch. Linux: bash member-NN/start.sh; WSL requires
-  scripts/launch_training_bundle.ps1 native owner, generic detach is rejected.
-- Read `docs/design/model-improvement.md` and `decision-routing.md` before changes.
-- v0.7 freezes 256 MACE train reactions, 60 validation, 128 new meta-development,
-  and prospective holdouts of 64 train + 64 val reactions. Concrete IDs/endpoint
-  records are in `configs/v0.7.0_partitions.json`, frozen before new training.
-- No prospective holdout labels are opened by the screening runner. The old 287
-  test reactions are already used; never call them unseen or fit the new router on them.
-- All13 pinned train shards are on OMEN; paths require complete contiguous fid
-  histories across the full source. v0.7 four controlled arms retain old anchors;
-  only random4096/path4096 share label/epoch ceilings. Details remain in design.
-- v0.7 four arms completed 40 actual epochs each and validation60 at 03:44Z
-  November24 (Nov23 local). random4096 selected, barrier MAE0.125968657 eV and
-  force RMSE0.090547554 eV/A; see `docs/reports/v0.7.0-screening/README.md`.
-- v0.9 finished November24 21:31Z; higher learning rate/force weight did not
-  replace the baseline. Read `docs/design/optimizer-study.md`.
-- v0.10 coverage1024 firstseed is now the stronger completed validation candidate;
-  v0.8 global512 remains the frozen specialist/MoE baseline. Original specialist
-  analysis completed November24 18:41Z; router did not consistently beat512.
-  Raw results: results/v0.8.0/development_analysis. All holdouts remain unopened.
-- Expert library/router uses meta-development/groupedOOF; each reaction retains
-  one expert. Image-by-image switching is not built. See decision-routing.md.
-- OMEN per-version state/official training logs and results/coordination/model-v*/
-  identify owners. Mac decision-models environment supports MLX/MPS analysis;
-  installation, real inference and chemistry benefit are distinct acceptance gates.
-- TabPFN/TabICL MPS and jevmlx MLX inference passed. Old-pool meta128 showed no
-  force-safe oracle gain; see docs/reports/v0.7.0-routing/README.md.
-- Eight experts/four families now evaluated: AIMNet2/rxn, ANI and Orb were added.
-  Read `docs/design/expert-diversity.md`; the new grouped pilot shows no deployed
-  multi-metric routing gain. All24 endpoint search units are complete: oldMACE
-  strict1/8,AIMNet4/8,Orb0/8; MACE/AIMNet successes are disjoint. This does not
-  compare the new512 model or establish a DFT population rate. Static specialist
-  systems also lost to general512; see docs/reports/v0.8.0-specialization.
-- Roommate AIMNet/rxn8694 fullGaussian independently passed: electronic barrier
-  2.625419123eV vs MLIP2.044812811eV; one post-hoc candidate. Owner5232 terminal,
-  no rerun. See docs/reports/v0.7.2-diversity-dft/README.md for raw evidence.
-- v0.6 r2 is terminal: Gaussian9456 passed, Mac failed with negative endpoint
-  curvature/exhausted backwardIRC. docs/reports/v0.6.0-pilot.md is post-hoc, not a cohort.
-- Mac rxn0666 positive-control full chain and four engine tolerances passed.
-- Host access/recovery lives in synchronized `~/.agents/ai4chem--adaptive-ts-search/AGENTS.md`.
-  No live coordinators remain from v0.6. ROG availability was not accepted.
-- Source float32 export equivalence and foundation-pretraining overlap are unresolved.
+- November26 user authorized useful tasks on ALLthreehosts throughUTC+8
+  November27 08:00 (=2026-11-27T00:00Z). Read
+  docs/design/overnight-until-0800.md and
+  configs/three-host-until-0800-20261126.json. No existing science restart.
+- OMEN originalgrowth67371 trains2048s2; s0/s1 completed20epochs, validation
+  barrier0.106280/0.103625, force0.082694/0.082712. Bothweights recoveredMac;
+  energy/forces/forceFD<=3.30e-7 passed. No best-repeat-seed selection.
+  Native35116/WSL75451 TS-study waits growth lock/terminal:512x8frames/8epochs
+  uniform vs normalizedTSx2; strictguardadmits2048x8/20epoch fullmodel.
+  Native25432/WSL75777 acceptance waits normalTSterminal,then<=3hreservedGPU
+  admission:16units on8othermetaendpoints,disjointfromMac; no newadmission00:00Z.
+- Mac actualowner69899, workers69904/69905 each4threads: fromfrozen2048s0,
+  8480publicreplayframes/20epochs completecontrol plus544frames/4epochs public
+  vsGaussian5D adaptationpilot. Realtraining/initialvalidation/epochs observed.
+  Strictcommonvalidationguardadmitsmatched8480frame/20epoch adaptation.
+  Slotsreleasedbefore00:00Zcanrun16fixed512/2048metaendpointsearchunits.
+  After00:00Znonewstages; existingexactworkertreesnice>=10/naturallydrain.
+  State/results:results/until-0800-20261126. Task-onlycaffeinate69900.
+- Roommate old29700/39768 terminal; calibration30184 completed16/16,875.95s,
+  all3Nforce/geometryalignmentpassed.5D reduces6D-public discrepancy but residual
+  numericdifferencesremain. OldZIP34868884bytes/13591entries recoveredCRCpassed.
+  Native16128 runs frozenoffpath32batch:2885Dframes=8reusedrefs+280newjobs,
+  serial4threads/2GB/4GiBgate/max8nativehours; collector50081return+alignment.
+  Newnative3248 holds1152unique5Dreserve(next128oldtrainreactions),waitsnormal
+  firstbatchdrain+actualMacpilotgate. Gateonlypermitsonefinite dataextension,
+  notmodelpromotion. Deadline00:00Zthen drain,3failurestop/no retries.
+  Collector73508 observesnewreserve12h. No automaticmergedataset/full512expansion.
+  Readconfigs/offpath32-20261126.json andoffpath128-until-0800-20261126.json.
+- User prioritizes better deliverable models AND methods beyond scale. Starting
+  OMENGPUallocation60%completeapplication/repeats,<=25%exploration,~15%acceptance;
+  debitcommittedqueuefirst. Readtraining-methods.md,model-growth.md,ts-weight-study.md.
+  v0.8sevenmodels/v0.9fivecontrols complete; global512 remainsfrozenMoEbaseline
+  (validationbarrier0.111033270,force0.090200620,TS0.133513). v0.10expandsreaction
+  coverage,notparameters. TS/relative-energy/AIMNet/EMA/LoRA areseparatemethods.
+- November24pairedqueues terminalonMac; OMENgrowthfollowscompletedoldqueue.
+  Seeds24–26OMEN/27–30Mac remainassigned, member01–05ZIPs mustnotredistribute.
+  Roommate0255/3342 DFTverified,4757 failedfixedforwardIRC320; no scienceretry.
+  v0.6terminal;9456Gaussianpassed/Macfailed,0666positivecontrolpassed.
+- v0.7 roles remain256train/60validation/128meta plusprospective64train+64val.
+  Allprospective labels stayunopened untilfinalmodel/evaluationbudgetfreeze.
+  Old287testreactions alreadyused; nevercallunseen orfitnewrouteronthem.
+  Source13shards requirecompletecontiguousfid histories; baseline4096labels retained.
+  v0.7random4096 selected; v0.8specialists/router andv0.11MoE didnotjointlybeat
+  strongbaseline. Routerkeepsonemodelperreaction; noimagewisehardswitching.
+- Cloudacceptance andotherhuman dispatch remainseparategates. Do notcreate/buy
+  serverorredistributereservedmemberbundles. Existinglocal3nodesauthorized.
+  OMENMLreadiness passed; nativeLinuxGaussian/userprovidedcloudunaccepted.
+  Mac Gaussian16A.03/GaussView6.0.16 installed/signed; waterOpt/Freq/logdisplay
+  passed,GUI submission/TS/IRC/concurrencyunverified. Seecloud-workers.md/mac-qc.md.
+- Hostaccess/recovery: synchronized~/.agents/ai4chem--adaptive-ts-search/AGENTS.md.
+  Actualprivate receipts:results/coordination/compute-20261126 and
+  results/until-0800-20261126; ownersandscientificcompletionaredistinct.
+  Foundationpretrainingoverlap andpublicfloat32/originalHDF5equivalenceunresolved.
 
 # Build / Run / Test
 
