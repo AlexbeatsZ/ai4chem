@@ -44,6 +44,18 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November26 user renewed roommate/OMEN assignments. Read
+  `docs/design/ts-weight-study.md`, `configs/compute-20261126.json`.
+  OMEN2048 s0/s1 completed: validationbarrier0.106280/0.103625,
+  force0.082694/0.082712; originalgrowth67371 runs s2, do not restart.
+  New TS-weight owner waits growth lock/terminal, then512x8/8epoch uniform vs
+  normalizedTSx2 pilot; only guarded improvement admits2048x8/20epoch fullmodel.
+  Roommate old39768 drained01:04:57Z:1486outcomes/1483rawforce labels,
+  101996.62worker seconds. Mac recovered34868884byte/13591entryZIP CRCpassed.
+  Eight6Dreferences differ frompubliclabels; quarantine stays. New16job5D/grid
+  calibration serial4threads/2GB,4GiBgate,2nativehours,owner30184 actuallyactive.
+  Actualreceipts:results/coordination/compute-20261126; noholdout opening/retries.
+
 - November25 user reiterated: prioritize training better models for group results.
   They also require methods beyond scale; v0.10 expands data, not parameters.
   Read `docs/design/training-methods.md`: TS-aware objectives, common-DFT
@@ -59,27 +71,16 @@ instructions still determine the group's assigned slot and submission details.
   reactions,8frames each,20epochs; retain all512 old reactions/4096 exact labels.
   Two first-seed models then two fixed repeats only for a guarded improvement.
   OMEN data preparation passed10:41Z:8192/16384frames, all4096 old labels retained.
-  FreshNovember26 06:02Z:1024 firstseed completed20epochs/best11; validation
-  barrier0.107966/force0.085223/TSforce0.125427 improves all512 metrics. Weight
-  recovered toMac and CPU reload/forceFD3.26e-7 passed. Native growth67371 now
-  trains2048 firstseed,GPU98%/5224MiB; original autoqueue continues,no restart.
-  v0.10.0-model-growth prerelease published10:43Z against2bc4491; four assets
-  verified, including the completed512-model weight (not an untrained growth model).
-  Mac recovery: results/coordination/model-v10/omen-activation-verification.json.
+  November26 fresh growth completed2048s0/s1 and now runs s2; see new TS
+  task above. Earlier1024 standardweight CPUreload/forceFD3.26e-7 passed.
 
-- November24 three-host queues: read docs/design/local-compute-queue.md and
-  configs/overnight-20261124.json. Seeds24–26OMEN/27–30Mac remain assigned;
-  original member01–05ZIPs must not be redistributed. Runtime results/overnight-20261124.
-  Mac eight paired arms completed2026-11-26 01:07Z; OMEN growth subsequently active.
-  Roommate pool29700 and continuation39768 were last verifiedNovember25 14:15Z;
-  same max2/fourthreads/2GB each/6GiB launch gate,398terminal/4212pending.
-  Final admissionNovember26 01:00Z (=09:00UTC+8) has passed; finaldrain/collector16314
-  not reverified here. Never resubmit either owner; inspect
-  configs/roommate-until-0900-20261125.json and actual worker identity/state first.
-  CMD-redirection/180s export repair actually passed. Three chains recovered:
-  0255/3342 independently DFT-verified,4757 failed forwardIRC320; no science retry.
-  All new force labels remain quarantined. See docs/reports/local-compute-20261124
-  and synchronized task log for prior user pause/resume and exact recovery receipts.
+- November24 paired queues are terminal on Mac; OMEN growth follows its completed
+  queue. Seeds24–26OMEN/27–30Mac remain assigned; originalmember01–05ZIPs must
+  not be redistributed. Three roommate chains recovered:0255/3342 independently
+  DFTverified,4757 failed fixedforwardIRC320; no science retry. Olderpool29700/
+  continuation39768 are terminal; never resubmit them. Currentrawforce/calibration
+  status is above; labels remain quarantined. Recoveryreceipts live under
+  results/coordination and docs/reports/local-compute-20261124.
 
 - Mac Gaussian16A.03/GaussView6.0.16: ~/.local/opt/gaussian16, signed GUI entry.
   WaterOpt/Freq/log display passed; GUI submission/TS/IRC/concurrency unverified.
@@ -186,6 +187,7 @@ completed or active study merely to inspect its status.
 
 # Docs Index
 
+- `docs/design/ts-weight-study.md`: finite TS objective pilot/application and DFT label calibration.
 - `docs/design/soft-mixture.md`: external gates and matched shared-trunk residual pilot.
 - `docs/design/model-growth.md`: v0.10 wider coverage and guarded seed repeats.
 - `docs/design/training-methods.md`: beyond-scale directions and expert evidence.

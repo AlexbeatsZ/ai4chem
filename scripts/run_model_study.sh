@@ -13,6 +13,8 @@ case "${1:-study}" in
   optimizer-study) entry=run_optimizer_study.py ;;
   growth-prepare) exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u run_model_growth.py --prepare-only ;;
   growth) entry=run_model_growth.py ;;
+  ts-weight-study) entry=run_ts_weight_study.py ;;
+  ts-weight-prepare) exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u run_ts_weight_study.py --prepare-only ;;
   *) exit 2 ;;
 esac
 exec /home/meta/.local/opt/miniforge3/bin/mamba run -n ai4chem python -u "$entry"

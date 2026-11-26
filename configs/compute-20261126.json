@@ -1,0 +1,53 @@
+{
+  "version": "compute-20261126",
+  "frozen_at_utc": "2026-11-26T14:19:32.629310+00:00",
+  "authorization": "November26 user: continue assigning computation to roommate and OMEN.",
+  "roommate": {
+    "stage": "calibration",
+    "reference_reactions": [
+      "rxn0448",
+      "rxn2761",
+      "rxn2224",
+      "rxn2323",
+      "rxn3705",
+      "rxn3923",
+      "rxn6763",
+      "rxn5270"
+    ],
+    "basis": "explicit5D/7F",
+    "grids": [
+      "UltraFine",
+      "SuperFineGrid"
+    ],
+    "jobs": 16,
+    "workers": 1,
+    "threads": 4,
+    "memory_GB": 2,
+    "admission_free_GiB": 4,
+    "budget_native_job_hours": 2,
+    "next": "Independent alignment decision before any off-path expansion; do not merge existing6D labels."
+  },
+  "omen": {
+    "predecessor": "v0.10.0 final2048seed, never restart",
+    "pilot": {
+      "reactions": 512,
+      "labels": 4096,
+      "epochs_per_arm": 8,
+      "arms": [
+        "uniform",
+        "ts_weighted"
+      ],
+      "ts_multiplier": 2,
+      "normalization": "Mean frame weight1 separately per reaction; endpoints retained.",
+      "seed": 20261116
+    },
+    "promotion": "Weighted pilot must improve barrier and not worsen whole-path/TS force versus matched uniform pilot or frozen512 baseline. Then one2048/16384-label20epoch full weighted model, seed20261116, no repeat/retry.",
+    "wait_hours": 72,
+    "estimated_remaining_growth_GPU_hours": 8,
+    "estimated_pilot_GPU_hours": 1.5,
+    "conditional_application_GPU_hours": 8,
+    "reserved_acceptance_GPU_hours": 3,
+    "holdout_labels_evaluated": false
+  },
+  "automatic_retries": 0
+}
