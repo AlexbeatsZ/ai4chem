@@ -48,6 +48,24 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November27 next compute: user authorized Mac/OMEN/existing roommate. OMEN native
+  owner26044 / WSL81448 runs `run_equal_budget_growth.py` once, from original
+  MH1, seed20261116, 4096 reactions x4 labels x20 epochs/batch4 =81920 updates.
+  Nested reaction identities; same label count as2048x8, not identical frame
+  selection. Output results/equal-budget-20261127; development validation only.
+- Mac completed three-seed analysis of288 quarantined DFT frames /128 pairs:
+  Spearman0.510652, top-quartile force error0.265724 vs random0.198212eV/A;
+  direction HVP RMSE means1.130644/1.067148/1.072549eV/A². No training merge.
+  Mac95088 prepares16 train-side reactions/short NEB trajectories,32 high
+  disagreement and32 random arm slots (overlap reused), no prospective data.
+  Mac95806 gates a single native serial DFT batch after the old queue and
+  roommate40712 (unadmitted rxn0255 candidate) drain; admission ends
+  2026-11-27T18:32:50Z, 4 job-hour cap, no retry. Actual state paths
+  results/active-learning-pilot-20261127 and results/active-learning-dispatch-20261127.
+  Raw returns must be aligned, and matched training protocol frozen before merge.
+  Roommate previous IRC stays intact. Source relay status verified; active pilot
+  transfer/launch not yet exercised. Local transport config stays git-ignored.
+
 - Latest user explicitly requested another ~4h on all three nodes after the old
   November27 08:00UTC+8 cutoff. New admission deadline is November27 12:20UTC+8
   (=2026-11-27T04:20Z). Read docs/design/four-hour-continuation.md and
