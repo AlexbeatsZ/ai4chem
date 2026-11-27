@@ -5,8 +5,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'results/active-learning-dispatch-20261127'
 PILOT=ROOT/'results/active-learning-pilot-20261127'
-RELAY='meta@100.113.70.121'
-RELROOT='C:/Users/Meta/source/repos/ai4chem'
+CONFIG=json.loads((ROOT/'results/coordination/active-pilot-private.json').read_text())
+RELAY=CONFIG['relay_ssh']
+RELROOT=CONFIG['relay_root']
 def main():
     OUT.mkdir(parents=True,exist_ok=False)
     deadline=datetime.now(timezone.utc)+timedelta(hours=12)
@@ -39,7 +40,7 @@ def main():
             save(status='dispatching',unique_labels=len(q['force_items']))
             receipt=relay('Dispatch');save(status='submitted',receipt=receipt)
             # Existing collector uses the verified relay transport and raw ZIP CRC.
-            collector=[os.sys.executable,str(ROOT/'scripts/collect_local_queue.py'),'--relay-ssh',RELAY,'--relay-root',RELROOT,'--worker-root','C:/Users/Boywe/Project/Workspaces/ai4chem-worker','--queue','C:/Users/Boywe/Project/Workspaces/ai4chem-worker/results/active-learning-pilot-20261127','--output',str(OUT/'return'),'--worker-host-name','GUGUGAGA.local','--worker-host-key-alias','192.168.31.41','--max-hours','12']
+            collector=[os.sys.executable,str(ROOT/'scripts/collect_local_queue.py'),'--relay-ssh',RELAY,'--relay-root',RELROOT,'--worker-root',CONFIG['worker_root'],'--queue',CONFIG['worker_root']+'/results/active-learning-pilot-20261127','--output',str(OUT/'return'),'--worker-host-name',CONFIG['worker_host_name'],'--worker-host-key-alias',CONFIG['worker_host_key_alias'],'--max-hours','12']
             with (OUT/'collector.log').open('w') as log:subprocess.Popen(collector,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             return
         save(status='admission_deadline_reached')
