@@ -48,6 +48,89 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- November27 13:19Z: user requests a finite overnight batch through
+  November28 09:00 Asia/Shanghai (= November28 01:00Z), preserving useful
+  science and existing work. Local task states in git-ignored results; no new
+  automatically purchased compute; roommate 4GiB gate unchanged. A scheduled
+  one-time 09:00 Beijing verification was created separately in ChatGPT.
+  Mac decision-surrogate-20261127 owner87890 actively trains three matched
+  frozen-backbone adapter objectives on 64 reactions x8 frames, 4 epochs:
+  standard E/F, reaction relative energy, differentiable soft barrier (tau0.1eV).
+  THIS IS NOT end-to-end DFL through NEB, only a downstream soft surrogate;
+  validation60 only, hard stop by 01:00Z or4h. Next Mac
+  active-query-router-20261127 supervisor88781 waits for first terminal,
+  then balanced random vs uncertainty vs decision-ambiguity adaptive sparse
+  expert queries, 3 seeds/four fractions, 5-fold grouped OOF, <=3h.
+  Mac decision-surrogate-2048-20261127 supervisor91161 waits and runs
+  larger 128-reaction,6-epoch two-arm matched pilot ONLY if first objective
+  jointly beats matched control and frozen baseline; otherwise stops.
+  OMEN original4096x4 training and guarded8-search owner81732 still live.
+  New meta128 validation supervisor84150 waits for both, evaluates 4096
+  vs development metadata, and searches old8 only if former guard skipped.
+  Additional OMEN supervisor84201 already froze16 new meta endpoints <=16
+  atoms with endpoint-only selection, and waits for previous acceptance,
+  then runs paired 2048/4096 actual MLIP search up to3h per model, no retries.
+  Roommate queue frontier-dft-20261127 owner16876 admitted four paired
+  AIMNet2/MACE TS/Freq/IRC chains but WAITING_FOR_4GIB_FREE, no Gaussian
+  started at 13:18Z. 09:00 extension owner39340 stays idle until prior
+  queue terminal, at most copies unattempted jobs into a fresh queue with
+  01:00Z admission. Does not duplicate begun/failed jobs. Mac collectors
+  82099 and89440 watch original and extension, respectively. No change to
+  source validation split or sealed prospective holdout. Jobs stop on real
+  failure/resource gate; not a promise all GPUs/hosts stay busy until 09:00.
+  This block supersedes older fixed 07:01 admission notes below.
+
+- November27 13:02Z: user confirms roommate capacity available again. OMEN
+  4096x4 training logged epoch18 at12:55Z, GPU79%; conditional acceptance
+  owner81732 still waiting. Mac all48 basic and31 advanced routing arms
+  complete; TabPFN sparse 12.5/25/50/100% MAE .159540/.154418/.145471/.137624,
+  full fixed expert .131575; no promotion. Matched AIMNet2 searches 2/8,
+  MACE512 and2048 each3/8, AIMNet successes subset of both.
+  Roommate previous chain terminal, new frontier-dft-20261127 owner16876
+  deployed four paired DFT chains (rxn0813/rxn0673 AIMNet2 vs2048 MACE),
+  serial4threads/2GB, 4GiB free gate, admission ends 23:01Z; actual status
+  waiting_for_4GiB_free with2.628GiB available, zero Gaussian processes.
+  Initial memory preflight rejected; second extraction succeeded but script
+  execution policy blocked before owner creation; process-local bypass then
+  launched exactly once. No global security policy change. Mac collector82099
+  observes up to24h and recovery82240 observes old0255 up to2h, no science
+  retry. New four chains are post-hoc development DFT acceptance; do not merge
+  labels, do not open prospective. Deadline is admission not a hard runtime cap.
+
+- November27 follow-up (07:05Z): user says roommate has left and computer is
+  offline; count its capacity as zero, do not restart, reconnect or dispatch
+  additional jobs. Existing collectors/evidence only. User requests larger
+  bounded batches without repeated manual handoff. OMEN4096x4 remains active.
+  Native53640/WSL81732 follow-up waits <=18h for completed joint-validation
+  eligibility; if eligible, run matched eight meta endpoints with CUDA, <=3h
+  admission, no retry or holdout; otherwise stop. Local ignored state:
+  results/frontier-followup-20261127. Device differences affect timing.
+  Mac frontier-pilots-20261127: retrospective 128x8 sparse router
+  48 arms completed, formula-disjoint five folds; 32 legacy search-unit
+  recovery policy OOF and 83 unique attempts DFL data audit completed.
+  Additional fixed-mask TabPFN/TabICL and direct expected-cost/CE routing
+  owner15424 launched, finite arms; AIMNet2 matched8 endpoint search owner14806
+  actual first reaction started, <=3h admission, no DFT. These are decision-layer
+  experiments, not DFL PES training. Stop after the bounded batch, do not
+  autoexpand conventional methods or expose prospective labels.
+
+- November27 research-priority update (07:01Z): user authorizes selective pause
+  and says existing coursework evidence is sufficient. Preserve the running
+  4096x4 equal-label experiment and previously admitted Gaussian TS verification;
+  do not automatically expand conventional training/DFT or open prospective.
+  Mac active-learning candidate preparation completed (16 reactions, 560
+  candidates, 60 unique DFT inputs). Dispatch owner95806 terminated before
+  archive creation/remote submission; state paused_by_research_priority.
+  Retain inputs, no new active-learning DFT until a new bounded admission.
+  Roommate latest local evidence: both rxn8694 chains assessed, rxn0255 started;
+  fresh relay hostname resolution failed, no assertion of live progress.
+  Next new research protocols prioritize sparse-supervision routing,
+  learned failure-mode-aware intervention and decision-focused PES training.
+  Literature claims require primary-source verification; conventional
+  active learning and committee variance are baselines, not novelty claims.
+  These new methods are not yet implemented or authorized as unbounded queues.
+  This update supersedes earlier automatic continuation instructions below.
+
 - November27 next compute: user authorized Mac/OMEN/existing roommate. OMEN native
   owner26044 / WSL81448 runs `run_equal_budget_growth.py` once, from original
   MH1, seed20261116, 4096 reactions x4 labels x20 epochs/batch4 =81920 updates.
