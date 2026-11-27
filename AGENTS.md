@@ -42,6 +42,10 @@ instructions still determine the group's assigned slot and submission details.
   newGPU/DFT0. Read docs/design/soft-mixture.md and docs/reports/v0.11.0-moe.
   v0.11.0-moe-pilot release8258281 verified8assets,including1024standardweight.
 
+- v0.14.0-four-hour-compute prerelease published frome3f654a:5assets verified,
+  sourceZIP downloadCRC/config/entrypoint match and2048s2actualCPUreload passed.
+  Includes completed thirdrepeatweight; EMA/DFT stillrunning, not completedclaims.
+
 # Active Work
 
 - Latest user explicitly requested another ~4h on all three nodes after the old
