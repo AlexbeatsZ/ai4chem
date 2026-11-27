@@ -34,6 +34,8 @@ def main():
     for name in ('relay-ssh','relay-root','worker-root','worker-job','protocol','output'):
         parser.add_argument('--'+name, required=True)
     parser.add_argument('--worker-ssh', default='ai4chem-worker')
+    parser.add_argument('--worker-host-name')
+    parser.add_argument('--worker-host-key-alias')
     parser.add_argument('--max-hours', type=float, default=12)
     args = parser.parse_args()
     for value in (args.relay_ssh,args.relay_root,args.worker_root,args.worker_job,args.worker_ssh):
@@ -59,6 +61,9 @@ def main():
             'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',
             args.relay_root+'/scripts/relay_gaussian_chain.ps1','-Action',action,
             '-WorkerRoot',args.worker_root,'-JobDirectory',args.worker_job,'-WorkerSsh',args.worker_ssh]
+        for flag, value in (('-WorkerHostName', args.worker_host_name), ('-WorkerHostKeyAlias', args.worker_host_key_alias)):
+            if value:
+                command += [flag, value]
         result = subprocess.run(command,capture_output=True,text=True,timeout=240 if action=='Export' else 45)
         if result.returncode:
             raise RuntimeError(result.stderr or result.stdout)

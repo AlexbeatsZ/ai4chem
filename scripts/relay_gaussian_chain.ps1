@@ -2,7 +2,9 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('Status','Export','Cleanup')][string]$Action,
     [Parameter(Mandatory=$true)][string]$WorkerRoot,
     [Parameter(Mandatory=$true)][string]$JobDirectory,
-    [string]$WorkerSsh = 'ai4chem-worker'
+    [string]$WorkerSsh = 'ai4chem-worker',
+    [string]$WorkerHostName = '',
+    [string]$WorkerHostKeyAlias = ''
 )
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
@@ -10,19 +12,20 @@ $ErrorActionPreference = 'Stop'
 foreach($value in @($WorkerRoot,$JobDirectory,$WorkerSsh)) {
     if($value -notmatch '^[A-Za-z0-9_./:\\@-]+$') { throw 'Use simple space-free worker paths and SSH identity.' }
 }
-function Remote([string]$Script,[switch]$RemoveArchive,[switch]$StreamOutput) {
-    $arguments = @('-n','-T','-o','BatchMode=yes','-o','ConnectTimeout=10',$WorkerSsh,
+foreach($value in @($WorkerHostName,$WorkerHostKeyAlias)) {
+    if($value -and $value -notmatch '^[A-Za-z0-9_.-]+$') { throw 'Unsupported worker host override.' }
+}
+$transport = @('-o','BatchMode=yes','-o','ConnectTimeout=10')
+if($WorkerHostName) { $transport += @('-o',('HostName='+$WorkerHostName)) }
+if($WorkerHostKeyAlias) { $transport += @('-o',('HostKeyAlias='+$WorkerHostKeyAlias)) }
+function Remote([string]$Script,[switch]$RemoveArchive) {
+    $arguments = @('-n','-T')+$transport+@($WorkerSsh,
         'powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',
         ($WorkerRoot+'/scripts/'+$Script),'-JobDirectory',$JobDirectory)
     if($RemoveArchive) { $arguments += '-RemoveArchive' }
-    if($StreamOutput) {
-        & ssh @arguments
-        if($LASTEXITCODE -ne 0) { throw "Worker command failed: $Script" }
-        return
-    }
     return (Invoke-WorkerCommand -Executable (Get-Command ssh -CommandType Application).Source -Arguments $arguments)
 }
-if($Action -eq 'Status') { Remote 'status_gaussian_chain.ps1' -StreamOutput; return }
+if($Action -eq 'Status') { Remote 'status_gaussian_chain.ps1'; return }
 if($Action -eq 'Cleanup') { Remote 'export_gaussian_chain.ps1' -RemoveArchive; return }
 $project = Split-Path -Parent $PSScriptRoot
 $jobName = Split-Path -Leaf $JobDirectory
@@ -40,8 +43,7 @@ $archive = Join-Path $directory 'return.zip'
 if(-not (Test-Path -LiteralPath $archive)) {
     $partial = Join-Path $directory 'return.partial.zip'
     $source = $WorkerSsh+':'+$exported.archive.Replace('\','/')
-    & scp -q -o BatchMode=yes -o ConnectTimeout=10 $source $partial
-    if($LASTEXITCODE -ne 0) { throw 'Worker evidence relay failed; receipt retained for retry.' }
+    Invoke-WorkerCommand -Executable (Get-Command scp -CommandType Application).Source -Arguments (@('-q')+$transport+@($source,$partial)) | Out-Null
     Move-Item -LiteralPath $partial -Destination $archive
 }
 if((Get-Item -LiteralPath $archive).Length -ne $exported.bytes) { throw 'Relayed archive size differs from export receipt.' }

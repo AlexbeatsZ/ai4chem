@@ -77,6 +77,9 @@ def train(experiment, protocol, manifest, *, output_root=None, manifest_path=Non
         "model_dir": str(model_path.parent), "checkpoints_dir": str(directory / "checkpoints"),
         "log_dir": str(directory / "logs"), "results_dir": str(directory / "metrics"),
     }
+    for key in ("ema", "ema_decay"):
+        if key in settings:
+            config[key] = settings[key]
     completed = next((entry for entry in manifest if entry["name"] == name), None)
     config_path = directory / "config.yaml"
     if completed:

@@ -1,0 +1,54 @@
+{
+  "version": "four-hours-20261127",
+  "authorized_at_utc": "2026-11-27T00:21:44.042326+00:00",
+  "user_request": "Continue allocating tasks to roommate,OMEN,Mac; user explicitly selected about4morehours.",
+  "deadline_utc": "2026-11-27T04:20:00+00:00",
+  "deadline_utc8": "2026-11-27T12:20:00+08:00",
+  "after_deadline": "No new model/search/reaction admission; already admitted finite work drains. No global power changes.",
+  "automatic_retries": 0,
+  "holdout_labels_evaluated": false,
+  "omen": {
+    "experiment": "ema_replay1024_e20",
+    "foundation": "models/v0.10.0/mh1_coverage2048_s0.model",
+    "seed": 2026112601,
+    "train_file": "data/until-0800-20261126/full-control.extxyz",
+    "training": {
+      "patience": 100,
+      "batch_size": 4,
+      "learning_rate": 1e-05,
+      "energy_weight": 10.0,
+      "forces_weight": 1.0,
+      "dtype": "float64",
+      "E0s": "foundation",
+      "device": "cuda",
+      "epochs": 20,
+      "ema": true,
+      "ema_decay": 0.99
+    },
+    "matched_control": "Mac public_replay1024_e20: same8480 orderedslots,20epochs,42400updates,initialweight/seed/lr/loss. Device differs; reportCPU/CUDA as a limitation.",
+    "budget": "One complete candidate, estimated3.5-4GPUh from actual8192x20 precedent; real8frameEMA interface first. No parametergrid or automaticrepeat.",
+    "promotion": "Barrier strictly lower and whole-path/TS force no worse than BOTH matched completeMaccontrol and frozen2048s0. Until common control metrics return, no promotion."
+  },
+  "mac": {
+    "experts": [
+      "global512",
+      "coverage2048s0"
+    ],
+    "search_protocol": "configs/four-hours-search-20261127.json",
+    "max_hours_per_worker": 3,
+    "workers": 2,
+    "threads_per_worker": 3,
+    "retained_full_control_owner": 69899,
+    "units": 16
+  },
+  "roommate": {
+    "cohort_reactions": 3,
+    "units_before_eligibility": 6,
+    "workers": 1,
+    "threads": 4,
+    "memory_GB": 2,
+    "minimum_available_GiB": 4,
+    "target_compute_hours": 4,
+    "policy": "Three smallest atom counts in previous frozen8metaendpoint cohort, tiesreactionID.Eligibility only existing strictMLIP+saddleIRC. Posthocdevelopment; no prospective/generalization claim. ExistingGaussian/rawtraininglabel queues remainterminal. No more offpath128labels aftergatefalse."
+  }
+}

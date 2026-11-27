@@ -44,34 +44,46 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
-- November26 user authorized useful tasks on ALLthreehosts throughUTC+8
-  November27 08:00 (=2026-11-27T00:00Z). Read
-  docs/design/overnight-until-0800.md and
-  configs/three-host-until-0800-20261126.json. No existing science restart.
-- OMEN originalgrowth67371 trains2048s2; s0/s1 completed20epochs, validation
-  barrier0.106280/0.103625, force0.082694/0.082712. Bothweights recoveredMac;
-  energy/forces/forceFD<=3.30e-7 passed. No best-repeat-seed selection.
-  Native35116/WSL75451 TS-study waits growth lock/terminal:512x8frames/8epochs
-  uniform vs normalizedTSx2; strictguardadmits2048x8/20epoch fullmodel.
-  Native25432/WSL75777 acceptance waits normalTSterminal,then<=3hreservedGPU
-  admission:16units on8othermetaendpoints,disjointfromMac; no newadmission00:00Z.
-- Mac actualowner69899, workers69904/69905 each4threads: fromfrozen2048s0,
-  8480publicreplayframes/20epochs completecontrol plus544frames/4epochs public
-  vsGaussian5D adaptationpilot. Realtraining/initialvalidation/epochs observed.
-  Strictcommonvalidationguardadmitsmatched8480frame/20epoch adaptation.
-  Slotsreleasedbefore00:00Zcanrun16fixed512/2048metaendpointsearchunits.
-  After00:00Znonewstages; existingexactworkertreesnice>=10/naturallydrain.
-  State/results:results/until-0800-20261126. Task-onlycaffeinate69900.
-- Roommate old29700/39768 terminal; calibration30184 completed16/16,875.95s,
-  all3Nforce/geometryalignmentpassed.5D reduces6D-public discrepancy but residual
-  numericdifferencesremain. OldZIP34868884bytes/13591entries recoveredCRCpassed.
-  Native16128 runs frozenoffpath32batch:2885Dframes=8reusedrefs+280newjobs,
-  serial4threads/2GB/4GiBgate/max8nativehours; collector50081return+alignment.
-  Newnative3248 holds1152unique5Dreserve(next128oldtrainreactions),waitsnormal
-  firstbatchdrain+actualMacpilotgate. Gateonlypermitsonefinite dataextension,
-  notmodelpromotion. Deadline00:00Zthen drain,3failurestop/no retries.
-  Collector73508 observesnewreserve12h. No automaticmergedataset/full512expansion.
-  Readconfigs/offpath32-20261126.json andoffpath128-until-0800-20261126.json.
+- Latest user explicitly requested another ~4h on all three nodes after the old
+  November27 08:00UTC+8 cutoff. New admission deadline is November27 12:20UTC+8
+  (=2026-11-27T04:20Z). Read docs/design/four-hour-continuation.md and
+  configs/four-hours-20261127.json. Old terminal evidence is preserved.
+- OMEN v0.10 all four models complete, including2048s2/20epochs/best14:
+  barrier0.107642/force0.083162/TS0.123912. All2048seeds mean barrier0.105849,
+  sampleSD0.002043. Frozen2048s0 remains baseline; no best-repeat selection.
+  TS8epoch control/weighted barrier0.114585/0.121462; weighted rejects promotion.
+  Old16unit acceptance failed at model loading before science (missing512weight),
+  now restored56945307bytes. Do not restart these old owners.
+- New OMEN native4932/WSL Python79004 runs one full8480frame/20epoch EMA0.99
+  candidate from2048s0, matched to currentMacpubliccontrol seed2026112601,
+  lr1e-5/E0foundation; actual8frameEMA save/reload/forceFD3.05e-7 passed.
+  State:results/four-hours-20261127/omen. Initial status-format startup failure
+  preserved as startup-failed-state.json before any scientific training.
+  One fullcandidate/no grid/retry; admitted20epochs naturally drain after04:20Z.
+- Mac original69899/fullworker69904/train69962 still completing20epochs;
+  at00:25Z epoch18 complete, nice10. Adaptation69905 terminal: publicpilot
+  barrier0.106378/force0.082435/TS0.123516, Gaussian5Dpilot
+  0.110124/0.088032/0.129886. Both fullpromotion and128label extension denied.
+  Existing original288labels are complete, aligned and quarantined; no expansion.
+- New Mac owner95219/search95263+95264 each3threads,nice10 runs previously
+  unexecuted OMEN frozen8metaendpoints,16units in results/four-hours-20261127/search;
+  <=3h admission per worker, absolute04:20Z cutoff, currentunit drains.
+  Oldother8meta searches complete:512and2048 each4/8strictMLIP, differentsets;
+  these are development/noDFT claims. Task caffeinate95220 plus original69900.
+- Roommate original32batch16128 finished280/280newjobs,288totalwith8reusedrefs,
+  8084.91jobseconds; Maccollector50081 alignedcomplete. Reserve3248 terminal
+  pilot_gate_declined,0jobs; collector73508 recovered rawinputevidence. No retries.
+- Roommate new serialowner29228 at results/four-hours-20261127/roommate:
+  three eligible newmodelDFTchains(2048/8694,512/8694,2048/0255), from smallest
+  three oldmeta reactions/sixplannedunits; rejectedMLIPunits retained.4threads/2GB,
+  4GiBfreegate,04:20Z newchain cutoff, boundedadmittedchain naturally drains.
+  Actualg16/l1110observed. Macindependentcollectors97710/97711/97712 use verified
+  per-commandhost/keyoverride,8h finiteobservations; no science restart or proxychange.
+- Modelcollector7027 is active with finite8h read-only return and assessment.
+- Source records private results/coordination/compute-20261126/{growth-final-state,
+  ts-weight-final-state}.json and results/four-hours-20261127. Modelcollector
+  scripts/collect_four_hour_model.py returnsactualEMAweight, CPUforceFD, common
+  completecontrol+2048s0metrics before any eligibility decision. Prospective closed.
 - User prioritizes better deliverable models AND methods beyond scale. Starting
   OMENGPUallocation60%completeapplication/repeats,<=25%exploration,~15%acceptance;
   debitcommittedqueuefirst. Readtraining-methods.md,model-growth.md,ts-weight-study.md.
@@ -149,6 +161,7 @@ completed or active study merely to inspect its status.
 
 # Docs Index
 
+- `docs/design/four-hour-continuation.md`: latest four-hour deadline, EMA full candidate and independent acceptance.
 - `docs/design/overnight-until-0800.md`: three-host deadline, actual adaptation and gated label continuation.
 - `docs/design/ts-weight-study.md`: finite TS objective pilot/application and DFT label calibration.
 - `docs/design/soft-mixture.md`: external gates and matched shared-trunk residual pilot.
