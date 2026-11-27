@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('download','prepare','study','specialization-prepare','optimizer-study','growth-prepare','growth','ts-weight-study','ts-weight-prepare','overnight-acceptance','four-hour-compute')][string]$Stage = 'study',
+    [ValidateSet('download','prepare','study','specialization-prepare','optimizer-study','growth-prepare','growth','ts-weight-study','ts-weight-prepare','overnight-acceptance','four-hour-compute','equal-budget-growth')][string]$Stage = 'study',
     [switch]$Worker
 )
 $ErrorActionPreference = 'Stop'
@@ -13,6 +13,7 @@ $runtimeName = switch($Stage) {
     'ts-weight-prepare' {'compute-20261126'}
     'overnight-acceptance' {'until-0800-20261126'}
     'four-hour-compute' {'four-hours-20261127'}
+    'equal-budget-growth' {'equal-budget-20261127'}
     default {'model-v07'}
 }
 $runtime = Join-Path $project ('results\coordination\'+$runtimeName)
