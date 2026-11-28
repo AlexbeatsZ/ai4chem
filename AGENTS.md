@@ -48,6 +48,46 @@ instructions still determine the group's assigned slot and submission details.
 
 # Active Work
 
+- 2026-11-28 02:16Z research continuation (user explicitly authorized more bounded
+  compute): OMEN phase-1 128 existing meta-development DFT paths for both
+  MACE2048/4096 complete (first script stopped after writing metrics due missing
+  sklearn; distinct recovery-only analysis completed; no recomputation).
+  2048/4096 average fixed-path tangent force RMSE .0639026/.0849290
+  eV/A, energy-slope RMSE .0863794/.1197209 eV/A; 94/128 tangent
+  errors increased. Existing 16 paired searches 2048 5 strict vs4096 3;
+  no novel DFT was run for the phase-1 static study.
+- OMEN Popcornn official repository pinned e4a02f4c in isolated
+  /home/meta/Project/Workspaces/popcornn/.venv, using the existing
+  ai4chem PyTorch environment's packages, separate optional dependencies,
+  custom small-molecule pure-Torch radius graph; no shared-env package
+  replacement. Two-geometry MACE parity passed (<1e-9eV and <1e-8eV/A).
+  The upstream integrate_gradient=True vmap path fails on scripted MACE;
+  integrate_gradient=False passed 2+2 step smoke. Active bounded
+  results/popcornn-compare-20261128 owner93038: 2 models×8 previously
+  examined meta reactions, same endpoints, each candidate undergoes Sella,
+  Hessian, IRC and minimum stability checks; 2100s/unit, four positive-control
+  pilot units gated before expanding, no retries, new admission ends
+  2026-11-28T19:00Z. Automatic paired comparison aggregator running.
+- Mac results/failure-policy-20261128 completed formula-disjoint 5-fold
+  offline post-S0 decision policy; small n=32 and S1/S2 costs modeled as
+  independent FULL restarts after S0, not observed sequential computation.
+  At lambda=0, ridge 10 successes/18433s versus fixed S1 10/25095s
+  and stop 8/6014s; hypothesis only, no independent prospective claim.
+- Roommate PC (authorized again) owner35152:
+  results/frontier-dft-rescue-20261128 2 frozen Gaussian full-chain
+  candidates rxn3849 and rxn9706, both strict MACE2048 successes
+  where MACE4096 failed, meta-development only. 4threads/2GB and
+  4GiB free-memory gate, last observed waiting at3.9GiB; admission
+  until 2026-11-28T14:15Z, no retries. Mac collector75920 observes
+  raw evidence and independent assessor76046 validates Gaussian TS,
+  frequencies, both IRC branches and mapped endpoints once returned.
+  Do not imply DFT started until queue state says so; no training label merge.
+- Research priority: static tangent/slope and search failure mechanism,
+  then algorithm-matched Popcornn vs CI-NEB success/cost; select new
+  DFT for genuine novel rescues only with independent guards.
+  Original prospective holdout remains unopened. Stop before launching
+  any extra uncapped GPU or Gaussian tasks without a fresh protocol.
+
 - November27 13:19Z: user requests a finite overnight batch through
   November28 09:00 Asia/Shanghai (= November28 01:00Z), preserving useful
   science and existing work. Local task states in git-ignored results; no new
